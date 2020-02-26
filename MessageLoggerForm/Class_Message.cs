@@ -3,12 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Globalization;
 
 namespace MessageLoggerForm
 {
-    class Class_Message
-    { 
+    public class Class_Message
+    {
+
+        /********************************** Message frame **********************************/
+        public struct tsFrameHeader
+        {
+            byte ucPreamble;
+            byte ucDestAddress;
+            byte ucSourceAddress;
+            byte ucMsgType;
+        };
+
+        //! Payload content. Wolf uses object and command inside of payload. Not our idea!
+        public unsafe struct tsPayload
+        {
+            byte ucMsgId;
+            byte ucCommand;
+            fixed byte ucData[6];
+ //           byte []ucData;
+
+            /*
+            public tsPayload(byte ucId, byte ucCmd, byte[] ucDat)
+            {
+                ucMsgId = ucId;
+                ucCommand = ucCmd;
+                ucData = ucDat;
+            }
+            */
+        };
+
+        //! Format of whole message frame
+        public struct tsMessageFrame
+        {
+            public tsFrameHeader sHeader;
+            public tsPayload sPayload;
+            public UInt32 ulCrc32;
+
+            public tsMessageFrame(tsFrameHeader sFrHeader, tsPayload sFrPayload, UInt32 ulFrCRC)
+            {
+                this.sHeader = sFrHeader;
+                this.sPayload = sFrPayload;
+                this.ulCrc32 = ulFrCRC;
+            }
+        };
+
+
         /*************************
         * variables and defines
         ************************/
@@ -36,6 +80,10 @@ namespace MessageLoggerForm
             this.uiMsgSize = uiSize;
             this.uiMsgFlag = uiFlag;
         }
+
+        public Class_Message();
+
+
 
         /****************************************************
          * Method for returning the complete message as a string

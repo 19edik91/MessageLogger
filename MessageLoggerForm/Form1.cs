@@ -8,17 +8,31 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Collections.Specialized;
 
 
 namespace MessageLoggerForm
 {
     public partial class Form1 : Form
     {
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SumVariables(int a, int b);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMessageFrame(out Class_Message.tsMessageFrame psMessageFrame);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool MsgLib_PutDataInBuffer(byte[] pucBuffer, byte ucSize);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void InitModule();
 
         const UInt16 uiBaudRate = 32800;
 
-
+        //Messages
+        private Class_Message sMsg = new Class_Message();
 
         public Form1()
         {
@@ -26,6 +40,8 @@ namespace MessageLoggerForm
 
             //Init combo box 
             getAvailablePorts();
+
+            InitModule();
         }
 
         //Function to get all available Ports and display them in the combo box
@@ -86,10 +102,18 @@ namespace MessageLoggerForm
             {
                 sp.Read(aucBuffer, 0, sp.BytesToRead);
                 sp.DiscardInBuffer();
+
+                MsgLib_PutDataInBuffer(aucBuffer, Convert.ToByte(aucBuffer.Count()));
+
+                Class_Message.tsMessageFrame sMsgFrame;
+                MsgLib_GetMessageFrame(out sMsgFrame);
+
+                MessageBox.Show("a");
             }
             catch(Exception)
             {
-                MessageBox.Show("Full");
+                //MessageBox.Show("Full");
+                sp.DiscardInBuffer();
                 return;
             }
         }
