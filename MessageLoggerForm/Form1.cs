@@ -126,19 +126,19 @@ namespace MessageLoggerForm
 
             
             DateTime sDate = DateTime.Now;
+            Class_Interpreter Interpreter = new Class_Interpreter();
+            
 
             /* Add items to list view */
             asMsgArray[0] = this.ulMsgIdxCnt.ToString();
             ++this.ulMsgIdxCnt;
 
             asMsgArray[1] = sDate.TimeOfDay.ToString();
-
-            //            asMsgArray[2] = sMsgFrame.sHeader.ucMsgType.ToString("X2");
             asMsgArray[2] = "Empty";
 
-            asMsgArray[3] = sMsgFrame.sHeader.ucDestAddress.ToString("X2");
-            asMsgArray[4] = sMsgFrame.sHeader.ucSourceAddress.ToString("X2");
-            asMsgArray[5] = sMsgFrame.sHeader.ucMsgType.ToString("X2");
+            asMsgArray[3] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
+            asMsgArray[4] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
+            asMsgArray[5] = Interpreter.InteprateType(sMsgFrame.sHeader.ucMsgType);
 
             /* Get the payload */
             string sPayload = "";
@@ -148,8 +148,8 @@ namespace MessageLoggerForm
             }
             asMsgArray[6] = sPayload;
 
-            asMsgArray[7] = sMsgFrame.sPayload.ucMsgId.ToString("X2");
-            asMsgArray[8] = sMsgFrame.sPayload.ucCommand.ToString("X2");
+            asMsgArray[7] = Interpreter.InteprateID(sMsgFrame.sPayload.ucMsgId);
+            asMsgArray[8] = Interpreter.InteprateCommand(sMsgFrame.sPayload.ucCommand);
 
             this.lvItem = new ListViewItem(asMsgArray);
 
