@@ -3,11 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+
 
 namespace MessageLoggerForm
 {
     public class Class_Interpreter
     {
+        /****************************************************************************************************
+        * C-DLL functions
+        ****************************************************************************************************/
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgOutputStatus(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgOutputStateCS psMsgOutputStateCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgOutputStatusResponse(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgOutputStateResponseCS psMsgOutputStateResponseCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgVersion(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgVersionCS psMsgVersionCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgFaultMessage(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgFaultMessageCS psMsgFaultMessageCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgManualInit(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgManualInitCS psMsgManualInitCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgUserTimer(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgUserTimerCS psMsgUserTimerCS);
+
+
         /****************************************************
          * @brief: Standard constructor for this class
          * @param: none
@@ -103,7 +127,7 @@ namespace MessageLoggerForm
          * @param: ucID - Message ID as a byte
          * @return: sID - Interprated ID as a string
          ***************************************************/
-        public string InteprateID(byte ucID)
+        public string InteprateIdAndPayload(byte ucID, byte[] aucPayload, ref string sPayloadInterpreation)
         {
             string sID = "No Cmd found";
 
@@ -112,6 +136,22 @@ namespace MessageLoggerForm
                 case ClassMsgEnum.teMessageId.eMsgOutputStatus:
                     {
                         sID = "Outputs status";
+
+                        MsgStructureCasted.tsMsgOutputStateCS sMsg;
+                        MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                        sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
+                        sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
+
+                        if (Convert.ToBoolean(sMsg.bInitMenuActive) == true && Convert.ToBoolean(sMsg.bInitMenuActiveInv) == false)
+                        {
+                            sPayloadInterpreation += "Init Menu acitve: true";
+                        }
+                        else
+                        {
+                            sPayloadInterpreation += "Init Menu acitve: false";
+                        }                       
                         break;
                     }
 

@@ -33,7 +33,6 @@ namespace MessageLoggerForm
         public static extern void InitModule();
 
 
-
         /****************************************************************************************************
         * Variables
         ****************************************************************************************************/
@@ -164,6 +163,21 @@ namespace MessageLoggerForm
 
 
         /****************************************************************************************************
+         * @brief: Re-sizes the columns of the list view
+         * @param: none
+         * @return: none
+         ****************************************************************************************************/
+        private void ResizeListViewColumns(object sender, EventArgs e)
+        {
+            foreach (ColumnHeader column in listView1.Columns)
+            {
+                column.Width = -2;
+            }
+        }
+
+
+
+        /****************************************************************************************************
          * @brief: Fills an array for the list view with the interprated data.
          * @param: sMsgFrame - The message frame which shall be interprated and put into the list view
          * @return: none
@@ -181,28 +195,35 @@ namespace MessageLoggerForm
             ++this.ulMsgIdxCnt;
 
             asMsgArray[1] = sDate.TimeOfDay.ToString();
-            asMsgArray[2] = "Empty";
+
+            for (byte ucBuffIdx = 0; ucBuffIdx < this.BufferCnt; ucBuffIdx++)
+            {
+                asMsgArray[2] += this.aucBuffer[ucBuffIdx].ToString("X2") + " ";
+            }
 
             asMsgArray[3] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
             asMsgArray[4] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
             asMsgArray[5] = Interpreter.InteprateType(sMsgFrame.sHeader.ucMsgType);
 
             /* Get the payload */
-            string sPayload = "";
+            byte[] aucPayloadCpy = new byte[6];
+
             for(byte ucPayloadIdx = 0; ucPayloadIdx < 6; ucPayloadIdx++)
             {
-                sPayload += sMsgFrame.sPayload.ucData[ucPayloadIdx].ToString("X2") + " ";
+                asMsgArray[6] += sMsgFrame.sPayload.ucData[ucPayloadIdx].ToString("X2") + " ";
+                aucPayloadCpy[ucPayloadIdx] = sMsgFrame.sPayload.ucData[ucPayloadIdx];
             }
-            asMsgArray[6] = sPayload;
 
-            asMsgArray[7] = Interpreter.InteprateID(sMsgFrame.sPayload.ucMsgId);
+            asMsgArray[7] = Interpreter.InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayloadCpy, ref asMsgArray[9]);
             asMsgArray[8] = Interpreter.InteprateCommand(sMsgFrame.sPayload.ucCommand);
+
+
 
             /* Create new list view item to enable the adding */
             this.lvItem = new ListViewItem(asMsgArray);
 
             /* Call per invoke to put the item to the list view */
-            this.Invoke(new MethodInvoker(AddNewItem));            
+            this.Invoke(new MethodInvoker(AddNewItem));
         }
 
 
