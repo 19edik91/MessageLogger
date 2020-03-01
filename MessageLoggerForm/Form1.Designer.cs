@@ -43,7 +43,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.LblMessage = new System.Windows.Forms.Label();
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
@@ -76,6 +75,7 @@
             this.BtnComPortStop = new System.Windows.Forms.Button();
             this.LblComPortStatus = new System.Windows.Forms.Label();
             this.LblBytesToRead = new System.Windows.Forms.Label();
+            this.RichTextBoxSerialData = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -113,14 +113,17 @@
             // LVIndex
             // 
             this.LVIndex.Text = "Index";
+            this.LVIndex.Width = 58;
             // 
             // LVTime
             // 
             this.LVTime.Text = "Time";
+            this.LVTime.Width = 110;
             // 
             // LVMessage
             // 
             this.LVMessage.Text = "Message";
+            this.LVMessage.Width = 63;
             // 
             // LVDestination
             // 
@@ -146,6 +149,7 @@
             // LVCommand
             // 
             this.LVCommand.Text = "Command";
+            this.LVCommand.Width = 87;
             // 
             // LVInterpretation
             // 
@@ -176,22 +180,14 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.LblMessage);
+            this.tabPage2.Controls.Add(this.RichTextBoxSerialData);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(693, 377);
+            this.tabPage2.Size = new System.Drawing.Size(932, 654);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.Text = "Serial Data";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // LblMessage
-            // 
-            this.LblMessage.AutoSize = true;
-            this.LblMessage.Location = new System.Drawing.Point(6, 13);
-            this.LblMessage.Name = "LblMessage";
-            this.LblMessage.Size = new System.Drawing.Size(0, 13);
-            this.LblMessage.TabIndex = 0;
             // 
             // serialPort1
             // 
@@ -554,6 +550,14 @@
             this.LblBytesToRead.TabIndex = 7;
             this.LblBytesToRead.Text = "0";
             // 
+            // RichTextBoxSerialData
+            // 
+            this.RichTextBoxSerialData.Location = new System.Drawing.Point(6, 7);
+            this.RichTextBoxSerialData.Name = "RichTextBoxSerialData";
+            this.RichTextBoxSerialData.Size = new System.Drawing.Size(920, 641);
+            this.RichTextBoxSerialData.TabIndex = 0;
+            this.RichTextBoxSerialData.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -565,7 +569,6 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.grpBoardStatus.ResumeLayout(false);
@@ -596,7 +599,6 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.IO.Ports.SerialPort serialPort1;
-        private System.Windows.Forms.Label LblMessage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.GroupBox grpBoardStatus;
@@ -628,6 +630,7 @@
         private System.Windows.Forms.Button BtnComPortStart;
         private System.Windows.Forms.ComboBox ComboBoxSerialComPorts;
         private System.Windows.Forms.Label LblComPort;
+        private System.Windows.Forms.RichTextBox RichTextBoxSerialData;
     }
 }
 

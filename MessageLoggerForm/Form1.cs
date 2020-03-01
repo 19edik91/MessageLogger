@@ -100,35 +100,23 @@ namespace MessageLoggerForm
             }
         }
 
-        public static string ToHexString(string str)
+        private void AddTextToSerialDataTextBox()
         {
-            var sb = new StringBuilder();
-
-            var bytes = Encoding.Unicode.GetBytes(str);
-            foreach (var t in bytes)
+            DateTime sDate = DateTime.Now; 
+            RichTextBoxSerialData.Text += sDate.TimeOfDay.ToString() + " ";
+            for (byte Idx = 0; Idx < BufferCnt; Idx++)
             {
-                sb.Append(t.ToString("X2"));
+                string sBufferEntry = aucBuffer[Idx].ToString("X2");
+                
+                RichTextBoxSerialData.Text += sBufferEntry + " ";
             }
 
-            return sb.ToString(); // returns: "48656C6C6F20776F726C64" for "Hello world"
-        }
-
-        private void ChangeLabel()
-        {
-            //for (byte Idx = 0; Idx < BufferCnt; Idx++)
-            //{
-            //    string s = aucBuffer[Idx].ToString("X2");
-            //    
-            //    LblMessage.Text += s + " ";
-            //}
-            LblMessage.Text = MsgFrame;
-
-            LblMessage.Text += "\n";
+            RichTextBoxSerialData.Text += "\n";
         }
 
         private void AddNewItem()
         {
-            listView1.Items.Add(this.lvItem);
+            listView1.Items.Insert(0, this.lvItem);
         }
 
         private unsafe void FillListView(Class_Message.tsMessageFrame sMsgFrame)
@@ -184,8 +172,7 @@ namespace MessageLoggerForm
                 sp.DiscardInBuffer();
 
                 MsgLib_PutDataInBuffer(aucBuffer, BufferCnt);
-
-//                this.Invoke(new MethodInvoker(ChangeLabel));
+                this.Invoke(new MethodInvoker(AddTextToSerialDataTextBox));
 
                 Class_Message.tsMessageFrame sMsgFrame;
                 if(MsgLib_GetMessageFrame(out sMsgFrame))
