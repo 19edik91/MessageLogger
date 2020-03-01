@@ -13,28 +13,18 @@ namespace MessageLoggerForm
         /********************************** Message frame **********************************/
         public struct tsFrameHeader
         {
-            byte ucPreamble;
-            byte ucDestAddress;
-            byte ucSourceAddress;
-            byte ucMsgType;
+            public byte ucPreamble;
+            public byte ucDestAddress;
+            public byte ucSourceAddress;
+            public byte ucMsgType;
         };
 
         //! Payload content. Wolf uses object and command inside of payload. Not our idea!
         public unsafe struct tsPayload
         {
-            byte ucMsgId;
-            byte ucCommand;
-            fixed byte ucData[6];
- //           byte []ucData;
-
-            /*
-            public tsPayload(byte ucId, byte ucCmd, byte[] ucDat)
-            {
-                ucMsgId = ucId;
-                ucCommand = ucCmd;
-                ucData = ucDat;
-            }
-            */
+            public byte ucMsgId;
+            public byte ucCommand;
+            public fixed byte ucData[6];
         };
 
         //! Format of whole message frame
@@ -43,13 +33,6 @@ namespace MessageLoggerForm
             public tsFrameHeader sHeader;
             public tsPayload sPayload;
             public UInt32 ulCrc32;
-
-            public tsMessageFrame(tsFrameHeader sFrHeader, tsPayload sFrPayload, UInt32 ulFrCRC)
-            {
-                this.sHeader = sFrHeader;
-                this.sPayload = sFrPayload;
-                this.ulCrc32 = ulFrCRC;
-            }
         };
 
 
@@ -81,7 +64,10 @@ namespace MessageLoggerForm
             this.uiMsgFlag = uiFlag;
         }
 
-        public Class_Message();
+        public Class_Message()
+        {
+            //Empty
+        }
 
 
 
