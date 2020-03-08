@@ -77,6 +77,7 @@
             this.ComboBoxSerialComPorts = new System.Windows.Forms.ComboBox();
             this.LblComPort = new System.Windows.Forms.Label();
             this.BtnResizeListView = new System.Windows.Forms.Button();
+            this.BtnComPortInit = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -240,9 +241,9 @@
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
             this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpBoardStatus.Location = new System.Drawing.Point(3, 108);
+            this.grpBoardStatus.Location = new System.Drawing.Point(3, 119);
             this.grpBoardStatus.Name = "grpBoardStatus";
-            this.grpBoardStatus.Size = new System.Drawing.Size(225, 540);
+            this.grpBoardStatus.Size = new System.Drawing.Size(225, 529);
             this.grpBoardStatus.TabIndex = 5;
             this.grpBoardStatus.TabStop = false;
             this.grpBoardStatus.Text = "Board Status";
@@ -491,6 +492,7 @@
             // 
             // grpSerialInterface
             // 
+            this.grpSerialInterface.Controls.Add(this.BtnComPortInit);
             this.grpSerialInterface.Controls.Add(this.LblBytesToRead);
             this.grpSerialInterface.Controls.Add(this.LblComPortStatus);
             this.grpSerialInterface.Controls.Add(this.BtnComPortStop);
@@ -500,7 +502,7 @@
             this.grpSerialInterface.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpSerialInterface.Location = new System.Drawing.Point(3, 3);
             this.grpSerialInterface.Name = "grpSerialInterface";
-            this.grpSerialInterface.Size = new System.Drawing.Size(225, 99);
+            this.grpSerialInterface.Size = new System.Drawing.Size(225, 110);
             this.grpSerialInterface.TabIndex = 4;
             this.grpSerialInterface.TabStop = false;
             this.grpSerialInterface.Text = "Serial Interface";
@@ -570,6 +572,16 @@
             this.BtnResizeListView.Text = "Resize List";
             this.BtnResizeListView.UseVisualStyleBackColor = true;
             this.BtnResizeListView.Click += new System.EventHandler(this.ResizeListViewColumns);
+            // 
+            // BtnComPortInit
+            // 
+            this.BtnComPortInit.Location = new System.Drawing.Point(81, 80);
+            this.BtnComPortInit.Name = "BtnComPortInit";
+            this.BtnComPortInit.Size = new System.Drawing.Size(121, 23);
+            this.BtnComPortInit.TabIndex = 8;
+            this.BtnComPortInit.Text = "Update COM Ports";
+            this.BtnComPortInit.UseVisualStyleBackColor = true;
+            this.BtnComPortInit.Click += new System.EventHandler(this.BtnComPortInit_Click);
             // 
             // Form1
             // 
@@ -645,6 +657,7 @@
         private System.Windows.Forms.Label LblComPort;
         private System.Windows.Forms.RichTextBox RichTextBoxSerialData;
         private System.Windows.Forms.Button BtnResizeListView;
+        private System.Windows.Forms.Button BtnComPortInit;
     }
 }
 

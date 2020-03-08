@@ -11,7 +11,7 @@ using System.IO.Ports;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Collections.Specialized;
-
+using System.Threading;
 
 namespace MessageLoggerForm
 {
@@ -50,6 +50,22 @@ namespace MessageLoggerForm
 
 
         /****************************************************************************************************
+        * @brief: Method to enable the double buffered option
+        * @param: control - The control object which should activate the double buffered function
+        * @return: none
+        ****************************************************************************************************/
+        public static void SetDoubleBufferd(Control control)
+        {
+            //Set instance non-public property with name "DoubleBufferd" to true
+            typeof(Control).InvokeMember("DoubleBuffered",
+                                            System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                                            null,
+                                            control,
+                                            new object[] { true });
+        }
+
+
+        /****************************************************************************************************
         * Functions of the FORM
         ****************************************************************************************************/
         public Form1()
@@ -60,6 +76,9 @@ namespace MessageLoggerForm
             GetAvailablePorts();
 
             InitModule();
+
+            //Activate the double buffered option in the list view
+            SetDoubleBufferd(listView1);
         }
 
         /****************************************************************************************************
@@ -70,7 +89,15 @@ namespace MessageLoggerForm
         void GetAvailablePorts()
         {
             String[] sPorts = SerialPort.GetPortNames();
-            ComboBoxSerialComPorts.Items.AddRange(sPorts);
+
+            /* Check if comport is already in the list */
+            foreach(string sPort in sPorts)
+            {
+                if(ComboBoxSerialComPorts.Items.Contains(sPort) == false)
+                {
+                    ComboBoxSerialComPorts.Items.Add(sPort);
+                }
+            }            
         }
 
         /****************************************************************************************************
@@ -250,16 +277,9 @@ namespace MessageLoggerForm
                 //Put the buffer into the serial handling
                 MsgLib_PutDataInBuffer(this.aucBuffer, BufferCnt);
 
-                //Use invoke to put the whole received buffer into the text box
-                this.Invoke(new MethodInvoker(AddTextToSerialDataTextBox));
-
-                /* When a message was constructed with the serial-handling put
-                 * it into the list view */
-                Class_Message.tsMessageFrame sMsgFrame;
-                if(MsgLib_GetMessageFrame(out sMsgFrame))
-                {
-                    FillListView(sMsgFrame);
-                }                
+                //Decouple the receive thread from the handling thread.
+                //Shall improve / fix freezes when the serial port is closed during received data
+                ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
             }
             catch(Exception ex)
             {
@@ -268,6 +288,42 @@ namespace MessageLoggerForm
                 sp.DiscardInBuffer();
                 return;
             }
+        }
+
+
+        /****************************************************************************************************
+         * @brief: Handles the received bytes and fills the text box and also the list view. Was necessary
+         *         for decoupling the Data-Received thread from this handling thread otherwise the program
+         *         could be freezed when COM port is disabled.
+         * @param: 
+         * @return: none
+         ****************************************************************************************************/
+        private void HandleReceivedBytes(object state)
+        {
+            //Use invoke to put the whole received buffer into the text box
+            this.Invoke(new MethodInvoker(AddTextToSerialDataTextBox));
+            //AddTextToSerialDataTextBox();
+
+            /* When a message was constructed with the serial-handling put
+             * it into the list view */
+            Class_Message.tsMessageFrame sMsgFrame;
+            if (MsgLib_GetMessageFrame(out sMsgFrame))
+            {
+                FillListView(sMsgFrame);
+            }
+        }
+
+
+
+        /****************************************************************************************************
+         * @brief: Checks for the available COM ports
+         * @param: 
+         * @return: none
+         ****************************************************************************************************/
+        private void BtnComPortInit_Click(object sender, EventArgs e)
+        {
+            //Init combo box 
+            GetAvailablePorts();
         }
     }
 }
