@@ -201,8 +201,7 @@ namespace MessageLoggerForm
                 column.Width = -2;
             }
         }
-
-
+        
 
         /****************************************************************************************************
          * @brief: Fills an array for the list view with the interprated data.
@@ -324,6 +323,16 @@ namespace MessageLoggerForm
         {
             //Init combo box 
             GetAvailablePorts();
+        }
+
+        /****************************************************************************************************
+          * @brief: Clear the list view
+          * @param: 
+          * @return: none
+          ****************************************************************************************************/
+        private void BtnClearListView_Click(object sender, EventArgs e)
+        {
+            this.listView1.Items.Clear();
         }
     }
 }

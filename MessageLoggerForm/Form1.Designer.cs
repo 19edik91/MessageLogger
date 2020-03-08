@@ -48,6 +48,8 @@
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.grpBoardStatus = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.BtnClearListView = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.LblTemperature = new System.Windows.Forms.Label();
             this.LblPower = new System.Windows.Forms.Label();
@@ -70,6 +72,7 @@
             this.LblLedStatusResp = new System.Windows.Forms.Label();
             this.LblBrightnessReq = new System.Windows.Forms.Label();
             this.grpSerialInterface = new System.Windows.Forms.GroupBox();
+            this.BtnComPortInit = new System.Windows.Forms.Button();
             this.LblBytesToRead = new System.Windows.Forms.Label();
             this.LblComPortStatus = new System.Windows.Forms.Label();
             this.BtnComPortStop = new System.Windows.Forms.Button();
@@ -77,13 +80,13 @@
             this.ComboBoxSerialComPorts = new System.Windows.Forms.ComboBox();
             this.LblComPort = new System.Windows.Forms.Label();
             this.BtnResizeListView = new System.Windows.Forms.Button();
-            this.BtnComPortInit = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.grpBoardStatus.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.grpSerialInterface.SuspendLayout();
@@ -223,9 +226,9 @@
             // 
             this.tableLayoutPanel4.ColumnCount = 1;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Controls.Add(this.panel1, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.grpBoardStatus, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.grpSerialInterface, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.BtnResizeListView, 0, 2);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(949, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -243,10 +246,29 @@
             this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpBoardStatus.Location = new System.Drawing.Point(3, 119);
             this.grpBoardStatus.Name = "grpBoardStatus";
-            this.grpBoardStatus.Size = new System.Drawing.Size(225, 529);
+            this.grpBoardStatus.Size = new System.Drawing.Size(225, 513);
             this.grpBoardStatus.TabIndex = 5;
             this.grpBoardStatus.TabStop = false;
             this.grpBoardStatus.Text = "Board Status";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.BtnClearListView);
+            this.panel1.Controls.Add(this.BtnResizeListView);
+            this.panel1.Location = new System.Drawing.Point(3, 638);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(225, 39);
+            this.panel1.TabIndex = 2;
+            // 
+            // BtnClearListView
+            // 
+            this.BtnClearListView.Location = new System.Drawing.Point(87, 8);
+            this.BtnClearListView.Name = "BtnClearListView";
+            this.BtnClearListView.Size = new System.Drawing.Size(75, 23);
+            this.BtnClearListView.TabIndex = 7;
+            this.BtnClearListView.Text = "Clear List";
+            this.BtnClearListView.UseVisualStyleBackColor = true;
+            this.BtnClearListView.Click += new System.EventHandler(this.BtnClearListView_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -507,6 +529,16 @@
             this.grpSerialInterface.TabStop = false;
             this.grpSerialInterface.Text = "Serial Interface";
             // 
+            // BtnComPortInit
+            // 
+            this.BtnComPortInit.Location = new System.Drawing.Point(81, 80);
+            this.BtnComPortInit.Name = "BtnComPortInit";
+            this.BtnComPortInit.Size = new System.Drawing.Size(121, 23);
+            this.BtnComPortInit.TabIndex = 8;
+            this.BtnComPortInit.Text = "Update COM Ports";
+            this.BtnComPortInit.UseVisualStyleBackColor = true;
+            this.BtnComPortInit.Click += new System.EventHandler(this.BtnComPortInit_Click);
+            // 
             // LblBytesToRead
             // 
             this.LblBytesToRead.AutoSize = true;
@@ -565,23 +597,13 @@
             // 
             // BtnResizeListView
             // 
-            this.BtnResizeListView.Location = new System.Drawing.Point(3, 654);
+            this.BtnResizeListView.Location = new System.Drawing.Point(3, 8);
             this.BtnResizeListView.Name = "BtnResizeListView";
             this.BtnResizeListView.Size = new System.Drawing.Size(75, 23);
             this.BtnResizeListView.TabIndex = 6;
             this.BtnResizeListView.Text = "Resize List";
             this.BtnResizeListView.UseVisualStyleBackColor = true;
             this.BtnResizeListView.Click += new System.EventHandler(this.ResizeListViewColumns);
-            // 
-            // BtnComPortInit
-            // 
-            this.BtnComPortInit.Location = new System.Drawing.Point(81, 80);
-            this.BtnComPortInit.Name = "BtnComPortInit";
-            this.BtnComPortInit.Size = new System.Drawing.Size(121, 23);
-            this.BtnComPortInit.TabIndex = 8;
-            this.BtnComPortInit.Text = "Update COM Ports";
-            this.BtnComPortInit.UseVisualStyleBackColor = true;
-            this.BtnComPortInit.Click += new System.EventHandler(this.BtnComPortInit_Click);
             // 
             // Form1
             // 
@@ -597,6 +619,7 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.grpBoardStatus.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -658,6 +681,8 @@
         private System.Windows.Forms.RichTextBox RichTextBoxSerialData;
         private System.Windows.Forms.Button BtnResizeListView;
         private System.Windows.Forms.Button BtnComPortInit;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button BtnClearListView;
     }
 }
 
