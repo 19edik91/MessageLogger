@@ -78,7 +78,7 @@ namespace MessageLoggerForm
          * @param: ucType - Type as a byte
          * @return: sType - Interprated type as a string
          ***************************************************/
-        public string InteprateType(byte ucType)
+        public string InteprateType(byte ucType, ref bool bInterpretationNeeded)
         {
             string sType = "No Type found";
 
@@ -99,12 +99,14 @@ namespace MessageLoggerForm
                 case ClassMsgEnum.teMessageType.eTypeResponseAck:
                 {
                     sType = "Response - ACK";
+                    bInterpretationNeeded = false;
                     break;
                 }
 
                 case ClassMsgEnum.teMessageType.eTypeResponseDenied:
                 {
                     sType = "Response - Denied";
+                    bInterpretationNeeded = false;
                     break;
                 }
 
@@ -263,6 +265,31 @@ namespace MessageLoggerForm
             }
 
             return sAddress;
+        }
+
+        /****************************************************
+         * @brief: Interprates the message frame and re-writes the given parameter.
+         * @param: sMsgFrame - The message frame to interprate
+         * @return: none
+         ***************************************************/
+        public void InteprateMessageFrame(Class_Message.tsMessageFrame sMsgFrame, ref string sDestAddr, ref string sSourceAddr, ref string sType,
+                                            ref string sCmd, ref string sID, byte[] aucPayload, ref string sPayloadInterpreation)
+        {
+            bool bInterpretationNeeded = true;
+
+            sDestAddr = InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
+            sSourceAddr = InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
+            sType = InteprateType(sMsgFrame.sHeader.ucMsgType, ref bInterpretationNeeded);
+            sID = InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayload, ref sPayloadInterpreation);
+
+            if (bInterpretationNeeded == true)
+            {
+                sCmd = InteprateCommand(sMsgFrame.sPayload.ucCommand);
+            }
+            else
+            {
+                sPayloadInterpreation = " ";
+            }
         }
     }
 }

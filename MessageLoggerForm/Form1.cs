@@ -115,8 +115,12 @@ namespace MessageLoggerForm
                     //Set port name to the Combo box name
                     serialPort1.PortName = ComboBoxSerialComPorts.Text;
                     serialPort1.BaudRate = uiBaudRate;
-                    serialPort1.ReadTimeout = 2000;
+                    serialPort1.ReadTimeout = 1000;
                     serialPort1.WriteTimeout = 1000;
+                    serialPort1.Parity = Parity.None;
+                    serialPort1.DataBits = 8;
+                    serialPort1.Handshake = Handshake.None;
+                    serialPort1.ReadBufferSize = 2;
                     serialPort1.Open();
                     LblComPortStatus.BackColor = Color.Green;
                 }
@@ -201,7 +205,29 @@ namespace MessageLoggerForm
                 column.Width = -2;
             }
         }
-        
+
+
+        /****************************************************************************************************
+         * @brief: Function to put a structure into a byte array
+         * @param: obj - Object structure
+         * @return: byte[] - Byte array of the structure
+         ****************************************************************************************************/
+        byte[] StructureToByteArray(object obj)
+        {
+            int len = Marshal.SizeOf(obj);
+
+            byte[] arr = new byte[len];
+
+            IntPtr ptr = Marshal.AllocHGlobal(len);
+
+            Marshal.StructureToPtr(obj, ptr, true);
+
+            Marshal.Copy(ptr, arr, 0, len);
+
+            Marshal.FreeHGlobal(ptr);
+
+            return arr;
+        }
 
         /****************************************************************************************************
          * @brief: Fills an array for the list view with the interprated data.
@@ -222,14 +248,16 @@ namespace MessageLoggerForm
 
             asMsgArray[1] = sDate.TimeOfDay.ToString();
 
-            for (byte ucBuffIdx = 0; ucBuffIdx < this.BufferCnt; ucBuffIdx++)
+            /* Cast message structure to bytes */
+            byte[] aucMsgInBytes = StructureToByteArray(sMsgFrame);
+            for (byte ucBuffIdx = 0; ucBuffIdx < aucMsgInBytes.Count(); ucBuffIdx++)
             {
-                asMsgArray[2] += this.aucBuffer[ucBuffIdx].ToString("X2") + " ";
+                asMsgArray[2] += aucMsgInBytes[ucBuffIdx].ToString("X2") + " ";
             }
 
-            asMsgArray[3] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
-            asMsgArray[4] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
-            asMsgArray[5] = Interpreter.InteprateType(sMsgFrame.sHeader.ucMsgType);
+            //asMsgArray[3] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
+            //asMsgArray[4] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
+            //asMsgArray[5] = Interpreter.InteprateType(sMsgFrame.sHeader.ucMsgType);
 
             /* Get the payload */
             byte[] aucPayloadCpy = new byte[6];
@@ -240,10 +268,10 @@ namespace MessageLoggerForm
                 aucPayloadCpy[ucPayloadIdx] = sMsgFrame.sPayload.ucData[ucPayloadIdx];
             }
 
-            asMsgArray[7] = Interpreter.InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayloadCpy, ref asMsgArray[9]);
-            asMsgArray[8] = Interpreter.InteprateCommand(sMsgFrame.sPayload.ucCommand);
+            //asMsgArray[7] = Interpreter.InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayloadCpy, ref asMsgArray[9]);
+            //asMsgArray[8] = Interpreter.InteprateCommand(sMsgFrame.sPayload.ucCommand);
 
-
+            Interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
 
             /* Create new list view item to enable the adding */
             this.lvItem = new ListViewItem(asMsgArray);

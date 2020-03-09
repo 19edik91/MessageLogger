@@ -47,9 +47,10 @@
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.grpBoardStatus = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.BtnClearListView = new System.Windows.Forms.Button();
+            this.BtnResizeListView = new System.Windows.Forms.Button();
+            this.grpBoardStatus = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.LblTemperature = new System.Windows.Forms.Label();
             this.LblPower = new System.Windows.Forms.Label();
@@ -79,14 +80,13 @@
             this.BtnComPortStart = new System.Windows.Forms.Button();
             this.ComboBoxSerialComPorts = new System.Windows.Forms.ComboBox();
             this.LblComPort = new System.Windows.Forms.Label();
-            this.BtnResizeListView = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
-            this.grpBoardStatus.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.grpBoardStatus.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.grpSerialInterface.SuspendLayout();
@@ -239,18 +239,6 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(231, 680);
             this.tableLayoutPanel4.TabIndex = 8;
             // 
-            // grpBoardStatus
-            // 
-            this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
-            this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
-            this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpBoardStatus.Location = new System.Drawing.Point(3, 119);
-            this.grpBoardStatus.Name = "grpBoardStatus";
-            this.grpBoardStatus.Size = new System.Drawing.Size(225, 513);
-            this.grpBoardStatus.TabIndex = 5;
-            this.grpBoardStatus.TabStop = false;
-            this.grpBoardStatus.Text = "Board Status";
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.BtnClearListView);
@@ -269,6 +257,28 @@
             this.BtnClearListView.Text = "Clear List";
             this.BtnClearListView.UseVisualStyleBackColor = true;
             this.BtnClearListView.Click += new System.EventHandler(this.BtnClearListView_Click);
+            // 
+            // BtnResizeListView
+            // 
+            this.BtnResizeListView.Location = new System.Drawing.Point(3, 8);
+            this.BtnResizeListView.Name = "BtnResizeListView";
+            this.BtnResizeListView.Size = new System.Drawing.Size(75, 23);
+            this.BtnResizeListView.TabIndex = 6;
+            this.BtnResizeListView.Text = "Resize List";
+            this.BtnResizeListView.UseVisualStyleBackColor = true;
+            this.BtnResizeListView.Click += new System.EventHandler(this.ResizeListViewColumns);
+            // 
+            // grpBoardStatus
+            // 
+            this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
+            this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
+            this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpBoardStatus.Location = new System.Drawing.Point(3, 119);
+            this.grpBoardStatus.Name = "grpBoardStatus";
+            this.grpBoardStatus.Size = new System.Drawing.Size(225, 513);
+            this.grpBoardStatus.TabIndex = 5;
+            this.grpBoardStatus.TabStop = false;
+            this.grpBoardStatus.Text = "Board Status";
             // 
             // tableLayoutPanel2
             // 
@@ -595,16 +605,6 @@
             this.LblComPort.TabIndex = 2;
             this.LblComPort.Text = "COM Port:";
             // 
-            // BtnResizeListView
-            // 
-            this.BtnResizeListView.Location = new System.Drawing.Point(3, 8);
-            this.BtnResizeListView.Name = "BtnResizeListView";
-            this.BtnResizeListView.Size = new System.Drawing.Size(75, 23);
-            this.BtnResizeListView.TabIndex = 6;
-            this.BtnResizeListView.Text = "Resize List";
-            this.BtnResizeListView.UseVisualStyleBackColor = true;
-            this.BtnResizeListView.Click += new System.EventHandler(this.ResizeListViewColumns);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -618,8 +618,8 @@
             this.tabPage2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
-            this.grpBoardStatus.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.grpBoardStatus.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -646,7 +646,6 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.GroupBox grpBoardStatus;
@@ -683,6 +682,7 @@
         private System.Windows.Forms.Button BtnComPortInit;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BtnClearListView;
+        private System.IO.Ports.SerialPort serialPort1;
     }
 }
 
