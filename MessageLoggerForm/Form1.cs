@@ -41,13 +41,10 @@ namespace MessageLoggerForm
         //Messages
         private UInt32 ulMsgIdxCnt = 0;
 
-        private ListViewItem lvItem;
-
         const int siTryToRead = 255;
         private byte[] aucBuffer = new byte[siTryToRead];
         private byte BufferCnt = 0;
         private string MsgFrame;
-
 
         /****************************************************************************************************
         * @brief: Method to enable the double buffered option
@@ -180,19 +177,6 @@ namespace MessageLoggerForm
         }
 
 
-
-        /****************************************************************************************************
-         * @brief: Adds the new created list view item at the first position
-         * @param: none
-         * @return: none
-         ****************************************************************************************************/
-        private void AddNewItem()
-        {
-            listView1.Items.Insert(0, this.lvItem);
-        }
-
-
-
         /****************************************************************************************************
          * @brief: Re-sizes the columns of the list view
          * @param: none
@@ -274,10 +258,14 @@ namespace MessageLoggerForm
             Interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
 
             /* Create new list view item to enable the adding */
-            this.lvItem = new ListViewItem(asMsgArray);
+            ListViewItem lvItem = new ListViewItem(asMsgArray);
 
             /* Call per invoke to put the item to the list view */
-            this.Invoke(new MethodInvoker(AddNewItem));
+            this.Invoke((MethodInvoker) delegate
+            {
+                listView1.Items.Insert(0, lvItem);
+            });
+
         }
 
 
