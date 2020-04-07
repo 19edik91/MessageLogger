@@ -37,6 +37,7 @@ namespace MessageLoggerForm
         * Variables
         ****************************************************************************************************/
         const UInt16 uiBaudRate = 38400;
+        //const int uiBaudRate = 115200;
 
         //Messages
         private UInt32 ulMsgIdxCnt = 0;
@@ -90,9 +91,14 @@ namespace MessageLoggerForm
             /* Check if comport is already in the list */
             foreach(string sPort in sPorts)
             {
-                if(ComboBoxSerialComPorts.Items.Contains(sPort) == false)
+                if(ComboBoxSerialComPorts0.Items.Contains(sPort) == false)
                 {
-                    ComboBoxSerialComPorts.Items.Add(sPort);
+                    ComboBoxSerialComPorts0.Items.Add(sPort);
+                }
+
+                if (ComboBoxSerialComPorts1.Items.Contains(sPort) == false)
+                {
+                    ComboBoxSerialComPorts1.Items.Add(sPort);
                 }
             }            
         }
@@ -105,21 +111,43 @@ namespace MessageLoggerForm
           ****************************************************************************************************/
         private void BtnComPortStart_Click(object sender, EventArgs e)
         {
+            Button btn = (Button)sender;
+            SerialPort sp = null;
+            string portname = "";
+
+            if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
+            {
+                sp = serialPort1;
+                portname = ComboBoxSerialComPorts0.Text;
+            }
+            else if(Convert.ToBoolean(btn.Name == "BtnComPortStart1"))
+            {
+                sp = serialPort2;
+                portname = ComboBoxSerialComPorts1.Text;
+            }
+            
+
             try
             {
-                if(ComboBoxSerialComPorts.Text.Length != 0)
+                if(ComboBoxSerialComPorts0.Text.Length != 0)
                 {
                     //Set port name to the Combo box name
-                    serialPort1.PortName = ComboBoxSerialComPorts.Text;
-                    serialPort1.BaudRate = uiBaudRate;
-                    serialPort1.ReadTimeout = 1000;
-                    serialPort1.WriteTimeout = 1000;
-                    serialPort1.Parity = Parity.None;
-                    serialPort1.DataBits = 8;
-                    serialPort1.Handshake = Handshake.None;
-                    serialPort1.ReadBufferSize = 2;
-                    serialPort1.Open();
-                    LblComPortStatus.BackColor = Color.Green;
+                    sp.PortName = portname;
+                    sp.BaudRate = uiBaudRate;
+                    sp.ReadTimeout = -1;
+                    sp.WriteTimeout = -1;
+                    sp.Parity = Parity.None;
+                    sp.DataBits = 8;
+                    sp.StopBits = StopBits.One;
+                    sp.Handshake = Handshake.None;
+                    sp.ReadBufferSize = 200;
+                    sp.Open();
+
+                    if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
+                        LblComPortStatus0.BackColor = Color.Green;
+                    else if (Convert.ToBoolean(btn.Name == "BtnComPortStart1"))
+                        LblComPortStatus1.BackColor = Color.Green;
+
                 }
                 else
                 {
@@ -141,11 +169,22 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private void BtnComPortStop_Click(object sender, EventArgs e)
         {
+            Button btn = (Button)sender;
+
             try
             {
-                serialPort1.Close();
-                serialPort1.Dispose();
-                LblComPortStatus.BackColor = Color.Red;
+                if (Convert.ToBoolean(btn.Name == "BtnComPortStop0"))
+                {
+                    serialPort1.Close();
+                    serialPort1.Dispose();
+                    LblComPortStatus0.BackColor = Color.Red;
+                }
+                else if (Convert.ToBoolean(btn.Name == "BtnComPortStop1"))
+                {
+                    serialPort2.Close();
+                    serialPort2.Dispose();
+                    LblComPortStatus1.BackColor = Color.Red;
+                }
             }
             catch (InvalidOperationException)
             {
@@ -284,10 +323,25 @@ namespace MessageLoggerForm
             try
             {
                 //Read the serial port buffer
-                sp.Read(this.aucBuffer, 0, BufferCnt);
+                sp.Read(this.aucBuffer, 0, BufferCnt);                
 
                 //Clear the serial port buffer to avoid an overfill
                 sp.DiscardInBuffer();
+
+                /********
+                string Line = "";
+
+                for (byte Idx = 0; Idx < BufferCnt; Idx++)
+                {
+                    Line += this.aucBuffer[Idx].ToString("X2");
+                }
+
+                //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
+                {
+                    file.WriteLine(Line);
+                }
+                ********/
 
                 //Put the buffer into the serial handling
                 MsgLib_PutDataInBuffer(this.aucBuffer, BufferCnt);

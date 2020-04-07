@@ -72,14 +72,24 @@
             this.label1 = new System.Windows.Forms.Label();
             this.LblLedStatusResp = new System.Windows.Forms.Label();
             this.LblBrightnessReq = new System.Windows.Forms.Label();
-            this.grpSerialInterface = new System.Windows.Forms.GroupBox();
-            this.BtnComPortInit = new System.Windows.Forms.Button();
-            this.LblBytesToRead = new System.Windows.Forms.Label();
-            this.LblComPortStatus = new System.Windows.Forms.Label();
-            this.BtnComPortStop = new System.Windows.Forms.Button();
-            this.BtnComPortStart = new System.Windows.Forms.Button();
-            this.ComboBoxSerialComPorts = new System.Windows.Forms.ComboBox();
+            this.grpSerialInterface1 = new System.Windows.Forms.GroupBox();
+            this.BtnComPortInit0 = new System.Windows.Forms.Button();
+            this.LblComPortStatus0 = new System.Windows.Forms.Label();
+            this.BtnComPortStop0 = new System.Windows.Forms.Button();
+            this.BtnComPortStart0 = new System.Windows.Forms.Button();
+            this.ComboBoxSerialComPorts0 = new System.Windows.Forms.ComboBox();
             this.LblComPort = new System.Windows.Forms.Label();
+            this.tabCtrlSerialInterface = new System.Windows.Forms.TabControl();
+            this.tabPageSerial0 = new System.Windows.Forms.TabPage();
+            this.tabPageSerial1 = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.BtnComPortInit1 = new System.Windows.Forms.Button();
+            this.LblComPortStatus1 = new System.Windows.Forms.Label();
+            this.BtnComPortStop1 = new System.Windows.Forms.Button();
+            this.BtnComPortStart1 = new System.Windows.Forms.Button();
+            this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.serialPort2 = new System.IO.Ports.SerialPort(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -89,7 +99,11 @@
             this.grpBoardStatus.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.grpSerialInterface.SuspendLayout();
+            this.grpSerialInterface1.SuspendLayout();
+            this.tabCtrlSerialInterface.SuspendLayout();
+            this.tabPageSerial0.SuspendLayout();
+            this.tabPageSerial1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // listView1
@@ -110,7 +124,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 3);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(926, 648);
+            this.listView1.Size = new System.Drawing.Size(1030, 648);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -169,7 +183,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(940, 680);
+            this.tabControl1.Size = new System.Drawing.Size(1044, 680);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
@@ -178,7 +192,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(932, 654);
+            this.tabPage1.Size = new System.Drawing.Size(1036, 654);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Messages";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -189,7 +203,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(932, 654);
+            this.tabPage2.Size = new System.Drawing.Size(1004, 654);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Serial Data";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -204,7 +218,8 @@
             // 
             // serialPort1
             // 
-            this.serialPort1.BaudRate = 38400;
+            this.serialPort1.BaudRate = 115200;
+            this.serialPort1.ReadBufferSize = 2048;
             this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort1_DataReceived);
             // 
             // tableLayoutPanel3
@@ -219,7 +234,7 @@
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(1183, 686);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1313, 686);
             this.tableLayoutPanel3.TabIndex = 6;
             // 
             // tableLayoutPanel4
@@ -228,22 +243,21 @@
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.Controls.Add(this.panel1, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.grpBoardStatus, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.grpSerialInterface, 0, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(949, 3);
+            this.tableLayoutPanel4.Controls.Add(this.tabCtrlSerialInterface, 0, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(1053, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(231, 680);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(249, 680);
             this.tableLayoutPanel4.TabIndex = 8;
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.BtnClearListView);
             this.panel1.Controls.Add(this.BtnResizeListView);
-            this.panel1.Location = new System.Drawing.Point(3, 638);
+            this.panel1.Location = new System.Drawing.Point(3, 637);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(225, 39);
             this.panel1.TabIndex = 2;
@@ -273,9 +287,9 @@
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
             this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpBoardStatus.Location = new System.Drawing.Point(3, 119);
+            this.grpBoardStatus.Location = new System.Drawing.Point(3, 161);
             this.grpBoardStatus.Name = "grpBoardStatus";
-            this.grpBoardStatus.Size = new System.Drawing.Size(225, 513);
+            this.grpBoardStatus.Size = new System.Drawing.Size(243, 470);
             this.grpBoardStatus.TabIndex = 5;
             this.grpBoardStatus.TabStop = false;
             this.grpBoardStatus.Text = "Board Status";
@@ -293,7 +307,7 @@
             this.tableLayoutPanel2.Controls.Add(this.label4, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.LblVoltage, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.label5, 0, 3);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(9, 195);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(9, 332);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -522,79 +536,69 @@
             this.LblBrightnessReq.TabIndex = 8;
             this.LblBrightnessReq.Text = "0%";
             // 
-            // grpSerialInterface
+            // grpSerialInterface1
             // 
-            this.grpSerialInterface.Controls.Add(this.BtnComPortInit);
-            this.grpSerialInterface.Controls.Add(this.LblBytesToRead);
-            this.grpSerialInterface.Controls.Add(this.LblComPortStatus);
-            this.grpSerialInterface.Controls.Add(this.BtnComPortStop);
-            this.grpSerialInterface.Controls.Add(this.BtnComPortStart);
-            this.grpSerialInterface.Controls.Add(this.ComboBoxSerialComPorts);
-            this.grpSerialInterface.Controls.Add(this.LblComPort);
-            this.grpSerialInterface.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpSerialInterface.Location = new System.Drawing.Point(3, 3);
-            this.grpSerialInterface.Name = "grpSerialInterface";
-            this.grpSerialInterface.Size = new System.Drawing.Size(225, 110);
-            this.grpSerialInterface.TabIndex = 4;
-            this.grpSerialInterface.TabStop = false;
-            this.grpSerialInterface.Text = "Serial Interface";
+            this.grpSerialInterface1.Controls.Add(this.BtnComPortInit0);
+            this.grpSerialInterface1.Controls.Add(this.LblComPortStatus0);
+            this.grpSerialInterface1.Controls.Add(this.BtnComPortStop0);
+            this.grpSerialInterface1.Controls.Add(this.BtnComPortStart0);
+            this.grpSerialInterface1.Controls.Add(this.ComboBoxSerialComPorts0);
+            this.grpSerialInterface1.Controls.Add(this.LblComPort);
+            this.grpSerialInterface1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpSerialInterface1.Location = new System.Drawing.Point(3, 3);
+            this.grpSerialInterface1.Name = "grpSerialInterface1";
+            this.grpSerialInterface1.Size = new System.Drawing.Size(229, 120);
+            this.grpSerialInterface1.TabIndex = 7;
+            this.grpSerialInterface1.TabStop = false;
+            this.grpSerialInterface1.Text = "Serial Interface 1";
             // 
-            // BtnComPortInit
+            // BtnComPortInit0
             // 
-            this.BtnComPortInit.Location = new System.Drawing.Point(81, 80);
-            this.BtnComPortInit.Name = "BtnComPortInit";
-            this.BtnComPortInit.Size = new System.Drawing.Size(121, 23);
-            this.BtnComPortInit.TabIndex = 8;
-            this.BtnComPortInit.Text = "Update COM Ports";
-            this.BtnComPortInit.UseVisualStyleBackColor = true;
-            this.BtnComPortInit.Click += new System.EventHandler(this.BtnComPortInit_Click);
+            this.BtnComPortInit0.Location = new System.Drawing.Point(81, 80);
+            this.BtnComPortInit0.Name = "BtnComPortInit0";
+            this.BtnComPortInit0.Size = new System.Drawing.Size(121, 23);
+            this.BtnComPortInit0.TabIndex = 8;
+            this.BtnComPortInit0.Text = "Update COM Ports";
+            this.BtnComPortInit0.UseVisualStyleBackColor = true;
+            this.BtnComPortInit0.Click += new System.EventHandler(this.BtnComPortInit_Click);
             // 
-            // LblBytesToRead
+            // LblComPortStatus0
             // 
-            this.LblBytesToRead.AutoSize = true;
-            this.LblBytesToRead.Location = new System.Drawing.Point(18, 75);
-            this.LblBytesToRead.Name = "LblBytesToRead";
-            this.LblBytesToRead.Size = new System.Drawing.Size(13, 13);
-            this.LblBytesToRead.TabIndex = 7;
-            this.LblBytesToRead.Text = "0";
+            this.LblComPortStatus0.AutoSize = true;
+            this.LblComPortStatus0.BackColor = System.Drawing.Color.Red;
+            this.LblComPortStatus0.Location = new System.Drawing.Point(15, 55);
+            this.LblComPortStatus0.Name = "LblComPortStatus0";
+            this.LblComPortStatus0.Size = new System.Drawing.Size(37, 13);
+            this.LblComPortStatus0.TabIndex = 6;
+            this.LblComPortStatus0.Text = "Status";
             // 
-            // LblComPortStatus
+            // BtnComPortStop0
             // 
-            this.LblComPortStatus.AutoSize = true;
-            this.LblComPortStatus.BackColor = System.Drawing.Color.Red;
-            this.LblComPortStatus.Location = new System.Drawing.Point(15, 55);
-            this.LblComPortStatus.Name = "LblComPortStatus";
-            this.LblComPortStatus.Size = new System.Drawing.Size(37, 13);
-            this.LblComPortStatus.TabIndex = 6;
-            this.LblComPortStatus.Text = "Status";
+            this.BtnComPortStop0.Location = new System.Drawing.Point(142, 50);
+            this.BtnComPortStop0.Name = "BtnComPortStop0";
+            this.BtnComPortStop0.Size = new System.Drawing.Size(60, 23);
+            this.BtnComPortStop0.TabIndex = 5;
+            this.BtnComPortStop0.Text = "Close";
+            this.BtnComPortStop0.UseVisualStyleBackColor = true;
+            this.BtnComPortStop0.Click += new System.EventHandler(this.BtnComPortStop_Click);
             // 
-            // BtnComPortStop
+            // BtnComPortStart0
             // 
-            this.BtnComPortStop.Location = new System.Drawing.Point(142, 50);
-            this.BtnComPortStop.Name = "BtnComPortStop";
-            this.BtnComPortStop.Size = new System.Drawing.Size(60, 23);
-            this.BtnComPortStop.TabIndex = 5;
-            this.BtnComPortStop.Text = "Close";
-            this.BtnComPortStop.UseVisualStyleBackColor = true;
-            this.BtnComPortStop.Click += new System.EventHandler(this.BtnComPortStop_Click);
+            this.BtnComPortStart0.Location = new System.Drawing.Point(81, 50);
+            this.BtnComPortStart0.Name = "BtnComPortStart0";
+            this.BtnComPortStart0.Size = new System.Drawing.Size(60, 23);
+            this.BtnComPortStart0.TabIndex = 4;
+            this.BtnComPortStart0.Text = "Open";
+            this.BtnComPortStart0.UseVisualStyleBackColor = true;
+            this.BtnComPortStart0.Click += new System.EventHandler(this.BtnComPortStart_Click);
             // 
-            // BtnComPortStart
+            // ComboBoxSerialComPorts0
             // 
-            this.BtnComPortStart.Location = new System.Drawing.Point(81, 50);
-            this.BtnComPortStart.Name = "BtnComPortStart";
-            this.BtnComPortStart.Size = new System.Drawing.Size(60, 23);
-            this.BtnComPortStart.TabIndex = 4;
-            this.BtnComPortStart.Text = "Open";
-            this.BtnComPortStart.UseVisualStyleBackColor = true;
-            this.BtnComPortStart.Click += new System.EventHandler(this.BtnComPortStart_Click);
-            // 
-            // ComboBoxSerialComPorts
-            // 
-            this.ComboBoxSerialComPorts.FormattingEnabled = true;
-            this.ComboBoxSerialComPorts.Location = new System.Drawing.Point(81, 23);
-            this.ComboBoxSerialComPorts.Name = "ComboBoxSerialComPorts";
-            this.ComboBoxSerialComPorts.Size = new System.Drawing.Size(121, 21);
-            this.ComboBoxSerialComPorts.TabIndex = 3;
+            this.ComboBoxSerialComPorts0.FormattingEnabled = true;
+            this.ComboBoxSerialComPorts0.Location = new System.Drawing.Point(81, 23);
+            this.ComboBoxSerialComPorts0.Name = "ComboBoxSerialComPorts0";
+            this.ComboBoxSerialComPorts0.Size = new System.Drawing.Size(121, 21);
+            this.ComboBoxSerialComPorts0.TabIndex = 3;
             // 
             // LblComPort
             // 
@@ -605,11 +609,122 @@
             this.LblComPort.TabIndex = 2;
             this.LblComPort.Text = "COM Port:";
             // 
+            // tabCtrlSerialInterface
+            // 
+            this.tabCtrlSerialInterface.Controls.Add(this.tabPageSerial0);
+            this.tabCtrlSerialInterface.Controls.Add(this.tabPageSerial1);
+            this.tabCtrlSerialInterface.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabCtrlSerialInterface.Location = new System.Drawing.Point(3, 3);
+            this.tabCtrlSerialInterface.Name = "tabCtrlSerialInterface";
+            this.tabCtrlSerialInterface.SelectedIndex = 0;
+            this.tabCtrlSerialInterface.Size = new System.Drawing.Size(243, 152);
+            this.tabCtrlSerialInterface.TabIndex = 8;
+            // 
+            // tabPageSerial0
+            // 
+            this.tabPageSerial0.Controls.Add(this.grpSerialInterface1);
+            this.tabPageSerial0.Location = new System.Drawing.Point(4, 22);
+            this.tabPageSerial0.Name = "tabPageSerial0";
+            this.tabPageSerial0.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSerial0.Size = new System.Drawing.Size(235, 126);
+            this.tabPageSerial0.TabIndex = 0;
+            this.tabPageSerial0.Text = "Serial 1";
+            this.tabPageSerial0.UseVisualStyleBackColor = true;
+            // 
+            // tabPageSerial1
+            // 
+            this.tabPageSerial1.Controls.Add(this.groupBox1);
+            this.tabPageSerial1.Location = new System.Drawing.Point(4, 22);
+            this.tabPageSerial1.Name = "tabPageSerial1";
+            this.tabPageSerial1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSerial1.Size = new System.Drawing.Size(235, 126);
+            this.tabPageSerial1.TabIndex = 1;
+            this.tabPageSerial1.Text = "Serial 2";
+            this.tabPageSerial1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.BtnComPortInit1);
+            this.groupBox1.Controls.Add(this.LblComPortStatus1);
+            this.groupBox1.Controls.Add(this.BtnComPortStop1);
+            this.groupBox1.Controls.Add(this.BtnComPortStart1);
+            this.groupBox1.Controls.Add(this.ComboBoxSerialComPorts1);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(229, 120);
+            this.groupBox1.TabIndex = 8;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Serial Interface 2";
+            // 
+            // BtnComPortInit1
+            // 
+            this.BtnComPortInit1.Location = new System.Drawing.Point(81, 80);
+            this.BtnComPortInit1.Name = "BtnComPortInit1";
+            this.BtnComPortInit1.Size = new System.Drawing.Size(121, 23);
+            this.BtnComPortInit1.TabIndex = 8;
+            this.BtnComPortInit1.Text = "Update COM Ports";
+            this.BtnComPortInit1.UseVisualStyleBackColor = true;
+            this.BtnComPortInit1.Click += new System.EventHandler(this.BtnComPortInit_Click);
+            // 
+            // LblComPortStatus1
+            // 
+            this.LblComPortStatus1.AutoSize = true;
+            this.LblComPortStatus1.BackColor = System.Drawing.Color.Red;
+            this.LblComPortStatus1.Location = new System.Drawing.Point(15, 55);
+            this.LblComPortStatus1.Name = "LblComPortStatus1";
+            this.LblComPortStatus1.Size = new System.Drawing.Size(37, 13);
+            this.LblComPortStatus1.TabIndex = 6;
+            this.LblComPortStatus1.Text = "Status";
+            // 
+            // BtnComPortStop1
+            // 
+            this.BtnComPortStop1.Location = new System.Drawing.Point(142, 50);
+            this.BtnComPortStop1.Name = "BtnComPortStop1";
+            this.BtnComPortStop1.Size = new System.Drawing.Size(60, 23);
+            this.BtnComPortStop1.TabIndex = 5;
+            this.BtnComPortStop1.Text = "Close";
+            this.BtnComPortStop1.UseVisualStyleBackColor = true;
+            this.BtnComPortStop1.Click += new System.EventHandler(this.BtnComPortStop_Click);
+            // 
+            // BtnComPortStart1
+            // 
+            this.BtnComPortStart1.Location = new System.Drawing.Point(81, 50);
+            this.BtnComPortStart1.Name = "BtnComPortStart1";
+            this.BtnComPortStart1.Size = new System.Drawing.Size(60, 23);
+            this.BtnComPortStart1.TabIndex = 4;
+            this.BtnComPortStart1.Text = "Open";
+            this.BtnComPortStart1.UseVisualStyleBackColor = true;
+            this.BtnComPortStart1.Click += new System.EventHandler(this.BtnComPortStart_Click);
+            // 
+            // ComboBoxSerialComPorts1
+            // 
+            this.ComboBoxSerialComPorts1.FormattingEnabled = true;
+            this.ComboBoxSerialComPorts1.Location = new System.Drawing.Point(81, 23);
+            this.ComboBoxSerialComPorts1.Name = "ComboBoxSerialComPorts1";
+            this.ComboBoxSerialComPorts1.Size = new System.Drawing.Size(121, 21);
+            this.ComboBoxSerialComPorts1.TabIndex = 3;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 26);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(56, 13);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "COM Port:";
+            // 
+            // serialPort2
+            // 
+            this.serialPort2.BaudRate = 115200;
+            this.serialPort2.ReadBufferSize = 2048;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1183, 686);
+            this.ClientSize = new System.Drawing.Size(1313, 686);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Name = "Form1";
             this.Text = "Message Logger";
@@ -624,8 +739,13 @@
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.grpSerialInterface.ResumeLayout(false);
-            this.grpSerialInterface.PerformLayout();
+            this.grpSerialInterface1.ResumeLayout(false);
+            this.grpSerialInterface1.PerformLayout();
+            this.tabCtrlSerialInterface.ResumeLayout(false);
+            this.tabPageSerial0.ResumeLayout(false);
+            this.tabPageSerial1.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -670,19 +790,29 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label LblLedStatusResp;
         private System.Windows.Forms.Label LblBrightnessReq;
-        private System.Windows.Forms.GroupBox grpSerialInterface;
-        private System.Windows.Forms.Label LblBytesToRead;
-        private System.Windows.Forms.Label LblComPortStatus;
-        private System.Windows.Forms.Button BtnComPortStop;
-        private System.Windows.Forms.Button BtnComPortStart;
-        private System.Windows.Forms.ComboBox ComboBoxSerialComPorts;
-        private System.Windows.Forms.Label LblComPort;
         private System.Windows.Forms.RichTextBox RichTextBoxSerialData;
         private System.Windows.Forms.Button BtnResizeListView;
-        private System.Windows.Forms.Button BtnComPortInit;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BtnClearListView;
         private System.IO.Ports.SerialPort serialPort1;
+        private System.Windows.Forms.TabControl tabCtrlSerialInterface;
+        private System.Windows.Forms.TabPage tabPageSerial0;
+        private System.Windows.Forms.GroupBox grpSerialInterface1;
+        private System.Windows.Forms.Button BtnComPortInit0;
+        private System.Windows.Forms.Label LblComPortStatus0;
+        private System.Windows.Forms.Button BtnComPortStop0;
+        private System.Windows.Forms.Button BtnComPortStart0;
+        private System.Windows.Forms.ComboBox ComboBoxSerialComPorts0;
+        private System.Windows.Forms.Label LblComPort;
+        private System.Windows.Forms.TabPage tabPageSerial1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button BtnComPortInit1;
+        private System.Windows.Forms.Label LblComPortStatus1;
+        private System.Windows.Forms.Button BtnComPortStop1;
+        private System.Windows.Forms.Button BtnComPortStart1;
+        private System.Windows.Forms.ComboBox ComboBoxSerialComPorts1;
+        private System.Windows.Forms.Label label8;
+        private System.IO.Ports.SerialPort serialPort2;
     }
 }
 
