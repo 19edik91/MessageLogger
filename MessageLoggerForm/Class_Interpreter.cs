@@ -129,7 +129,7 @@ namespace MessageLoggerForm
          * @param: ucID - Message ID as a byte
          * @return: sID - Interprated ID as a string
          ***************************************************/
-        public string InteprateIdAndPayload(byte ucID, byte[] aucPayload, ref string sPayloadInterpreation)
+        public string InteprateIdAndPayload(byte ucID, byte ucCommand, byte[] aucPayload, ref string sPayloadInterpreation)
         {
             string sID = "No Cmd found";
 
@@ -137,23 +137,40 @@ namespace MessageLoggerForm
             {
                 case ClassMsgEnum.teMessageId.eMsgOutputStatus:
                     {
-                        sID = "Outputs status";
-
-                        MsgStructureCasted.tsMsgOutputStateCS sMsg;
-                        MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
-
-                        sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
-                        sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
-                        sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
-
-                        if (Convert.ToBoolean(sMsg.bInitMenuActive) == true && Convert.ToBoolean(sMsg.bInitMenuActiveInv) == false)
+                        if (ClassMsgEnum.teMessageCmd.eCmdGet == (ClassMsgEnum.teMessageCmd)ucCommand)
                         {
-                            sPayloadInterpreation += "Init Menu acitve: true";
+                            sID = "Outputs status response ";
+
+                            MsgStructureCasted.tsMsgOutputStateResponseCS sMsg;
+                            MsgLib_GetMsgOutputStatusResponse(aucPayload, out sMsg);
+
+                            sPayloadInterpreation = "Voltage: " + sMsg.uiVoltage + "mV" + " | ";
+                            sPayloadInterpreation += "Current: " + sMsg.uiCurrent + "mA" + " | ";
+
+                            string Temp = Convert.ToString(sMsg.siTemperature);
+                            Temp = Temp.Insert((Temp.Length - 1), ".");
+                            sPayloadInterpreation += "Temp: " + Temp + "°C";
                         }
                         else
                         {
-                            sPayloadInterpreation += "Init Menu acitve: false";
-                        }                       
+                            sID = "Outputs status";
+
+                            MsgStructureCasted.tsMsgOutputStateCS sMsg;
+                            MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
+
+                            sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                            sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
+                            sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
+
+                            if (Convert.ToBoolean(sMsg.bInitMenuActive) == true && Convert.ToBoolean(sMsg.bInitMenuActiveInv) == false)
+                            {
+                                sPayloadInterpreation += "Init Menu acitve: true";
+                            }
+                            else
+                            {
+                                sPayloadInterpreation += "Init Menu acitve: false";
+                            }
+                        }               
                         break;
                     }
 
@@ -280,7 +297,7 @@ namespace MessageLoggerForm
             sDestAddr = InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
             sSourceAddr = InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
             sType = InteprateType(sMsgFrame.sHeader.ucMsgType, ref bInterpretationNeeded);
-            sID = InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayload, ref sPayloadInterpreation);
+            sID = InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, sMsgFrame.sPayload.ucCommand, aucPayload, ref sPayloadInterpreation);
 
             if (bInterpretationNeeded == true)
             {
