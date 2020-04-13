@@ -134,13 +134,14 @@ namespace MessageLoggerForm
                     //Set port name to the Combo box name
                     sp.PortName = portname;
                     sp.BaudRate = uiBaudRate;
-                    sp.ReadTimeout = -1;
-                    sp.WriteTimeout = -1;
+                    sp.ReadTimeout = 500;
+                    sp.WriteTimeout = 500;
                     sp.Parity = Parity.None;
                     sp.DataBits = 8;
                     sp.StopBits = StopBits.One;
                     sp.Handshake = Handshake.None;
-                    sp.ReadBufferSize = 200;
+                    sp.ReadBufferSize = 2;
+                    sp.ReceivedBytesThreshold = 2;
                     sp.Open();
 
                     if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
@@ -322,6 +323,8 @@ namespace MessageLoggerForm
 
             try
             {
+                Console.WriteLine(this.BufferCnt);
+
                 //Read the serial port buffer
                 sp.Read(this.aucBuffer, 0, BufferCnt);                
 
@@ -335,6 +338,8 @@ namespace MessageLoggerForm
                 {
                     Line += this.aucBuffer[Idx].ToString("X2");
                 }
+
+                Line += " ";
 
                 //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
@@ -376,7 +381,7 @@ namespace MessageLoggerForm
             /* When a message was constructed with the serial-handling put
              * it into the list view */
             Class_Message.tsMessageFrame sMsgFrame;
-            if (MsgLib_GetMessageFrame(out sMsgFrame))
+            while(MsgLib_GetMessageFrame(out sMsgFrame))
             {
                 FillListView(sMsgFrame);
             }
