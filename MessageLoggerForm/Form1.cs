@@ -47,6 +47,13 @@ namespace MessageLoggerForm
         private byte BufferCnt = 0;
         private string MsgFrame;
 
+        delegate void AddListItem();
+        AddListItem _serialDelegate;
+
+        Queue<Byte> _receivedSerialData;
+
+        Mutex _mutexSerial;
+
         /****************************************************************************************************
         * @brief: Method to enable the double buffered option
         * @param: control - The control object which should activate the double buffered function
@@ -69,6 +76,11 @@ namespace MessageLoggerForm
         public Form1()
         {
             InitializeComponent();
+
+            /* Initialize serial handling */
+            _serialDelegate = new AddListItem(ProcessSerialData);
+            _receivedSerialData = new Queue<byte>();
+            _mutexSerial = new Mutex();
 
             //Init combo box 
             GetAvailablePorts();
@@ -140,8 +152,8 @@ namespace MessageLoggerForm
                     sp.DataBits = 8;
                     sp.StopBits = StopBits.One;
                     sp.Handshake = Handshake.None;
-                    sp.ReadBufferSize = 2;
-                    sp.ReceivedBytesThreshold = 2;
+                    sp.ReadBufferSize = 14;
+//                    sp.ReceivedBytesThreshold = 2;
                     sp.Open();
 
                     if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
@@ -308,7 +320,64 @@ namespace MessageLoggerForm
 
         }
 
+        /****************************************************************************************************
+         * @brief: Process the received serial data
+         * @param: none
+         * @return: none
+         ****************************************************************************************************/
+        private void ProcessSerialData()
+        {
+            /* Get the count of the received bytes */
+            int RecDataCnt = _receivedSerialData.Count;
 
+            /* Start blocking */
+            _mutexSerial.WaitOne();
+
+            /* Copy data from received bytes into local array */
+            byte[] arrayRec = new byte[RecDataCnt];
+            _receivedSerialData.CopyTo(arrayRec, 0);
+            _receivedSerialData.Clear();
+
+            /* End blocking */
+            _mutexSerial.ReleaseMutex();
+
+
+            ///********
+            string Line = "";
+
+            for (byte Idx = 0; Idx < RecDataCnt; Idx++)
+            {
+                Line += arrayRec[Idx].ToString("X2");
+            }
+
+            Line += " ";
+
+            //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
+            {
+                file.WriteLine(Line);
+            }
+            //********/
+
+            //Put the buffer into the serial handling
+            MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length);
+
+            //Decouple the receive thread from the handling thread.
+            //Shall improve / fix freezes when the serial port is closed during received data
+            //ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
+
+            //Use invoke to put the whole received buffer into the text box
+            //this.Invoke(new MethodInvoker(AddTextToSerialDataTextBox));
+            AddTextToSerialDataTextBox();
+
+            /* When a message was constructed with the serial-handling put
+             * it into the list view */
+            Class_Message.tsMessageFrame sMsgFrame;
+            while (MsgLib_GetMessageFrame(out sMsgFrame))
+            {
+                FillListView(sMsgFrame);
+            }
+        }
 
         /****************************************************************************************************
          * @brief: Interrupt handler on received data. The serial port is read and cleared afterwards. 
@@ -319,41 +388,30 @@ namespace MessageLoggerForm
         private void SerialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
-            this.BufferCnt = (byte)sp.BytesToRead;
 
+            byte[] aucSerialPortBuffer = new byte[255];
+            int SP_Read;
             try
             {
-                Console.WriteLine(this.BufferCnt);
-
                 //Read the serial port buffer
-                sp.Read(this.aucBuffer, 0, BufferCnt);                
+                SP_Read = sp.Read(aucSerialPortBuffer, 0, aucSerialPortBuffer.Length);                
 
                 //Clear the serial port buffer to avoid an overfill
                 sp.DiscardInBuffer();
 
-                /********
-                string Line = "";
+                /* Block multiple callbacks */
+                _mutexSerial.WaitOne();
 
-                for (byte Idx = 0; Idx < BufferCnt; Idx++)
+                for(int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
                 {
-                    Line += this.aucBuffer[Idx].ToString("X2");
+                    _receivedSerialData.Enqueue(aucSerialPortBuffer[buffIdx]);
                 }
 
-                Line += " ";
+                /* Release mutex */
+                _mutexSerial.ReleaseMutex();
 
-                //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
-                {
-                    file.WriteLine(Line);
-                }
-                ********/
-
-                //Put the buffer into the serial handling
-                MsgLib_PutDataInBuffer(this.aucBuffer, BufferCnt);
-
-                //Decouple the receive thread from the handling thread.
-                //Shall improve / fix freezes when the serial port is closed during received data
-                ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
+                //Use the delegate callback function 
+                Invoke(_serialDelegate);
             }
             catch(Exception ex)
             {
