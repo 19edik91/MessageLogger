@@ -32,6 +32,12 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void InitModule();
 
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_ReadBuffer(IntPtr pucBuffer, byte ucSize);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte MsgLib_GetWrittenBufferSize();
+
 
         /****************************************************************************************************
         * Variables
@@ -44,7 +50,7 @@ namespace MessageLoggerForm
 
         const int siTryToRead = 255;
         private byte[] aucBuffer = new byte[siTryToRead];
-        private byte BufferCnt = 0;
+        private int BufferCnt = 0;
         private string MsgFrame;
 
         delegate void AddListItem();
@@ -53,6 +59,7 @@ namespace MessageLoggerForm
         Queue<Byte> _receivedSerialData;
 
         Mutex _mutexSerial;
+        Mutex _mutexMessage;
 
         /****************************************************************************************************
         * @brief: Method to enable the double buffered option
@@ -81,6 +88,7 @@ namespace MessageLoggerForm
             _serialDelegate = new AddListItem(ProcessSerialData);
             _receivedSerialData = new Queue<byte>();
             _mutexSerial = new Mutex();
+            _mutexMessage = new Mutex();
 
             //Init combo box 
             GetAvailablePorts();
@@ -212,16 +220,16 @@ namespace MessageLoggerForm
          * @param: none
          * @return: none
          ****************************************************************************************************/
-        private void AddTextToSerialDataTextBox()
+        private void AddTextToSerialDataTextBox(byte[] pucBuffer, int ucBufferCnt)
         {
             //Put the time index at the first place
             DateTime sDate = DateTime.Now; 
             RichTextBoxSerialData.Text += sDate.TimeOfDay.ToString() + " ";
 
             //Put the whole buffer data into the text box
-            for (byte Idx = 0; Idx < BufferCnt; Idx++)
+            for (byte Idx = 0; Idx < ucBufferCnt; Idx++)
             {
-                string sBufferEntry = this.aucBuffer[Idx].ToString("X2");
+                string sBufferEntry = pucBuffer[Idx].ToString("X2");
                 
                 RichTextBoxSerialData.Text += sBufferEntry + " ";
             }
@@ -327,11 +335,11 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private void ProcessSerialData()
         {
-            /* Get the count of the received bytes */
-            int RecDataCnt = _receivedSerialData.Count;
-
             /* Start blocking */
             _mutexSerial.WaitOne();
+
+            /* Get the count of the received bytes */
+            int RecDataCnt = _receivedSerialData.Count;            
 
             /* Copy data from received bytes into local array */
             byte[] arrayRec = new byte[RecDataCnt];
@@ -362,21 +370,12 @@ namespace MessageLoggerForm
             //Put the buffer into the serial handling
             MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length);
 
-            //Decouple the receive thread from the handling thread.
-            //Shall improve / fix freezes when the serial port is closed during received data
+            /* Decouple the receive thread from the handling thread. Shall improve / fix freezes when the serial port is closed during received data */
             //ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
+            ReadReceivedBytesFromBuffer();
 
-            //Use invoke to put the whole received buffer into the text box
-            //this.Invoke(new MethodInvoker(AddTextToSerialDataTextBox));
-            AddTextToSerialDataTextBox();
-
-            /* When a message was constructed with the serial-handling put
-             * it into the list view */
-            Class_Message.tsMessageFrame sMsgFrame;
-            while (MsgLib_GetMessageFrame(out sMsgFrame))
-            {
-                FillListView(sMsgFrame);
-            }
+            /* Put the whole received buffer into the text box */
+            AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
         }
 
         /****************************************************************************************************
@@ -430,18 +429,57 @@ namespace MessageLoggerForm
          * @param: 
          * @return: none
          ****************************************************************************************************/
-        private void HandleReceivedBytes(object state)
+        private unsafe void HandleReceivedBytes(object state)
         {
-            //Use invoke to put the whole received buffer into the text box
-            this.Invoke(new MethodInvoker(AddTextToSerialDataTextBox));
-            //AddTextToSerialDataTextBox();
+            _mutexMessage.WaitOne();
 
-            /* When a message was constructed with the serial-handling put
-             * it into the list view */
+            /* When a message was constructed with the serial-handling put it into the list view */
             Class_Message.tsMessageFrame sMsgFrame;
-            while(MsgLib_GetMessageFrame(out sMsgFrame))
+            if(MsgLib_GetMessageFrame(out sMsgFrame))
             {
+                if(sMsgFrame.sHeader.ucDestAddress == 0)
+                {
+                    int a = 4;
+                }
+            
                 FillListView(sMsgFrame);
+            }
+
+            _mutexMessage.ReleaseMutex();
+        }
+
+
+        /****************************************************************************************************
+         * @brief: Handles the received bytes and fills the text box and also the list view. Was necessary
+         *         for decoupling the Data-Received thread from this handling thread otherwise the program
+         *         could be freezed when COM port is disabled.
+         * @param: 
+         * @return: none
+         ****************************************************************************************************/
+        private unsafe void ReadReceivedBytesFromBuffer()
+        {
+            /* Copy data from received bytes into local array */
+            byte ucBuffCnt = MsgLib_GetWrittenBufferSize();
+            byte[] arrayRec = new byte[ucBuffCnt];
+
+            fixed (byte* p = arrayRec)
+            {
+                MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt);
+            }
+            
+            string Line = "BufferCnt: " + ucBuffCnt.ToString() + "   ";
+
+            for (byte Idx = 0; Idx < ucBuffCnt; Idx++)
+            {
+                Line += arrayRec[Idx].ToString("X2");
+            }
+
+            Line += " ";
+
+            //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Buffer_Lines.txt", true))
+            {
+                file.WriteLine(Line);
             }
         }
 
