@@ -38,6 +38,8 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern byte MsgLib_GetWrittenBufferSize();
 
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx);
 
         /****************************************************************************************************
         * Variables
@@ -328,6 +330,29 @@ namespace MessageLoggerForm
 
         }
 
+
+        /****************************************************************************************************
+         * @brief: Prints the buffer handler values in the console 
+         * @param: none
+         * @return: none
+         ****************************************************************************************************/
+        private void PrintReceiveBufferHandlerValues()
+        {
+            UInt16 uiFreeSize = 0xFFFF;
+            UInt16 uiMaxSize = 0XFFFF;
+            UInt16 uiPutIdx = 0xFFFF;
+            UInt16 uiGetIdx = 0xFFFF;
+            MsgLib_GetBufferHandlerData(ref uiFreeSize, ref uiMaxSize, ref uiPutIdx, ref uiGetIdx);
+
+            string sFifoVal = "Free: " + uiFreeSize.ToString() + " ";
+            sFifoVal += "Size: " + uiMaxSize.ToString() + " ";
+            sFifoVal += "PutIdx: " + uiPutIdx.ToString() + " ";
+            sFifoVal += "GetIdx: " + uiGetIdx.ToString() + " ";
+
+            Console.WriteLine(sFifoVal);
+        }
+
+
         /****************************************************************************************************
          * @brief: Process the received serial data
          * @param: none
@@ -367,12 +392,23 @@ namespace MessageLoggerForm
             }
             //********/
 
+            Console.Write("New amount of data: ");
+            Console.WriteLine(RecDataCnt.ToString());
+
+            //Debug info
+            //Console.WriteLine("Before serial data Put: ");
+            //PrintReceiveBufferHandlerValues();
+
             //Put the buffer into the serial handling
             MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length);
 
+            //Debug info
+            //Console.WriteLine("After serial data Put: ");
+            //PrintReceiveBufferHandlerValues();
+
             /* Decouple the receive thread from the handling thread. Shall improve / fix freezes when the serial port is closed during received data */
-            //ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
-            ReadReceivedBytesFromBuffer();
+            ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
+            //ReadReceivedBytesFromBuffer();
 
             /* Put the whole received buffer into the text box */
             AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
@@ -436,12 +472,7 @@ namespace MessageLoggerForm
             /* When a message was constructed with the serial-handling put it into the list view */
             Class_Message.tsMessageFrame sMsgFrame;
             if(MsgLib_GetMessageFrame(out sMsgFrame))
-            {
-                if(sMsgFrame.sHeader.ucDestAddress == 0)
-                {
-                    int a = 4;
-                }
-            
+            {           
                 FillListView(sMsgFrame);
             }
 
@@ -458,6 +489,10 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private unsafe void ReadReceivedBytesFromBuffer()
         {
+            //Debug info
+            //Console.WriteLine("Before Message Get: ");
+            //PrintReceiveBufferHandlerValues();
+
             /* Copy data from received bytes into local array */
             byte ucBuffCnt = MsgLib_GetWrittenBufferSize();
             byte[] arrayRec = new byte[ucBuffCnt];
@@ -466,7 +501,11 @@ namespace MessageLoggerForm
             {
                 MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt);
             }
-            
+
+            //Debug info
+            //Console.WriteLine("After Message Get: ");
+            //PrintReceiveBufferHandlerValues();
+
             string Line = "BufferCnt: " + ucBuffCnt.ToString() + "   ";
 
             for (byte Idx = 0; Idx < ucBuffCnt; Idx++)
