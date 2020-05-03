@@ -72,6 +72,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.LblLedStatusResp = new System.Windows.Forms.Label();
             this.LblBrightnessReq = new System.Windows.Forms.Label();
+            this.tabCtrlSerialInterface = new System.Windows.Forms.TabControl();
+            this.tabPageSerial0 = new System.Windows.Forms.TabPage();
             this.grpSerialInterface1 = new System.Windows.Forms.GroupBox();
             this.BtnComPortInit0 = new System.Windows.Forms.Button();
             this.LblComPortStatus0 = new System.Windows.Forms.Label();
@@ -79,8 +81,6 @@
             this.BtnComPortStart0 = new System.Windows.Forms.Button();
             this.ComboBoxSerialComPorts0 = new System.Windows.Forms.ComboBox();
             this.LblComPort = new System.Windows.Forms.Label();
-            this.tabCtrlSerialInterface = new System.Windows.Forms.TabControl();
-            this.tabPageSerial0 = new System.Windows.Forms.TabPage();
             this.tabPageSerial1 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.BtnComPortInit1 = new System.Windows.Forms.Button();
@@ -99,9 +99,9 @@
             this.grpBoardStatus.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.grpSerialInterface1.SuspendLayout();
             this.tabCtrlSerialInterface.SuspendLayout();
             this.tabPageSerial0.SuspendLayout();
+            this.grpSerialInterface1.SuspendLayout();
             this.tabPageSerial1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -203,7 +203,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1004, 654);
+            this.tabPage2.Size = new System.Drawing.Size(1036, 654);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Serial Data";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -536,6 +536,28 @@
             this.LblBrightnessReq.TabIndex = 8;
             this.LblBrightnessReq.Text = "0%";
             // 
+            // tabCtrlSerialInterface
+            // 
+            this.tabCtrlSerialInterface.Controls.Add(this.tabPageSerial0);
+            this.tabCtrlSerialInterface.Controls.Add(this.tabPageSerial1);
+            this.tabCtrlSerialInterface.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabCtrlSerialInterface.Location = new System.Drawing.Point(3, 3);
+            this.tabCtrlSerialInterface.Name = "tabCtrlSerialInterface";
+            this.tabCtrlSerialInterface.SelectedIndex = 0;
+            this.tabCtrlSerialInterface.Size = new System.Drawing.Size(243, 152);
+            this.tabCtrlSerialInterface.TabIndex = 8;
+            // 
+            // tabPageSerial0
+            // 
+            this.tabPageSerial0.Controls.Add(this.grpSerialInterface1);
+            this.tabPageSerial0.Location = new System.Drawing.Point(4, 22);
+            this.tabPageSerial0.Name = "tabPageSerial0";
+            this.tabPageSerial0.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSerial0.Size = new System.Drawing.Size(235, 126);
+            this.tabPageSerial0.TabIndex = 0;
+            this.tabPageSerial0.Text = "Serial 1";
+            this.tabPageSerial0.UseVisualStyleBackColor = true;
+            // 
             // grpSerialInterface1
             // 
             this.grpSerialInterface1.Controls.Add(this.BtnComPortInit0);
@@ -608,28 +630,6 @@
             this.LblComPort.Size = new System.Drawing.Size(56, 13);
             this.LblComPort.TabIndex = 2;
             this.LblComPort.Text = "COM Port:";
-            // 
-            // tabCtrlSerialInterface
-            // 
-            this.tabCtrlSerialInterface.Controls.Add(this.tabPageSerial0);
-            this.tabCtrlSerialInterface.Controls.Add(this.tabPageSerial1);
-            this.tabCtrlSerialInterface.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabCtrlSerialInterface.Location = new System.Drawing.Point(3, 3);
-            this.tabCtrlSerialInterface.Name = "tabCtrlSerialInterface";
-            this.tabCtrlSerialInterface.SelectedIndex = 0;
-            this.tabCtrlSerialInterface.Size = new System.Drawing.Size(243, 152);
-            this.tabCtrlSerialInterface.TabIndex = 8;
-            // 
-            // tabPageSerial0
-            // 
-            this.tabPageSerial0.Controls.Add(this.grpSerialInterface1);
-            this.tabPageSerial0.Location = new System.Drawing.Point(4, 22);
-            this.tabPageSerial0.Name = "tabPageSerial0";
-            this.tabPageSerial0.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSerial0.Size = new System.Drawing.Size(235, 126);
-            this.tabPageSerial0.TabIndex = 0;
-            this.tabPageSerial0.Text = "Serial 1";
-            this.tabPageSerial0.UseVisualStyleBackColor = true;
             // 
             // tabPageSerial1
             // 
@@ -719,6 +719,7 @@
             // 
             this.serialPort2.BaudRate = 115200;
             this.serialPort2.ReadBufferSize = 2048;
+            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort2_DataReceived);
             // 
             // Form1
             // 
@@ -739,10 +740,10 @@
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.grpSerialInterface1.ResumeLayout(false);
-            this.grpSerialInterface1.PerformLayout();
             this.tabCtrlSerialInterface.ResumeLayout(false);
             this.tabPageSerial0.ResumeLayout(false);
+            this.grpSerialInterface1.ResumeLayout(false);
+            this.grpSerialInterface1.PerformLayout();
             this.tabPageSerial1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

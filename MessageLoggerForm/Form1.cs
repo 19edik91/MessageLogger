@@ -24,22 +24,22 @@ namespace MessageLoggerForm
         public static extern int SumVariables(int a, int b);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool MsgLib_GetMessageFrame(out Class_Message.tsMessageFrame psMessageFrame);
+        public static extern bool MsgLib_GetMessageFrame(out Class_Message.tsMessageFrame psMessageFrame, byte ucBufferIdx);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool MsgLib_PutDataInBuffer(byte[] pucBuffer, byte ucSize);
+        public static extern bool MsgLib_PutDataInBuffer(byte[] pucBuffer, byte ucSize, byte ucBufferIdx);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void InitModule();
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_ReadBuffer(IntPtr pucBuffer, byte ucSize);
+        public static extern void MsgLib_ReadBuffer(IntPtr pucBuffer, byte ucSize, byte ucBufferIdx);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte MsgLib_GetWrittenBufferSize();
+        public static extern byte MsgLib_GetWrittenBufferSize(byte ucBufferIdx);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_GetBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx);
+        public static extern void MsgLib_GetBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx, byte ucBufferIdx);
 
         /****************************************************************************************************
         * Variables
@@ -55,10 +55,10 @@ namespace MessageLoggerForm
         private int BufferCnt = 0;
         private string MsgFrame;
 
-        delegate void AddListItem();
+        delegate void AddListItem(byte ucPortIdx);
         AddListItem _serialDelegate;
 
-        Queue<Byte> _receivedSerialData;
+        Queue<Byte>[] _receivedSerialData;
 
         Mutex _mutexSerial;
         Mutex _mutexMessage;
@@ -88,7 +88,9 @@ namespace MessageLoggerForm
 
             /* Initialize serial handling */
             _serialDelegate = new AddListItem(ProcessSerialData);
-            _receivedSerialData = new Queue<byte>();
+            _receivedSerialData = new Queue<byte>[2];
+            _receivedSerialData[0] = new Queue<byte>();
+            _receivedSerialData[1] = new Queue<byte>();
             _mutexSerial = new Mutex();
             _mutexMessage = new Mutex();
 
@@ -336,13 +338,13 @@ namespace MessageLoggerForm
          * @param: none
          * @return: none
          ****************************************************************************************************/
-        private void PrintReceiveBufferHandlerValues()
+        private void PrintReceiveBufferHandlerValues(byte ucBufferIdx)
         {
             UInt16 uiFreeSize = 0xFFFF;
             UInt16 uiMaxSize = 0XFFFF;
             UInt16 uiPutIdx = 0xFFFF;
             UInt16 uiGetIdx = 0xFFFF;
-            MsgLib_GetBufferHandlerData(ref uiFreeSize, ref uiMaxSize, ref uiPutIdx, ref uiGetIdx);
+            MsgLib_GetBufferHandlerData(ref uiFreeSize, ref uiMaxSize, ref uiPutIdx, ref uiGetIdx, ucBufferIdx);
 
             string sFifoVal = "Free: " + uiFreeSize.ToString() + " ";
             sFifoVal += "Size: " + uiMaxSize.ToString() + " ";
@@ -358,18 +360,18 @@ namespace MessageLoggerForm
          * @param: none
          * @return: none
          ****************************************************************************************************/
-        private void ProcessSerialData()
+        private void ProcessSerialData(byte ucPortIndex)
         {
             /* Start blocking */
             _mutexSerial.WaitOne();
 
             /* Get the count of the received bytes */
-            int RecDataCnt = _receivedSerialData.Count;            
+            int RecDataCnt = _receivedSerialData[ucPortIndex].Count;            
 
             /* Copy data from received bytes into local array */
             byte[] arrayRec = new byte[RecDataCnt];
-            _receivedSerialData.CopyTo(arrayRec, 0);
-            _receivedSerialData.Clear();
+            _receivedSerialData[ucPortIndex].CopyTo(arrayRec, 0);
+            _receivedSerialData[ucPortIndex].Clear();
 
             /* End blocking */
             _mutexSerial.ReleaseMutex();
@@ -400,7 +402,7 @@ namespace MessageLoggerForm
             //PrintReceiveBufferHandlerValues();
 
             //Put the buffer into the serial handling
-            MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length);
+            MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length, ucPortIndex);
 
             //Debug info
             //Console.WriteLine("After serial data Put: ");
@@ -408,11 +410,34 @@ namespace MessageLoggerForm
 
             /* Decouple the receive thread from the handling thread. Shall improve / fix freezes when the serial port is closed during received data */
             ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
-            //ReadReceivedBytesFromBuffer();
+            //ReadReceivedBytesFromBuffer(ucPortIdx);
 
             /* Put the whole received buffer into the text box */
             AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
         }
+
+        /****************************************************************************************************
+         * @brief: Wrapper function to detect from which serial port the event was received
+         * @param: 
+         * @return: 
+         ****************************************************************************************************/
+        private void SerialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            SerialPort sp = (SerialPort)sender;
+            SerialPort_DataReceived(sp, 0);
+        }
+
+        /****************************************************************************************************
+         * @brief: Wrapper function to detect from which serial port the event was received
+         * @param: 
+         * @return: 
+         ****************************************************************************************************/
+        private void SerialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            SerialPort sp = (SerialPort)sender;
+            SerialPort_DataReceived(sp, 1);
+        }
+
 
         /****************************************************************************************************
          * @brief: Interrupt handler on received data. The serial port is read and cleared afterwards. 
@@ -420,10 +445,8 @@ namespace MessageLoggerForm
          * @param: sender - The serial port which started this event
          * @return: none
          ****************************************************************************************************/
-        private void SerialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private void SerialPort_DataReceived(SerialPort sp, byte PortIdx)
         {
-            SerialPort sp = (SerialPort)sender;
-
             byte[] aucSerialPortBuffer = new byte[255];
             int SP_Read;
             try
@@ -439,14 +462,14 @@ namespace MessageLoggerForm
 
                 for(int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
                 {
-                    _receivedSerialData.Enqueue(aucSerialPortBuffer[buffIdx]);
+                    _receivedSerialData[PortIdx].Enqueue(aucSerialPortBuffer[buffIdx]);
                 }
 
                 /* Release mutex */
                 _mutexSerial.ReleaseMutex();
 
                 //Use the delegate callback function 
-                Invoke(_serialDelegate);
+                Invoke(_serialDelegate, PortIdx);
             }
             catch(Exception ex)
             {
@@ -469,11 +492,14 @@ namespace MessageLoggerForm
         {
             _mutexMessage.WaitOne();
 
-            /* When a message was constructed with the serial-handling put it into the list view */
-            Class_Message.tsMessageFrame sMsgFrame;
-            if(MsgLib_GetMessageFrame(out sMsgFrame))
-            {           
-                FillListView(sMsgFrame);
+            for (byte ucPortIdx = 0; ucPortIdx < 2; ucPortIdx++)
+            {
+                /* When a message was constructed with the serial-handling put it into the list view */
+                Class_Message.tsMessageFrame sMsgFrame;
+                if (MsgLib_GetMessageFrame(out sMsgFrame, ucPortIdx))
+                {
+                    FillListView(sMsgFrame);
+                }
             }
 
             _mutexMessage.ReleaseMutex();
@@ -487,19 +513,19 @@ namespace MessageLoggerForm
          * @param: 
          * @return: none
          ****************************************************************************************************/
-        private unsafe void ReadReceivedBytesFromBuffer()
+        private unsafe void ReadReceivedBytesFromBuffer(byte ucPortIdx)
         {
             //Debug info
             //Console.WriteLine("Before Message Get: ");
             //PrintReceiveBufferHandlerValues();
 
             /* Copy data from received bytes into local array */
-            byte ucBuffCnt = MsgLib_GetWrittenBufferSize();
+            byte ucBuffCnt = MsgLib_GetWrittenBufferSize(ucPortIdx);
             byte[] arrayRec = new byte[ucBuffCnt];
 
             fixed (byte* p = arrayRec)
             {
-                MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt);
+                MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt, ucPortIdx);
             }
 
             //Debug info
