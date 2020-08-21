@@ -14,7 +14,13 @@ namespace MessageLoggerForm
         * C-DLL functions
         ****************************************************************************************************/
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_GetMsgOutputStatus(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgOutputStateCS psMsgOutputStateCS);
+        public static extern void MsgLib_GetMsgOutputStatus(byte[] ucPayloadArray, out MsgStructureCasted.tMsgRequestOutputStateCS psMsgOutputStateCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgUpdateOutputStatus(byte[] ucPayloadArray, out MsgStructureCasted.tMsgUpdateOutputStateCS psMsgUpdateOutputStateCS);
+
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetCurrentTime(byte[] ucPayloadArray, out MsgStructureCasted.tMsgCurrentTimeCS psMsgCurrentTime);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetMsgOutputStatusResponse(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgOutputStateResponseCS psMsgOutputStateResponseCS);
@@ -135,42 +141,73 @@ namespace MessageLoggerForm
 
             switch ((ClassMsgEnum.teMessageId)ucID)
             {
-                case ClassMsgEnum.teMessageId.eMsgOutputStatus:
+                case ClassMsgEnum.teMessageId.eMsgRequestOutputStatus:
                     {
-                        if (ClassMsgEnum.teMessageCmd.eCmdGet == (ClassMsgEnum.teMessageCmd)ucCommand)
+                        sID = "Outputs request status";
+
+                        MsgStructureCasted.tMsgRequestOutputStateCS sMsg;
+                        MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                        sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
+                        sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
+
+                        if (Convert.ToBoolean(sMsg.bInitMenuActive) == true && Convert.ToBoolean(sMsg.bInitMenuActiveInv) == false)
                         {
-                            sID = "Outputs status response ";
-
-                            MsgStructureCasted.tsMsgOutputStateResponseCS sMsg;
-                            MsgLib_GetMsgOutputStatusResponse(aucPayload, out sMsg);
-
-                            sPayloadInterpreation = "Voltage: " + sMsg.uiVoltage + "mV" + " | ";
-                            sPayloadInterpreation += "Current: " + sMsg.uiCurrent + "mA" + " | ";
-
-                            string Temp = Convert.ToString(sMsg.siTemperature);
-                            Temp = Temp.Insert((Temp.Length - 1), ".");
-                            sPayloadInterpreation += "Temp: " + Temp + "°C";
+                            sPayloadInterpreation += "Init Menu acitve: true";
                         }
                         else
                         {
-                            sID = "Outputs status";
+                            sPayloadInterpreation += "Init Menu acitve: false";
+                        }
 
-                            MsgStructureCasted.tsMsgOutputStateCS sMsg;
-                            MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
+                        sPayloadInterpreation += "Night Mode: " + Convert.ToBoolean(sMsg.bNightModeOnOff).ToString() + " | ";
+                        sPayloadInterpreation += "PIR Mode: " + Convert.ToBoolean(sMsg.bMotionDetectionOnOff).ToString() + " | ";
+                        sPayloadInterpreation += "Burntime :" + Convert.ToBoolean(sMsg.ucBurnTime).ToString();            
+                        break;
+                    }
 
-                            sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
-                            sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
-                            sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
+                case ClassMsgEnum.teMessageId.eMsgUpdateOutputStatus:
+                    {
+                        sID = "Output update status";
 
-                            if (Convert.ToBoolean(sMsg.bInitMenuActive) == true && Convert.ToBoolean(sMsg.bInitMenuActiveInv) == false)
-                            {
-                                sPayloadInterpreation += "Init Menu acitve: true";
-                            }
-                            else
-                            {
-                                sPayloadInterpreation += "Init Menu acitve: false";
-                            }
-                        }               
+                        MsgStructureCasted.tMsgUpdateOutputStateCS sMsg;
+                        MsgLib_GetMsgUpdateOutputStatus(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                        sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
+                        sPayloadInterpreation += "Nightmode: " + Convert.ToBoolean(sMsg.bNightModeOnOff).ToString() + " | ";
+                        sPayloadInterpreation += "PIR detected: " + Convert.ToBoolean(sMsg.bMotionDetectionOnOff).ToString() + " | ";
+                        sPayloadInterpreation += "Burn time: " + sMsg.ucRemainingBurnTime;
+                        break;
+                    }
+
+                case ClassMsgEnum.teMessageId.eMsgCurrentTime:
+                    {
+                        sID = "Current Time";
+
+                        MsgStructureCasted.tMsgCurrentTimeCS sMsg;
+                        MsgLib_GetCurrentTime(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Ticks: " + sMsg.ulTicks + " | ";
+                        sPayloadInterpreation += "Hours: " + sMsg.ucHour + " | ";
+                        sPayloadInterpreation += "Minutes: " + sMsg.ucMinutes;
+                        break;
+                    }
+
+                case ClassMsgEnum.teMessageId.eMsgOutputState:
+                    {
+                        sID = "Outputs status response ";
+
+                        MsgStructureCasted.tsMsgOutputStateResponseCS sMsg;
+                        MsgLib_GetMsgOutputStatusResponse(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Voltage: " + sMsg.uiVoltage + "mV" + " | ";
+                        sPayloadInterpreation += "Current: " + sMsg.uiCurrent + "mA" + " | ";
+
+                        string Temp = Convert.ToString(sMsg.siTemperature);
+                        Temp = Temp.Insert((Temp.Length - 1), ".");
+                        sPayloadInterpreation += "Temp: " + Temp + "°C";
                         break;
                     }
 
@@ -180,24 +217,12 @@ namespace MessageLoggerForm
                         break;
                     }
 
-                case ClassMsgEnum.teMessageId.eMsgDimPermit:
-                    {
-                        sID = "Dimming permit";
-                        break;
-                    }
-
                 case ClassMsgEnum.teMessageId.eMsgErrorCode:
                     {
                         sID = "Error code";
                         break;
                     }
-
-                case ClassMsgEnum.teMessageId.eMsgFaultStatus:
-                    {
-                        sID = "Fault status";
-                        break;
-                    }
-
+                    
                 case ClassMsgEnum.teMessageId.eMsgLastEntry:
                     {
                         sID = "Last entry";

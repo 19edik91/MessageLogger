@@ -41,6 +41,10 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx, byte ucBufferIdx);
 
+
+
+
+
         /****************************************************************************************************
         * Variables
         ****************************************************************************************************/
@@ -60,7 +64,7 @@ namespace MessageLoggerForm
 
         Queue<Byte>[] _receivedSerialData;
 
-        Mutex _mutexSerial;
+        Mutex[] _mutexSerial;
         Mutex _mutexMessage;
 
         /****************************************************************************************************
@@ -91,7 +95,9 @@ namespace MessageLoggerForm
             _receivedSerialData = new Queue<byte>[2];
             _receivedSerialData[0] = new Queue<byte>();
             _receivedSerialData[1] = new Queue<byte>();
-            _mutexSerial = new Mutex();
+            _mutexSerial = new Mutex[2];
+            _mutexSerial[0] = new Mutex();
+            _mutexSerial[1] = new Mutex();
             _mutexMessage = new Mutex();
 
             //Init combo box 
@@ -363,7 +369,7 @@ namespace MessageLoggerForm
         private void ProcessSerialData(byte ucPortIndex)
         {
             /* Start blocking */
-            _mutexSerial.WaitOne();
+            _mutexSerial[ucPortIndex].WaitOne();
 
             /* Get the count of the received bytes */
             int RecDataCnt = _receivedSerialData[ucPortIndex].Count;            
@@ -374,7 +380,7 @@ namespace MessageLoggerForm
             _receivedSerialData[ucPortIndex].Clear();
 
             /* End blocking */
-            _mutexSerial.ReleaseMutex();
+            _mutexSerial[ucPortIndex].ReleaseMutex();
 
 
             ///********
@@ -458,7 +464,7 @@ namespace MessageLoggerForm
                 sp.DiscardInBuffer();
 
                 /* Block multiple callbacks */
-                _mutexSerial.WaitOne();
+                _mutexSerial[PortIdx].WaitOne();
 
                 for(int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
                 {
@@ -466,7 +472,7 @@ namespace MessageLoggerForm
                 }
 
                 /* Release mutex */
-                _mutexSerial.ReleaseMutex();
+                _mutexSerial[PortIdx].ReleaseMutex();
 
                 //Use the delegate callback function 
                 Invoke(_serialDelegate, PortIdx);
