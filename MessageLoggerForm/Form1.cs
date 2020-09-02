@@ -33,16 +33,19 @@ namespace MessageLoggerForm
         public static extern void InitModule();
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_ReadBuffer(IntPtr pucBuffer, byte ucSize, byte ucBufferIdx);
+        public static extern void MsgLib_ReadBuffer(IntPtr pucBuffer, byte ucSize, byte ucBufferIdx, bool bUpdateBuffer);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern byte MsgLib_GetWrittenBufferSize(byte ucBufferIdx);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_GetBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx, byte ucBufferIdx);
+        public static extern void MsgLib_GetFifoBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx, byte ucBufferIdx);
 
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMessageBufferHandlerData(ref UInt16 puiMsgCnt, ref UInt16 puiMsgPutIdx, ref UInt16 puiMsgGetIdx, byte ucBufferIdx);
 
-
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMessageBufferMessageData(ref UInt16 puiMsgByteCnt, ref UInt16 puiMsgStartIdx, ref UInt16 puiMsgSize, ref UInt16 puiMsgSavedStatus, ref UInt16 puiMsgRespondRec, byte ucBufferIdx, byte ucMsgIndex);
 
 
         /****************************************************************************************************
@@ -66,6 +69,8 @@ namespace MessageLoggerForm
 
         Mutex[] _mutexSerial;
         Mutex _mutexMessage;
+
+        private BackgroundWorker[] backgroundWorkersArr;
 
         /****************************************************************************************************
         * @brief: Method to enable the double buffered option
@@ -107,7 +112,40 @@ namespace MessageLoggerForm
 
             //Activate the double buffered option in the list view
             SetDoubleBufferd(listView1);
+
+            //Initialize Background worker
+            InitializeBackgroundWorker();
+            timer1.Enabled = true;
         }
+
+        /****************************************************************************************************
+        * @brief: Creates background worker threads 
+        * @param: none
+        * @return: none
+        ****************************************************************************************************/
+        void InitializeBackgroundWorker()
+        {
+            /* Initializes background worker. At first only one */
+            byte ucBgW_Count = 2;
+
+            backgroundWorkersArr = new BackgroundWorker[ucBgW_Count];
+
+            for(byte ucBgW_Idx = 0; ucBgW_Idx < ucBgW_Count; ucBgW_Idx++)
+            {
+                /* Create new background worker thread */
+                backgroundWorkersArr[ucBgW_Idx] = new BackgroundWorker();
+
+                /* Link them to the handler */
+                backgroundWorkersArr[ucBgW_Idx].DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
+                backgroundWorkersArr[ucBgW_Idx].RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_Finished);
+
+                backgroundWorkersArr[ucBgW_Idx].WorkerSupportsCancellation = true;
+
+                /* Start the background worker */
+                backgroundWorkersArr[ucBgW_Idx].RunWorkerAsync(ucBgW_Idx);
+            }
+        }
+
 
         /****************************************************************************************************
         * @brief: Reads all available ports and put them into the combo-box.
@@ -164,14 +202,14 @@ namespace MessageLoggerForm
                     //Set port name to the Combo box name
                     sp.PortName = portname;
                     sp.BaudRate = uiBaudRate;
-                    sp.ReadTimeout = 500;
-                    sp.WriteTimeout = 500;
+                    sp.ReadTimeout = 1000;
+                    sp.WriteTimeout = 1000;
                     sp.Parity = Parity.None;
                     sp.DataBits = 8;
                     sp.StopBits = StopBits.One;
                     sp.Handshake = Handshake.None;
-                    sp.ReadBufferSize = 14;
-//                    sp.ReceivedBytesThreshold = 2;
+//                    sp.ReadBufferSize = 14;
+                    sp.ReceivedBytesThreshold = 4;
                     sp.Open();
 
                     if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
@@ -344,22 +382,63 @@ namespace MessageLoggerForm
          * @param: none
          * @return: none
          ****************************************************************************************************/
-        private void PrintReceiveBufferHandlerValues(byte ucBufferIdx)
+        private string PrintReceiveBufferHandlerValues(byte ucBufferIdx)
         {
             UInt16 uiFreeSize = 0xFFFF;
             UInt16 uiMaxSize = 0XFFFF;
             UInt16 uiPutIdx = 0xFFFF;
             UInt16 uiGetIdx = 0xFFFF;
-            MsgLib_GetBufferHandlerData(ref uiFreeSize, ref uiMaxSize, ref uiPutIdx, ref uiGetIdx, ucBufferIdx);
+            MsgLib_GetFifoBufferHandlerData(ref uiFreeSize, ref uiMaxSize, ref uiPutIdx, ref uiGetIdx, ucBufferIdx);
 
             string sFifoVal = "Free: " + uiFreeSize.ToString() + " ";
             sFifoVal += "Size: " + uiMaxSize.ToString() + " ";
             sFifoVal += "PutIdx: " + uiPutIdx.ToString() + " ";
             sFifoVal += "GetIdx: " + uiGetIdx.ToString() + " ";
 
-            Console.WriteLine(sFifoVal);
+            return sFifoVal;
         }
 
+        /****************************************************************************************************
+         * @brief: Prints the buffer handler values in the console 
+         * @param: none
+         * @return: none
+         ****************************************************************************************************/
+        private string PrintMessageBufferHandlerValues(byte ucBufferIdx)
+        {
+            UInt16 uiMsgCnt = 0xFFFF;
+            UInt16 uiPutIdx = 0xFFFF;
+            UInt16 uiGetIdx = 0xFFFF;
+            MsgLib_GetMessageBufferHandlerData(ref uiMsgCnt, ref uiPutIdx, ref uiGetIdx, ucBufferIdx);
+
+            string sMsgBuffVal = "MsgCnt: " + uiMsgCnt.ToString() + " ";
+            sMsgBuffVal += "PutIdx: " + uiPutIdx.ToString() + " ";
+            sMsgBuffVal += "GetIdx: " + uiGetIdx.ToString() + " ";
+
+            return sMsgBuffVal;
+        }
+
+        /****************************************************************************************************
+         * @brief: Prints the buffer handler values in the console 
+         * @param: none
+         * @return: none
+         ****************************************************************************************************/
+        private string PrintMessageBufferMessageValues(byte ucBufferIdx, byte ucMsgEntryIndex)
+        {
+            UInt16 uiByteCnt = 0xFFFF;
+            UInt16 uiStartIdx = 0XFFFF;
+            UInt16 uiSize = 0xFFFF;
+            UInt16 uiSavedState = 0xFFFF;
+            UInt16 uiRespState = 0xFFFF;
+            MsgLib_GetMessageBufferMessageData(ref uiByteCnt, ref uiStartIdx, ref uiSize, ref uiSavedState, ref uiRespState, ucBufferIdx, ucMsgEntryIndex);
+
+            string sMsgVal = "MsgIdx: " + ucMsgEntryIndex.ToString() + " ";
+            sMsgVal += "Size: " + uiSize.ToString() + " ";
+            sMsgVal += "StartIdx: " + uiStartIdx.ToString() + " ";
+            sMsgVal += "Saved: " + uiSavedState.ToString() + " ";
+            sMsgVal += "Resp: " + uiRespState.ToString() + " ";
+
+            return sMsgVal;
+        }
 
         /****************************************************************************************************
          * @brief: Process the received serial data
@@ -369,57 +448,41 @@ namespace MessageLoggerForm
         private void ProcessSerialData(byte ucPortIndex)
         {
             /* Start blocking */
-            _mutexSerial[ucPortIndex].WaitOne();
-
-            /* Get the count of the received bytes */
-            int RecDataCnt = _receivedSerialData[ucPortIndex].Count;            
-
-            /* Copy data from received bytes into local array */
-            byte[] arrayRec = new byte[RecDataCnt];
-            _receivedSerialData[ucPortIndex].CopyTo(arrayRec, 0);
-            _receivedSerialData[ucPortIndex].Clear();
-
-            /* End blocking */
-            _mutexSerial[ucPortIndex].ReleaseMutex();
-
-
-            ///********
-            string Line = "";
-
-            for (byte Idx = 0; Idx < RecDataCnt; Idx++)
+            if (_mutexSerial[ucPortIndex].WaitOne(1000, true))
             {
-                Line += arrayRec[Idx].ToString("X2");
+                /* Get the count of the received bytes */
+                int RecDataCnt = _receivedSerialData[ucPortIndex].Count;
+
+                if (RecDataCnt > 0)
+                {
+                    /* Copy data from received bytes into local array */
+                    byte[] arrayRec = new byte[RecDataCnt];
+                    _receivedSerialData[ucPortIndex].CopyTo(arrayRec, 0);
+                    _receivedSerialData[ucPortIndex].Clear();
+
+                    /* Save received data into text file */
+                    string Line = DateTime.Now.ToString() + " Port: " + ucPortIndex.ToString() + " Put " + RecDataCnt.ToString() + " Bytes | ";
+                    for (byte Idx = 0; Idx < RecDataCnt; Idx++)
+                    {
+                        Line += arrayRec[Idx].ToString("X2");
+                    }
+                    Line += " ";
+                    /* Save received data into text file */
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
+                    {
+                        file.WriteLine(Line);
+                    }
+                    
+                    //Put the buffer into the serial handling
+                    MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length, ucPortIndex);
+                                       
+                    /* Put the whole received buffer into the text box */
+                    //AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
+                }
+
+                /* End blocking */
+                _mutexSerial[ucPortIndex].ReleaseMutex();
             }
-
-            Line += " ";
-
-            //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
-            {
-                file.WriteLine(Line);
-            }
-            //********/
-
-            Console.Write("New amount of data: ");
-            Console.WriteLine(RecDataCnt.ToString());
-
-            //Debug info
-            //Console.WriteLine("Before serial data Put: ");
-            //PrintReceiveBufferHandlerValues();
-
-            //Put the buffer into the serial handling
-            MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length, ucPortIndex);
-
-            //Debug info
-            //Console.WriteLine("After serial data Put: ");
-            //PrintReceiveBufferHandlerValues();
-
-            /* Decouple the receive thread from the handling thread. Shall improve / fix freezes when the serial port is closed during received data */
-            ThreadPool.QueueUserWorkItem(HandleReceivedBytes);
-            //ReadReceivedBytesFromBuffer(ucPortIdx);
-
-            /* Put the whole received buffer into the text box */
-            AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
         }
 
         /****************************************************************************************************
@@ -457,25 +520,23 @@ namespace MessageLoggerForm
             int SP_Read;
             try
             {
-                //Read the serial port buffer
-                SP_Read = sp.Read(aucSerialPortBuffer, 0, aucSerialPortBuffer.Length);                
-
-                //Clear the serial port buffer to avoid an overfill
-                sp.DiscardInBuffer();
-
                 /* Block multiple callbacks */
-                _mutexSerial[PortIdx].WaitOne();
-
-                for(int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
+                if (_mutexSerial[PortIdx].WaitOne(1000, true))
                 {
-                    _receivedSerialData[PortIdx].Enqueue(aucSerialPortBuffer[buffIdx]);
+                    //Read the serial port buffer
+                    SP_Read = sp.Read(aucSerialPortBuffer, 0, aucSerialPortBuffer.Length);
+
+                    //Clear the serial port buffer to avoid an overfill
+                    sp.DiscardInBuffer();
+
+                    for (int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
+                    {
+                        _receivedSerialData[PortIdx].Enqueue(aucSerialPortBuffer[buffIdx]);
+                    }
+
+                    /* Release mutex */
+                    _mutexSerial[PortIdx].ReleaseMutex();
                 }
-
-                /* Release mutex */
-                _mutexSerial[PortIdx].ReleaseMutex();
-
-                //Use the delegate callback function 
-                Invoke(_serialDelegate, PortIdx);
             }
             catch(Exception ex)
             {
@@ -496,19 +557,28 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private unsafe void HandleReceivedBytes(object state)
         {
-            _mutexMessage.WaitOne();
-
             for (byte ucPortIdx = 0; ucPortIdx < 2; ucPortIdx++)
             {
-                /* When a message was constructed with the serial-handling put it into the list view */
-                Class_Message.tsMessageFrame sMsgFrame;
-                if (MsgLib_GetMessageFrame(out sMsgFrame, ucPortIdx))
+                if (_mutexSerial[ucPortIdx].WaitOne(1000, true))
                 {
-                    FillListView(sMsgFrame);
-                }
-            }
 
-            _mutexMessage.ReleaseMutex();
+                if ((ucPortIdx == 0 && serialPort1.IsOpen) || (ucPortIdx == 1 && serialPort2.IsOpen))
+                {
+                    //if (true)
+                    ReadReceivedBytesFromBuffer(ucPortIdx, false);
+                    //else
+                    {
+                        /* When a message was constructed with the serial-handling put it into the list view */
+                        Class_Message.tsMessageFrame sMsgFrame;
+                        if (MsgLib_GetMessageFrame(out sMsgFrame, ucPortIdx))
+                        {
+                            FillListView(sMsgFrame);
+                        }
+                    }
+                }
+                _mutexSerial[ucPortIdx].ReleaseMutex();
+                }
+            }            
         }
 
 
@@ -519,39 +589,46 @@ namespace MessageLoggerForm
          * @param: 
          * @return: none
          ****************************************************************************************************/
-        private unsafe void ReadReceivedBytesFromBuffer(byte ucPortIdx)
+        private unsafe byte[] ReadReceivedBytesFromBuffer(byte ucPortIdx, bool bUpdateBuffer)
         {
-            //Debug info
-            //Console.WriteLine("Before Message Get: ");
-            //PrintReceiveBufferHandlerValues();
-
             /* Copy data from received bytes into local array */
             byte ucBuffCnt = MsgLib_GetWrittenBufferSize(ucPortIdx);
             byte[] arrayRec = new byte[ucBuffCnt];
 
-            fixed (byte* p = arrayRec)
+            if (ucBuffCnt > 0)
             {
-                MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt, ucPortIdx);
+                string sFifoValues = "FifoValues: " + PrintReceiveBufferHandlerValues(ucPortIdx);
+                string sMsgBuffValues = "MsgBuffValues: " + PrintMessageBufferHandlerValues(ucPortIdx);
+                string sMsgValues = "MsgValues: " + "\n";
+                for (int MsgIdx = 0; MsgIdx < 10; MsgIdx++)
+                {
+                    sMsgValues += PrintMessageBufferMessageValues(ucPortIdx, Convert.ToByte(MsgIdx));
+                    sMsgValues += "\n";
+                }
+
+
+                fixed (byte* p = arrayRec)
+                {
+                    MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt, ucPortIdx, bUpdateBuffer);
+                }
+
+                /* Save data into text file */
+                string Line = "BufferCnt: " + ucBuffCnt.ToString() + "   ";
+                for (byte Idx = 0; Idx < ucBuffCnt; Idx++)
+                {
+                    Line += arrayRec[Idx].ToString("X2") + " ";
+                }
+                Line += "\n";
+
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Buffer_Lines.txt", true))
+                {
+                    file.WriteLine(sFifoValues);
+                    file.WriteLine(sMsgBuffValues);
+                    file.WriteLine(sMsgValues);
+                    file.WriteLine(Line);
+                }               
             }
-
-            //Debug info
-            //Console.WriteLine("After Message Get: ");
-            //PrintReceiveBufferHandlerValues();
-
-            string Line = "BufferCnt: " + ucBuffCnt.ToString() + "   ";
-
-            for (byte Idx = 0; Idx < ucBuffCnt; Idx++)
-            {
-                Line += arrayRec[Idx].ToString("X2");
-            }
-
-            Line += " ";
-
-            //System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Lines.txt", Line);
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Buffer_Lines.txt", true))
-            {
-                file.WriteLine(Line);
-            }
+            return arrayRec;
         }
 
 
@@ -575,6 +652,80 @@ namespace MessageLoggerForm
         private void BtnClearListView_Click(object sender, EventArgs e)
         {
             this.listView1.Items.Clear();
+        }
+
+        /****************************************************************************************************
+        * @brief: Background worker handling callback. This method is the start of each background worker thread
+        * @param: DoWorkEventArgs - The argument which is set with the initialization of the background worker
+        * @return: none
+        ****************************************************************************************************/
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                while (true)
+                {
+                    byte ucBgW_Idx = (byte)e.Argument;
+
+
+                    if (ucBgW_Idx == 0)
+                        HandleReceivedBytes(sender);
+                    else
+                    {
+                        ProcessSerialData(0);
+                        ProcessSerialData(1);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+        }
+        
+        /****************************************************************************************************
+        * @brief: Background worker handling callback when the background worker finished its work
+        * @param: 
+        * @return: none
+        ****************************************************************************************************/
+        private void backgroundWorker_Finished(object sender, RunWorkerCompletedEventArgs e)
+        {
+            BackgroundWorker bgw = (BackgroundWorker)sender;
+            bgw.Dispose();
+        }
+
+
+        /****************************************************************************************************
+        * @brief: Test method for checking when a back ground worker stops working
+        * @param: 
+        * @return: none
+        ****************************************************************************************************/
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            if(backgroundWorkersArr[0].IsBusy == true)
+            {
+                if (progressBar1.Value == 0)
+                {
+                    progressBar1.Value = progressBar1.Maximum;
+                }
+                else
+                {
+                    progressBar1.Value = progressBar1.Minimum;
+                }
+            }
+
+            if (backgroundWorkersArr[1].IsBusy == true)
+            {
+                if (progressBar2.Value == 0)
+                {
+                    progressBar2.Value = progressBar2.Maximum;
+                }
+                else
+                {
+                    progressBar2.Value = progressBar2.Minimum;
+                }
+            }
         }
     }
 }
