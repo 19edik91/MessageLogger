@@ -90,9 +90,10 @@
             this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.serialPort2 = new System.IO.Ports.SerialPort(this.components);
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
+            this.GrpBoxLogging = new System.Windows.Forms.GroupBox();
+            this.ChkBoxLogRecData = new System.Windows.Forms.CheckBox();
+            this.ChkBoxLogMsgBuffer = new System.Windows.Forms.CheckBox();
+            this.ChkBoxLogListView = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -107,6 +108,7 @@
             this.grpSerialInterface1.SuspendLayout();
             this.tabPageSerial1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.GrpBoxLogging.SuspendLayout();
             this.SuspendLayout();
             // 
             // listView1
@@ -123,6 +125,7 @@
             this.LVCommand,
             this.LVInterpretation});
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 3);
@@ -287,8 +290,7 @@
             // 
             // grpBoardStatus
             // 
-            this.grpBoardStatus.Controls.Add(this.progressBar2);
-            this.grpBoardStatus.Controls.Add(this.progressBar1);
+            this.grpBoardStatus.Controls.Add(this.GrpBoxLogging);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
             this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -726,24 +728,47 @@
             this.serialPort2.ReadBufferSize = 2048;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort2_DataReceived);
             // 
-            // progressBar1
+            // GrpBoxLogging
             // 
-            this.progressBar1.Location = new System.Drawing.Point(16, 246);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(193, 23);
-            this.progressBar1.TabIndex = 2;
+            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogListView);
+            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogMsgBuffer);
+            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogRecData);
+            this.GrpBoxLogging.Location = new System.Drawing.Point(9, 195);
+            this.GrpBoxLogging.Name = "GrpBoxLogging";
+            this.GrpBoxLogging.Size = new System.Drawing.Size(200, 100);
+            this.GrpBoxLogging.TabIndex = 2;
+            this.GrpBoxLogging.TabStop = false;
+            this.GrpBoxLogging.Text = "Logging settings";
             // 
-            // timer1
+            // ChkBoxLogRecData
             // 
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
+            this.ChkBoxLogRecData.AutoSize = true;
+            this.ChkBoxLogRecData.Location = new System.Drawing.Point(9, 20);
+            this.ChkBoxLogRecData.Name = "ChkBoxLogRecData";
+            this.ChkBoxLogRecData.Size = new System.Drawing.Size(112, 17);
+            this.ChkBoxLogRecData.TabIndex = 0;
+            this.ChkBoxLogRecData.Text = "Log received data";
+            this.ChkBoxLogRecData.UseVisualStyleBackColor = true;
             // 
-            // progressBar2
+            // ChkBoxLogMsgBuffer
             // 
-            this.progressBar2.Location = new System.Drawing.Point(17, 275);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(193, 23);
-            this.progressBar2.TabIndex = 3;
+            this.ChkBoxLogMsgBuffer.AutoSize = true;
+            this.ChkBoxLogMsgBuffer.Location = new System.Drawing.Point(8, 44);
+            this.ChkBoxLogMsgBuffer.Name = "ChkBoxLogMsgBuffer";
+            this.ChkBoxLogMsgBuffer.Size = new System.Drawing.Size(119, 17);
+            this.ChkBoxLogMsgBuffer.TabIndex = 1;
+            this.ChkBoxLogMsgBuffer.Text = "Log message buffer";
+            this.ChkBoxLogMsgBuffer.UseVisualStyleBackColor = true;
+            // 
+            // ChkBoxLogListView
+            // 
+            this.ChkBoxLogListView.AutoSize = true;
+            this.ChkBoxLogListView.Location = new System.Drawing.Point(9, 68);
+            this.ChkBoxLogListView.Name = "ChkBoxLogListView";
+            this.ChkBoxLogListView.Size = new System.Drawing.Size(118, 17);
+            this.ChkBoxLogListView.TabIndex = 2;
+            this.ChkBoxLogListView.Text = "Log list view entries";
+            this.ChkBoxLogListView.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -771,6 +796,8 @@
             this.tabPageSerial1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.GrpBoxLogging.ResumeLayout(false);
+            this.GrpBoxLogging.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -838,9 +865,10 @@
         private System.Windows.Forms.ComboBox ComboBoxSerialComPorts1;
         private System.Windows.Forms.Label label8;
         private System.IO.Ports.SerialPort serialPort2;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.ProgressBar progressBar2;
+        private System.Windows.Forms.GroupBox GrpBoxLogging;
+        private System.Windows.Forms.CheckBox ChkBoxLogListView;
+        private System.Windows.Forms.CheckBox ChkBoxLogMsgBuffer;
+        private System.Windows.Forms.CheckBox ChkBoxLogRecData;
     }
 }
 

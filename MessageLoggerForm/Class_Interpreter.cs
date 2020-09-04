@@ -256,6 +256,13 @@ namespace MessageLoggerForm
                 case ClassMsgEnum.teMessageId.eMsgUserTimer:
                     {
                         sID = "User Timer";
+
+                        MsgStructureCasted.tsMsgUserTimerCS sMsg;
+                        MsgLib_GetMsgUserTimer(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Timer Idx: " + sMsg.b7TimerIdx + " | ";
+                        sPayloadInterpreation += "Start: " + sMsg.ucStartHour + ":" + sMsg.ucStartMin + " | ";
+                        sPayloadInterpreation += "Stop: " + sMsg.ucStopHour + ":" + sMsg.ucStopMin;
                         break;
                     }
 

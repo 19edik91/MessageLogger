@@ -115,7 +115,6 @@ namespace MessageLoggerForm
 
             //Initialize Background worker
             InitializeBackgroundWorker();
-            timer1.Enabled = true;
         }
 
         /****************************************************************************************************
@@ -374,6 +373,21 @@ namespace MessageLoggerForm
                 listView1.Items.Insert(0, lvItem);
             });
 
+            /* Save list view entry in text file */
+            if(ChkBoxLogListView.Checked == true)
+            {
+                string localString = "";
+                foreach (string sArrEntry in asMsgArray)
+                {
+                    localString += sArrEntry + " ";
+                }
+
+                /* Save received data into text file */
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\ListView.txt", true))
+                {
+                    file.WriteLine(localString);
+                }
+            }
         }
 
 
@@ -461,16 +475,19 @@ namespace MessageLoggerForm
                     _receivedSerialData[ucPortIndex].Clear();
 
                     /* Save received data into text file */
-                    string Line = DateTime.Now.ToString() + " Port: " + ucPortIndex.ToString() + " Put " + RecDataCnt.ToString() + " Bytes | ";
-                    for (byte Idx = 0; Idx < RecDataCnt; Idx++)
+                    if (ChkBoxLogRecData.Checked == true)
                     {
-                        Line += arrayRec[Idx].ToString("X2");
-                    }
-                    Line += " ";
-                    /* Save received data into text file */
-                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
-                    {
-                        file.WriteLine(Line);
+                        string Line = DateTime.Now.ToString() + " Port: " + ucPortIndex.ToString() + " Put " + RecDataCnt.ToString() + " Bytes | ";
+                        for (byte Idx = 0; Idx < RecDataCnt; Idx++)
+                        {
+                            Line += arrayRec[Idx].ToString("X2");
+                        }
+                        Line += " ";
+                        /* Save received data into text file */
+                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
+                        {
+                            file.WriteLine(Line);
+                        }
                     }
                     
                     //Put the buffer into the serial handling
@@ -564,16 +581,16 @@ namespace MessageLoggerForm
 
                 if ((ucPortIdx == 0 && serialPort1.IsOpen) || (ucPortIdx == 1 && serialPort2.IsOpen))
                 {
-                    //if (true)
-                    ReadReceivedBytesFromBuffer(ucPortIdx, false);
-                    //else
+                    if (ChkBoxLogMsgBuffer.Checked == true)
                     {
-                        /* When a message was constructed with the serial-handling put it into the list view */
-                        Class_Message.tsMessageFrame sMsgFrame;
-                        if (MsgLib_GetMessageFrame(out sMsgFrame, ucPortIdx))
-                        {
-                            FillListView(sMsgFrame);
-                        }
+                        ReadReceivedBytesFromBuffer(ucPortIdx, false);
+                    }
+
+                    /* When a message was constructed with the serial-handling put it into the list view */
+                    Class_Message.tsMessageFrame sMsgFrame;
+                    if (MsgLib_GetMessageFrame(out sMsgFrame, ucPortIdx))
+                    {
+                        FillListView(sMsgFrame);
                     }
                 }
                 _mutexSerial[ucPortIdx].ReleaseMutex();
@@ -693,39 +710,6 @@ namespace MessageLoggerForm
         {
             BackgroundWorker bgw = (BackgroundWorker)sender;
             bgw.Dispose();
-        }
-
-
-        /****************************************************************************************************
-        * @brief: Test method for checking when a back ground worker stops working
-        * @param: 
-        * @return: none
-        ****************************************************************************************************/
-        private void Timer1_Tick(object sender, EventArgs e)
-        {
-            if(backgroundWorkersArr[0].IsBusy == true)
-            {
-                if (progressBar1.Value == 0)
-                {
-                    progressBar1.Value = progressBar1.Maximum;
-                }
-                else
-                {
-                    progressBar1.Value = progressBar1.Minimum;
-                }
-            }
-
-            if (backgroundWorkersArr[1].IsBusy == true)
-            {
-                if (progressBar2.Value == 0)
-                {
-                    progressBar2.Value = progressBar2.Maximum;
-                }
-                else
-                {
-                    progressBar2.Value = progressBar2.Minimum;
-                }
-            }
         }
     }
 }
