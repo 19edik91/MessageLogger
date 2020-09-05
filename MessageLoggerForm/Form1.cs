@@ -72,6 +72,18 @@ namespace MessageLoggerForm
 
         private BackgroundWorker[] backgroundWorkersArr;
 
+        Class_Interpreter _interpreter;
+        string sLocReqLed = "";
+        string sLocResLed = "";
+        string sLocBrightnessReq = "";
+        string sLocBrightnessRes = "";
+        string sLocAutoReq = "";
+        string sLocAutoRes = "";
+        string sLocVoltage = "";
+        string sLocCurrent = "";
+        string sLocPower = "";
+        string sLocTemp = "";
+
         /****************************************************************************************************
         * @brief: Method to enable the double buffered option
         * @param: control - The control object which should activate the double buffered function
@@ -115,6 +127,10 @@ namespace MessageLoggerForm
 
             //Initialize Background worker
             InitializeBackgroundWorker();
+
+            //Initialize interpreter
+            _interpreter = new Class_Interpreter(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq,
+                                                                   ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
         }
 
         /****************************************************************************************************
@@ -362,7 +378,9 @@ namespace MessageLoggerForm
             //asMsgArray[7] = Interpreter.InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayloadCpy, ref asMsgArray[9]);
             //asMsgArray[8] = Interpreter.InteprateCommand(sMsgFrame.sPayload.ucCommand);
 
-            Interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
+            //Interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
+            _interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
+            _interpreter.GetLables(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq, ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
 
             /* Create new list view item to enable the adding */
             ListViewItem lvItem = new ListViewItem(asMsgArray);
@@ -370,6 +388,17 @@ namespace MessageLoggerForm
             /* Call per invoke to put the item to the list view */
             this.Invoke((MethodInvoker) delegate
             {
+                LblLedStatusReq.Text = sLocReqLed;
+                LblLedStatusResp.Text = sLocResLed;
+                LblBrightnessReq.Text = sLocBrightnessReq;
+                LblBrightnessResp.Text = sLocBrightnessRes;
+                LblAutomaticModeReq.Text = sLocAutoReq;
+                LblAutomaticModeRes.Text = sLocAutoRes;
+                LblVoltage.Text = sLocVoltage;
+                LblCurrent.Text = sLocCurrent;
+                LblPower.Text = sLocPower;
+                LblTemperature.Text = sLocTemp;
+
                 listView1.Items.Insert(0, lvItem);
             });
 
