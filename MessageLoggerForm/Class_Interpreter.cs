@@ -37,6 +37,9 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetMsgUserTimer(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgUserTimerCS psMsgUserTimerCS);
 
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetMsgInitOutputStatus(byte[] ucPayloadArray, out MsgStructureCasted.tMsgRequestOutputStateCS psMsgInitOutputStatusCS);
+
 
         /****************************************************
          * @brief: Standard constructor for this class
@@ -275,6 +278,23 @@ namespace MessageLoggerForm
                 case ClassMsgEnum.teMessageId.eMsgWakeUp:
                     {
                         sID = "Wake up";
+                        break;
+                    }
+
+                case ClassMsgEnum.teMessageId.eMsgInitOutputStatus:
+                    {
+                        sID = "Init output";
+
+                        MsgStructureCasted.tMsgRequestOutputStateCS sMsg;
+                        MsgLib_GetMsgInitOutputStatus(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                        sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
+                        sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
+                        sPayloadInterpreation += "Night Mode: " + Convert.ToBoolean(sMsg.bNightModeOnOff).ToString() + " | ";
+                        sPayloadInterpreation += "PIR Mode: " + Convert.ToBoolean(sMsg.bMotionDetectionOnOff).ToString() + " | ";
+                        sPayloadInterpreation += "Burntime :" + Convert.ToBoolean(sMsg.ucBurnTime).ToString();
+
                         break;
                     }
 
