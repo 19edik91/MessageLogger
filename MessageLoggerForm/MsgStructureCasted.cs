@@ -30,7 +30,7 @@ namespace MessageLoggerForm
             public byte bLedStatus;
             public byte bNightModeOnOff;
             public byte bMotionDetectionOnOff;
-            public byte ucRemainingBurnTime;
+            public Int32 slRemainingBurnTime;
         };
 
         public struct tsMsgOutputStateResponseCS

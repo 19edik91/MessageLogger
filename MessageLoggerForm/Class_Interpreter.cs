@@ -247,7 +247,7 @@ namespace MessageLoggerForm
                             LblAutoRes = "N/A";
                             sPayloadInterpreation += "Nightmode: " + Convert.ToBoolean(sMsg.bNightModeOnOff).ToString() + " | ";
                             sPayloadInterpreation += "PIR detected: " + Convert.ToBoolean(sMsg.bMotionDetectionOnOff).ToString() + " | ";
-                            sPayloadInterpreation += "Burn time: " + sMsg.ucRemainingBurnTime;
+                            sPayloadInterpreation += "Burn time: " + sMsg.slRemainingBurnTime;
                         }
                         break;
                     }
