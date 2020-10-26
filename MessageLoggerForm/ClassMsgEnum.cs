@@ -30,6 +30,7 @@ namespace MessageLoggerForm
             eMsgSystemStarted       = 0x0C,     /*<-- Slave started message. Slave => Master            --> */
             eMsgOutputState         = 0x0D,     /*<-- Sends the current, voltage and temperature values. Slave <= Master --> */
             eMsgCurrentTime         = 0x0E,     /*<-- The current time from the ethernet. Slave => Master  --> */
+            eMsgStillAlive          = 0x0F,     /*<-- Alive check message before the slave is reseted   --> */
             eMsgLastEntry           = 0xFF
         }
 

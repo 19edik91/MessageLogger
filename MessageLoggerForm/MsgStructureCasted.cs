@@ -75,5 +75,11 @@ namespace MessageLoggerForm
             public byte ucStopMin;
             public byte b7TimerIdx;
         };
+
+        public struct tsMsgStillAliveCS
+        {
+	        public byte bResponse;
+	        public byte bRequest;
+        };
     }
 }

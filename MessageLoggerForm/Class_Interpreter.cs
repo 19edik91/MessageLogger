@@ -40,6 +40,9 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetMsgInitOutputStatus(byte[] ucPayloadArray, out MsgStructureCasted.tMsgRequestOutputStateCS psMsgInitOutputStatusCS);
 
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetStillAliveMessage(byte[] ucPayloadArry, out MsgStructureCasted.tsMsgStillAliveCS psMsgStillAlive);
+
 
         string LblReqLed;
         string LblResLed;
@@ -379,6 +382,18 @@ namespace MessageLoggerForm
                             sPayloadInterpreation += "PIR Mode: " + Convert.ToBoolean(sMsg.bMotionDetectionOnOff).ToString() + " | ";
                             sPayloadInterpreation += "Burntime :" + Convert.ToBoolean(sMsg.ucBurnTime).ToString();
                         }
+                        break;
+                    }
+
+                case ClassMsgEnum.teMessageId.eMsgStillAlive:
+                    {
+                        sID = "Still alive";
+
+                        MsgStructureCasted.tsMsgStillAliveCS sMsg;
+                        MsgLib_GetStillAliveMessage(aucPayload, out sMsg);
+
+                        sPayloadInterpreation = "Req: " + sMsg.bRequest.ToString("X2") + " | ";
+                        sPayloadInterpreation += "Res: " + sMsg.bResponse.ToString("X2");
                         break;
                     }
 
