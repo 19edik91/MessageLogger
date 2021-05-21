@@ -43,6 +43,8 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetStillAliveMessage(byte[] ucPayloadArry, out MsgStructureCasted.tsMsgStillAliveCS psMsgStillAlive);
 
+        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MsgLib_GetErrorCode(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgErrorCode psMsgFaultMessage);
 
         string LblReqLed;
         string LblResLed;
@@ -310,6 +312,82 @@ namespace MessageLoggerForm
                 case ClassMsgEnum.teMessageId.eMsgErrorCode:
                     {
                         sID = "Error code";
+
+                        MsgStructureCasted.tsMsgErrorCode sMsg;
+                        MsgLib_GetErrorCode(aucPayload, out sMsg);
+
+                        Int32 slCode = sMsg.uiErrorCode & 0xFFFF;
+
+                        switch (slCode)
+                        {
+                            case 0x0000: sPayloadInterpreation = "eNoError"; break;
+                            case 0x1000: sPayloadInterpreation = "ePinFault"; break;
+                            case 0x1001: sPayloadInterpreation = "ePmwFault"; break;
+                            case 0x1002: sPayloadInterpreation = "eInputVoltageFault"; break;
+                            case 0x1004: sPayloadInterpreation = "eCommunicationFault"; break;
+                            case 0x1006: sPayloadInterpreation = "eMessageCrcFault"; break;
+                            case 0x1008: sPayloadInterpreation = "eOverTemperatureFault"; break;
+                            case 0x100B: sPayloadInterpreation = "eUnknownReturnValue"; break;
+                            case 0x100C: sPayloadInterpreation = "eInvalidPointerAccess"; break;
+                            case 0x1010: sPayloadInterpreation = "eFlashCRCInvalid"; break;
+                            case 0x1011: sPayloadInterpreation = "eFlashDataToBig"; break;
+                            case 0x1012: sPayloadInterpreation = "eFlashProtected"; break;
+                            case 0x1013: sPayloadInterpreation = "eFlashAddrInvalid"; break;
+                            case 0x1020: sPayloadInterpreation = "eTimerInvalidTimer"; break;
+                            case 0x1021: sPayloadInterpreation = "eTimerInvalid"; break;
+                            case 0x1022: sPayloadInterpreation = "eStateMachineError_EntryNxtState"; break;
+                            case 0x1023: sPayloadInterpreation = "eStateMachineError_RootNxtState"; break;
+                            case 0x1024: sPayloadInterpreation = "eStateMachineError_ExitNxtState"; break;
+                            case 0x1025: sPayloadInterpreation = "eStateMachineError_NoState"; break;
+                            case 0x1026: sPayloadInterpreation = "eStateMachineError_InvalidRequest"; break;
+                            case 0x1027: sPayloadInterpreation = "eSoftwareTimer_TimerLimit"; break;
+                            case 0x1028: sPayloadInterpreation = "eSoftwareTimer_InvalidRequest"; break;
+                            case 0x1029: sPayloadInterpreation = "eEventError_NotProcessed"; break;
+                            case 0xA001: sPayloadInterpreation = "eOutputVoltageFault_0"; break;
+                            case 0xA002: sPayloadInterpreation = "eOutputVoltageFault_1"; break;
+                            case 0xA003: sPayloadInterpreation = "eOutputVoltageFault_2"; break;
+                            case 0xA004: sPayloadInterpreation = "eOutputVoltageFault_3"; break;
+                            case 0xA005: sPayloadInterpreation = "eOverCurrentFault_0"; break;
+                            case 0xA006: sPayloadInterpreation = "eOverCurrentFault_1"; break;
+                            case 0xA007: sPayloadInterpreation = "eOverCurrentFault_2"; break;
+                            case 0xA008: sPayloadInterpreation = "eOverCurrentFault_3"; break;
+                            case 0xA009: sPayloadInterpreation = "eLoadMissingFault_0"; break;
+                            case 0xA00A: sPayloadInterpreation = "eLoadMissingFault_1"; break;
+                            case 0xA00B: sPayloadInterpreation = "eLoadMissingFault_2"; break;
+                            case 0xA00C: sPayloadInterpreation = "eLoadMissingFault_3"; break;
+                            case 0xA010: sPayloadInterpreation = "eOverTemperatureFault_0"; break;
+                            case 0xA011: sPayloadInterpreation = "eOverTemperatureFault_1"; break;
+                            case 0xA012: sPayloadInterpreation = "eOverTemperatureFault_2"; break;
+                            case 0xA013: sPayloadInterpreation = "eOverTemperatureFault_3"; break;
+                            case 0xA014: sPayloadInterpreation = "eCommunicationTimeoutFault"; break;
+                            default:
+                                sPayloadInterpreation = "Unknown error";
+                                break;
+                        }
+
+                        sPayloadInterpreation += " | Old Error: ";
+
+                        switch(slCode)
+                        {
+                            case 0x0000: sPayloadInterpreation += "eNoError"; break;
+                            case 0xA000: sPayloadInterpreation += "ePinFault"; break;
+                            case 0xA002: sPayloadInterpreation += "eInputVoltageFault"; break;
+                            case 0xA004: sPayloadInterpreation += "eOutputVoltageFault_0"; break;
+                            case 0xA005: sPayloadInterpreation += "eOutputVoltageFault_1"; break;
+                            case 0xA006: sPayloadInterpreation += "eOutputVoltageFault_2"; break;
+                            case 0xA008: sPayloadInterpreation += "eCommunicationFault"; break;
+                            case 0xA00A: sPayloadInterpreation += "eMessageCrcFault"; break;
+                            case 0xA00C: sPayloadInterpreation += "eOverCurrentFault_0"; break;
+                            case 0xA00D: sPayloadInterpreation += "eOverCurrentFault_1"; break;
+                            case 0xA00E: sPayloadInterpreation += "eOverCurrentFault_2"; break;
+                            case 0xA010: sPayloadInterpreation += "eLoadMissingFault_0"; break;
+                            case 0xA011: sPayloadInterpreation += "eLoadMissingFault_1"; break;
+                            case 0xA012: sPayloadInterpreation += "eLoadMissingFault_2"; break;
+                            case 0xA014: sPayloadInterpreation += "eOverTemperatureFault"; break;
+                            case 0xA016: sPayloadInterpreation += "eCommunicationTimeoutFault"; break;
+                            case 0xFFFF: sPayloadInterpreation += "eErrorListLastEntry"; break;
+                            default:    break;
+                        }
                         break;
                     }
                     

@@ -47,7 +47,6 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetMessageBufferMessageData(ref UInt16 puiMsgByteCnt, ref UInt16 puiMsgStartIdx, ref UInt16 puiMsgSize, ref UInt16 puiMsgSavedStatus, ref UInt16 puiMsgRespondRec, byte ucBufferIdx, byte ucMsgIndex);
 
-
         /****************************************************************************************************
         * Variables
         ****************************************************************************************************/

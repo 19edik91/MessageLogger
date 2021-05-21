@@ -88,5 +88,10 @@ namespace MessageLoggerForm
 	        public byte bResponse;
 	        public byte bRequest;
         };
+
+        public struct tsMsgErrorCode
+        {
+            public short uiErrorCode;
+        };
     }
 }
