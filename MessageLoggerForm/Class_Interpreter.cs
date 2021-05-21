@@ -207,7 +207,9 @@ namespace MessageLoggerForm
                             MsgStructureCasted.tMsgRequestOutputStateCS sMsg;
                             MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
 
-                            sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                            sPayloadInterpreation = "Output: " + sMsg.b3OutputIdx + " | ";
+
+                            sPayloadInterpreation += "Brightness: " + sMsg.b7Brightness + "%" + " | ";
                             LblBrightnessReq = sMsg.b7Brightness + "%";
 
                             sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
@@ -241,7 +243,9 @@ namespace MessageLoggerForm
                             MsgStructureCasted.tMsgUpdateOutputStateCS sMsg;
                             MsgLib_GetMsgUpdateOutputStatus(aucPayload, out sMsg);
 
-                            sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                            sPayloadInterpreation = "Output: " + sMsg.b3OutputIndex + " | ";
+
+                            sPayloadInterpreation += "Brightness: " + sMsg.b7Brightness + "%" + " | ";
                             LblBrightnessRes = sMsg.b7Brightness + "%";
 
                             sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
@@ -280,12 +284,13 @@ namespace MessageLoggerForm
                             MsgStructureCasted.tsMsgOutputStateResponseCS sMsg;
                             MsgLib_GetMsgOutputStatusResponse(aucPayload, out sMsg);
 
-                            sPayloadInterpreation = "Voltage: " + sMsg.uiVoltage + "mV" + " | ";
-                            LblVoltage = sMsg.uiVoltage + "mV";
+                            sPayloadInterpreation = "Output: " + sMsg.ucOutputIndex + " | ";
+                            sPayloadInterpreation += "Voltage: " + sMsg.ulVoltage + "mV" + " | ";
+                            LblVoltage = sMsg.ulVoltage + "mV";
                             sPayloadInterpreation += "Current: " + sMsg.uiCurrent + "mA" + " | ";
                             LblCurrent = sMsg.uiCurrent + "mA";
 
-                            LblPower = Convert.ToString((sMsg.uiVoltage * sMsg.uiCurrent) / 1000) + "W";
+                            LblPower = Convert.ToString((sMsg.ulVoltage * sMsg.uiCurrent) / 1000) + "W";
 
                             string Temp = Convert.ToString(sMsg.siTemperature);
                             Temp = Temp.Insert((Temp.Length - 1), ".");
@@ -375,7 +380,8 @@ namespace MessageLoggerForm
                             MsgStructureCasted.tMsgRequestOutputStateCS sMsg;
                             MsgLib_GetMsgInitOutputStatus(aucPayload, out sMsg);
 
-                            sPayloadInterpreation = "Brightness: " + sMsg.b7Brightness + "%" + " | ";
+                            sPayloadInterpreation = "Output: " + sMsg.b3OutputIdx + " | ";
+                            sPayloadInterpreation += "Brightness: " + sMsg.b7Brightness + "%" + " | ";
                             sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
                             sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
                             sPayloadInterpreation += "Night Mode: " + Convert.ToBoolean(sMsg.bNightModeOnOff).ToString() + " | ";

@@ -20,7 +20,7 @@ namespace MessageLoggerForm
             public byte bAutomaticModeActive;
             public byte bNightModeOnOff;
             public byte bMotionDetectionOnOff;
-            public byte b3Reserved;
+            public byte b3OutputIdx;
             public byte ucBurnTime; 
         };
 
@@ -28,16 +28,22 @@ namespace MessageLoggerForm
         {
             public byte b7Brightness;
             public byte bLedStatus;
+
             public byte bNightModeOnOff;
             public byte bMotionDetectionOnOff;
+            public byte bAutomaticModeOnOff;
+            public byte b3OutputIndex;
+            public byte b2Reserved;
+
             public Int32 slRemainingBurnTime;
         };
 
         public struct tsMsgOutputStateResponseCS
         {
-            public UInt16 uiVoltage;
+            public UInt32 ulVoltage;
             public UInt16 uiCurrent;
             public Int16 siTemperature;
+            public byte ucOutputIndex;
         };
 
 
@@ -64,6 +70,7 @@ namespace MessageLoggerForm
         {
             public byte bSetMinValue;
             public byte bSetMaxValue;
+            public byte ucOutputIndex;
         };
 
 

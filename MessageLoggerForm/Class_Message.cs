@@ -24,7 +24,7 @@ namespace MessageLoggerForm
         {
             public byte ucMsgId;
             public byte ucCommand;
-            public fixed byte ucData[6];
+            public fixed byte ucData[9];
         };
 
         //! Format of whole message frame
