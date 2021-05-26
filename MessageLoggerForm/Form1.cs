@@ -24,7 +24,7 @@ namespace MessageLoggerForm
         public static extern int SumVariables(int a, int b);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool MsgLib_GetMessageFrame(out Class_Message.tsMessageFrame psMessageFrame, byte ucBufferIdx);
+        public static extern byte MsgLib_GetMessageFrame(out Class_Message.tsMessageFrame psMessageFrame, IntPtr pucBuffer, byte ucBufferIdx);
 
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool MsgLib_PutDataInBuffer(byte[] pucBuffer, byte ucSize, byte ucBufferIdx);
@@ -82,6 +82,8 @@ namespace MessageLoggerForm
         string sLocCurrent = "";
         string sLocPower = "";
         string sLocTemp = "";
+
+        const bool bAppendInFile = true;
 
         /****************************************************************************************************
         * @brief: Method to enable the double buffered option
@@ -223,7 +225,7 @@ namespace MessageLoggerForm
                     sp.StopBits = StopBits.One;
                     sp.Handshake = Handshake.None;
 //                    sp.ReadBufferSize = 14;
-                    sp.ReceivedBytesThreshold = 4;
+                    sp.ReceivedBytesThreshold = 1;
                     sp.Open();
 
                     if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
@@ -411,7 +413,7 @@ namespace MessageLoggerForm
                 }
 
                 /* Save received data into text file */
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\ListView.txt", true))
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\ListView.txt", bAppendInFile))
                 {
                     file.WriteLine(localString);
                 }
@@ -505,14 +507,14 @@ namespace MessageLoggerForm
                     /* Save received data into text file */
                     if (ChkBoxLogRecData.Checked == true)
                     {
-                        string Line = DateTime.Now.ToString() + " Port: " + ucPortIndex.ToString() + " Put " + RecDataCnt.ToString() + " Bytes | ";
+                        string Line = DateTime.Now.TimeOfDay.ToString() + " Port: " + ucPortIndex.ToString() + " Put " + RecDataCnt.ToString() + " Bytes | ";
                         for (byte Idx = 0; Idx < RecDataCnt; Idx++)
                         {
                             Line += arrayRec[Idx].ToString("X2");
                         }
                         Line += " ";
                         /* Save received data into text file */
-                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Lines.txt", true))
+                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
                         {
                             file.WriteLine(Line);
                         }
@@ -520,7 +522,12 @@ namespace MessageLoggerForm
                     
                     //Put the buffer into the serial handling
                     MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length, ucPortIndex);
-                                       
+
+                    if (ChkBoxLogMsgBuffer.Checked == true)
+                    {
+                        ReadReceivedBytesFromBuffer(ucPortIndex, false);
+                    }
+
                     /* Put the whole received buffer into the text box */
                     //AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
                 }
@@ -609,15 +616,37 @@ namespace MessageLoggerForm
 
                 if ((ucPortIdx == 0 && serialPort1.IsOpen) || (ucPortIdx == 1 && serialPort2.IsOpen))
                 {
-                    if (ChkBoxLogMsgBuffer.Checked == true)
-                    {
-                        ReadReceivedBytesFromBuffer(ucPortIdx, false);
-                    }
-
                     /* When a message was constructed with the serial-handling put it into the list view */
                     Class_Message.tsMessageFrame sMsgFrame;
-                    if (MsgLib_GetMessageFrame(out sMsgFrame, ucPortIdx))
+                    byte[] aucReadByteStream = new byte[255];
+                    byte ucReadCount = 0xFF;
+
+                    fixed (byte* p = aucReadByteStream)
                     {
+                        ucReadCount = MsgLib_GetMessageFrame(out sMsgFrame, (IntPtr)p, ucPortIdx);
+                    }
+
+                    if (ucReadCount != 0xFF && ucReadCount > 0)
+                    {
+                        /* Save list view entry in text file */
+                        if (ChkBoxLogListView.Checked == true)
+                        {
+                            string localString = "Read count: " + ucReadCount.ToString() + " Buffer: ";
+
+                            for (byte ucIdx = 0; ucIdx < ucReadCount; ucIdx++)
+                            {
+                                localString += aucReadByteStream[ucIdx].ToString("X2") + " ";
+                            }
+
+                            localString += "\n";
+
+                            /* Save received data into text file */
+                            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\ListView.txt", bAppendInFile))
+                            {
+                                file.WriteLine(localString);
+                            }
+                        }
+
                         FillListView(sMsgFrame);
                     }
                 }
@@ -642,6 +671,7 @@ namespace MessageLoggerForm
 
             if (ucBuffCnt > 0)
             {
+                string szDateTime = DateTime.Now.TimeOfDay.ToString();
                 string sFifoValues = "FifoValues: " + PrintReceiveBufferHandlerValues(ucPortIdx);
                 string sMsgBuffValues = "MsgBuffValues: " + PrintMessageBufferHandlerValues(ucPortIdx);
                 string sMsgValues = "MsgValues: " + "\n";
@@ -663,10 +693,11 @@ namespace MessageLoggerForm
                 {
                     Line += arrayRec[Idx].ToString("X2") + " ";
                 }
-                Line += "\n";
+                Line += "\n\n";
 
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\TestFolder\Buffer_Lines.txt", true))
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Buffer_Lines.txt", bAppendInFile))
                 {
+                    file.WriteLine(szDateTime);
                     file.WriteLine(sFifoValues);
                     file.WriteLine(sMsgBuffValues);
                     file.WriteLine(sMsgValues);
@@ -711,7 +742,6 @@ namespace MessageLoggerForm
                 while (true)
                 {
                     byte ucBgW_Idx = (byte)e.Argument;
-
 
                     if (ucBgW_Idx == 0)
                         HandleReceivedBytes(sender);
