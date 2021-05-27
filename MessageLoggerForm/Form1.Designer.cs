@@ -51,6 +51,10 @@
             this.BtnClearListView = new System.Windows.Forms.Button();
             this.BtnResizeListView = new System.Windows.Forms.Button();
             this.grpBoardStatus = new System.Windows.Forms.GroupBox();
+            this.GrpBoxLogging = new System.Windows.Forms.GroupBox();
+            this.ChkBoxLogListView = new System.Windows.Forms.CheckBox();
+            this.ChkBoxLogMsgBuffer = new System.Windows.Forms.CheckBox();
+            this.ChkBoxLogRecData = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.LblTemperature = new System.Windows.Forms.Label();
             this.LblPower = new System.Windows.Forms.Label();
@@ -90,10 +94,7 @@
             this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.serialPort2 = new System.IO.Ports.SerialPort(this.components);
-            this.GrpBoxLogging = new System.Windows.Forms.GroupBox();
-            this.ChkBoxLogRecData = new System.Windows.Forms.CheckBox();
-            this.ChkBoxLogMsgBuffer = new System.Windows.Forms.CheckBox();
-            this.ChkBoxLogListView = new System.Windows.Forms.CheckBox();
+            this.ChkBoxUpdateListView = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -101,6 +102,7 @@
             this.tableLayoutPanel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.grpBoardStatus.SuspendLayout();
+            this.GrpBoxLogging.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabCtrlSerialInterface.SuspendLayout();
@@ -108,7 +110,6 @@
             this.grpSerialInterface1.SuspendLayout();
             this.tabPageSerial1.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.GrpBoxLogging.SuspendLayout();
             this.SuspendLayout();
             // 
             // listView1
@@ -265,7 +266,7 @@
             this.panel1.Controls.Add(this.BtnResizeListView);
             this.panel1.Location = new System.Drawing.Point(3, 637);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(225, 39);
+            this.panel1.Size = new System.Drawing.Size(243, 39);
             this.panel1.TabIndex = 2;
             // 
             // BtnClearListView
@@ -290,6 +291,7 @@
             // 
             // grpBoardStatus
             // 
+            this.grpBoardStatus.Controls.Add(this.ChkBoxUpdateListView);
             this.grpBoardStatus.Controls.Add(this.GrpBoxLogging);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
@@ -300,6 +302,48 @@
             this.grpBoardStatus.TabIndex = 5;
             this.grpBoardStatus.TabStop = false;
             this.grpBoardStatus.Text = "Board Status";
+            // 
+            // GrpBoxLogging
+            // 
+            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogListView);
+            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogMsgBuffer);
+            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogRecData);
+            this.GrpBoxLogging.Location = new System.Drawing.Point(9, 195);
+            this.GrpBoxLogging.Name = "GrpBoxLogging";
+            this.GrpBoxLogging.Size = new System.Drawing.Size(200, 100);
+            this.GrpBoxLogging.TabIndex = 2;
+            this.GrpBoxLogging.TabStop = false;
+            this.GrpBoxLogging.Text = "Logging settings";
+            // 
+            // ChkBoxLogListView
+            // 
+            this.ChkBoxLogListView.AutoSize = true;
+            this.ChkBoxLogListView.Location = new System.Drawing.Point(9, 68);
+            this.ChkBoxLogListView.Name = "ChkBoxLogListView";
+            this.ChkBoxLogListView.Size = new System.Drawing.Size(118, 17);
+            this.ChkBoxLogListView.TabIndex = 2;
+            this.ChkBoxLogListView.Text = "Log list view entries";
+            this.ChkBoxLogListView.UseVisualStyleBackColor = true;
+            // 
+            // ChkBoxLogMsgBuffer
+            // 
+            this.ChkBoxLogMsgBuffer.AutoSize = true;
+            this.ChkBoxLogMsgBuffer.Location = new System.Drawing.Point(8, 44);
+            this.ChkBoxLogMsgBuffer.Name = "ChkBoxLogMsgBuffer";
+            this.ChkBoxLogMsgBuffer.Size = new System.Drawing.Size(119, 17);
+            this.ChkBoxLogMsgBuffer.TabIndex = 1;
+            this.ChkBoxLogMsgBuffer.Text = "Log message buffer";
+            this.ChkBoxLogMsgBuffer.UseVisualStyleBackColor = true;
+            // 
+            // ChkBoxLogRecData
+            // 
+            this.ChkBoxLogRecData.AutoSize = true;
+            this.ChkBoxLogRecData.Location = new System.Drawing.Point(9, 20);
+            this.ChkBoxLogRecData.Name = "ChkBoxLogRecData";
+            this.ChkBoxLogRecData.Size = new System.Drawing.Size(112, 17);
+            this.ChkBoxLogRecData.TabIndex = 0;
+            this.ChkBoxLogRecData.Text = "Log received data";
+            this.ChkBoxLogRecData.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel2
             // 
@@ -728,47 +772,17 @@
             this.serialPort2.ReadBufferSize = 2048;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort2_DataReceived);
             // 
-            // GrpBoxLogging
+            // ChkBoxUpdateListView
             // 
-            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogListView);
-            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogMsgBuffer);
-            this.GrpBoxLogging.Controls.Add(this.ChkBoxLogRecData);
-            this.GrpBoxLogging.Location = new System.Drawing.Point(9, 195);
-            this.GrpBoxLogging.Name = "GrpBoxLogging";
-            this.GrpBoxLogging.Size = new System.Drawing.Size(200, 100);
-            this.GrpBoxLogging.TabIndex = 2;
-            this.GrpBoxLogging.TabStop = false;
-            this.GrpBoxLogging.Text = "Logging settings";
-            // 
-            // ChkBoxLogRecData
-            // 
-            this.ChkBoxLogRecData.AutoSize = true;
-            this.ChkBoxLogRecData.Location = new System.Drawing.Point(9, 20);
-            this.ChkBoxLogRecData.Name = "ChkBoxLogRecData";
-            this.ChkBoxLogRecData.Size = new System.Drawing.Size(112, 17);
-            this.ChkBoxLogRecData.TabIndex = 0;
-            this.ChkBoxLogRecData.Text = "Log received data";
-            this.ChkBoxLogRecData.UseVisualStyleBackColor = true;
-            // 
-            // ChkBoxLogMsgBuffer
-            // 
-            this.ChkBoxLogMsgBuffer.AutoSize = true;
-            this.ChkBoxLogMsgBuffer.Location = new System.Drawing.Point(8, 44);
-            this.ChkBoxLogMsgBuffer.Name = "ChkBoxLogMsgBuffer";
-            this.ChkBoxLogMsgBuffer.Size = new System.Drawing.Size(119, 17);
-            this.ChkBoxLogMsgBuffer.TabIndex = 1;
-            this.ChkBoxLogMsgBuffer.Text = "Log message buffer";
-            this.ChkBoxLogMsgBuffer.UseVisualStyleBackColor = true;
-            // 
-            // ChkBoxLogListView
-            // 
-            this.ChkBoxLogListView.AutoSize = true;
-            this.ChkBoxLogListView.Location = new System.Drawing.Point(9, 68);
-            this.ChkBoxLogListView.Name = "ChkBoxLogListView";
-            this.ChkBoxLogListView.Size = new System.Drawing.Size(118, 17);
-            this.ChkBoxLogListView.TabIndex = 2;
-            this.ChkBoxLogListView.Text = "Log list view entries";
-            this.ChkBoxLogListView.UseVisualStyleBackColor = true;
+            this.ChkBoxUpdateListView.AutoSize = true;
+            this.ChkBoxUpdateListView.Checked = true;
+            this.ChkBoxUpdateListView.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ChkBoxUpdateListView.Location = new System.Drawing.Point(9, 301);
+            this.ChkBoxUpdateListView.Name = "ChkBoxUpdateListView";
+            this.ChkBoxUpdateListView.Size = new System.Drawing.Size(103, 17);
+            this.ChkBoxUpdateListView.TabIndex = 8;
+            this.ChkBoxUpdateListView.Text = "Update ListView";
+            this.ChkBoxUpdateListView.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -785,6 +799,9 @@
             this.tableLayoutPanel4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.grpBoardStatus.ResumeLayout(false);
+            this.grpBoardStatus.PerformLayout();
+            this.GrpBoxLogging.ResumeLayout(false);
+            this.GrpBoxLogging.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -796,8 +813,6 @@
             this.tabPageSerial1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.GrpBoxLogging.ResumeLayout(false);
-            this.GrpBoxLogging.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -869,6 +884,7 @@
         private System.Windows.Forms.CheckBox ChkBoxLogListView;
         private System.Windows.Forms.CheckBox ChkBoxLogMsgBuffer;
         private System.Windows.Forms.CheckBox ChkBoxLogRecData;
+        private System.Windows.Forms.CheckBox ChkBoxUpdateListView;
     }
 }
 
