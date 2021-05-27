@@ -95,6 +95,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.serialPort2 = new System.IO.Ports.SerialPort(this.components);
             this.ChkBoxUpdateListView = new System.Windows.Forms.CheckBox();
+            this.ChkBoxShowACK = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -291,6 +292,7 @@
             // 
             // grpBoardStatus
             // 
+            this.grpBoardStatus.Controls.Add(this.ChkBoxShowACK);
             this.grpBoardStatus.Controls.Add(this.ChkBoxUpdateListView);
             this.grpBoardStatus.Controls.Add(this.GrpBoxLogging);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
@@ -358,7 +360,7 @@
             this.tableLayoutPanel2.Controls.Add(this.label4, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.LblVoltage, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.label5, 0, 3);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(9, 332);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(9, 364);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -784,6 +786,18 @@
             this.ChkBoxUpdateListView.Text = "Update ListView";
             this.ChkBoxUpdateListView.UseVisualStyleBackColor = true;
             // 
+            // ChkBoxShowACK
+            // 
+            this.ChkBoxShowACK.AutoSize = true;
+            this.ChkBoxShowACK.Checked = true;
+            this.ChkBoxShowACK.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ChkBoxShowACK.Location = new System.Drawing.Point(9, 324);
+            this.ChkBoxShowACK.Name = "ChkBoxShowACK";
+            this.ChkBoxShowACK.Size = new System.Drawing.Size(121, 17);
+            this.ChkBoxShowACK.TabIndex = 9;
+            this.ChkBoxShowACK.Text = "Show Acknowledge";
+            this.ChkBoxShowACK.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -885,6 +899,7 @@
         private System.Windows.Forms.CheckBox ChkBoxLogMsgBuffer;
         private System.Windows.Forms.CheckBox ChkBoxLogRecData;
         private System.Windows.Forms.CheckBox ChkBoxUpdateListView;
+        private System.Windows.Forms.CheckBox ChkBoxShowACK;
     }
 }
 
