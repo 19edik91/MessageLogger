@@ -413,9 +413,9 @@ namespace MessageLoggerForm
             //asMsgArray[5] = Interpreter.InteprateType(sMsgFrame.sHeader.ucMsgType);
 
             /* Get the payload */
-            byte[] aucPayloadCpy = new byte[6];
+            byte[] aucPayloadCpy = new byte[Class_Message.DATA_MAX_SIZE];
 
-            for(byte ucPayloadIdx = 0; ucPayloadIdx < 6; ucPayloadIdx++)
+            for(byte ucPayloadIdx = 0; ucPayloadIdx < Class_Message.DATA_MAX_SIZE; ucPayloadIdx++)
             {
                 asMsgArray[6] += sMsgFrame.sPayload.ucData[ucPayloadIdx].ToString("X2") + " ";
                 aucPayloadCpy[ucPayloadIdx] = sMsgFrame.sPayload.ucData[ucPayloadIdx];
@@ -431,22 +431,26 @@ namespace MessageLoggerForm
             /* Create new list view item to enable the adding */
             ListViewItem lvItem = new ListViewItem(asMsgArray);
 
-            /* Call per invoke to put the item to the list view */
-            this.Invoke((MethodInvoker) delegate
+            /* Check if list view shall be updated */
+            if (ChkBoxUpdateListView.Checked == true)
             {
-                LblLedStatusReq.Text = sLocReqLed;
-                LblLedStatusResp.Text = sLocResLed;
-                LblBrightnessReq.Text = sLocBrightnessReq;
-                LblBrightnessResp.Text = sLocBrightnessRes;
-                LblAutomaticModeReq.Text = sLocAutoReq;
-                LblAutomaticModeRes.Text = sLocAutoRes;
-                LblVoltage.Text = sLocVoltage;
-                LblCurrent.Text = sLocCurrent;
-                LblPower.Text = sLocPower;
-                LblTemperature.Text = sLocTemp;
+                /* Call per invoke to put the item to the list view */
+                this.Invoke((MethodInvoker)delegate
+               {
+                   LblLedStatusReq.Text = sLocReqLed;
+                   LblLedStatusResp.Text = sLocResLed;
+                   LblBrightnessReq.Text = sLocBrightnessReq;
+                   LblBrightnessResp.Text = sLocBrightnessRes;
+                   LblAutomaticModeReq.Text = sLocAutoReq;
+                   LblAutomaticModeRes.Text = sLocAutoRes;
+                   LblVoltage.Text = sLocVoltage;
+                   LblCurrent.Text = sLocCurrent;
+                   LblPower.Text = sLocPower;
+                   LblTemperature.Text = sLocTemp;
 
-                listView1.Items.Insert(0, lvItem);
-            });
+                   listView1.Items.Insert(0, lvItem);
+               });
+            }
 
             /* Save list view entry in text file */
             if(ChkBoxLogListView.Checked == true)
