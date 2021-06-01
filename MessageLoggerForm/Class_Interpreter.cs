@@ -46,16 +46,6 @@ namespace MessageLoggerForm
         [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void MsgLib_GetErrorCode(byte[] ucPayloadArray, out MsgStructureCasted.tsMsgErrorCode psMsgFaultMessage);
 
-        string LblReqLed;
-        string LblResLed;
-        string LblBrightnessReq;
-        string LblBrightnessRes;
-        string LblAutoReq;
-        string LblAutoRes;
-        string LblVoltage;
-        string LblCurrent;
-        string LblPower;
-        string LblTemp;
 
         /****************************************************
          * @brief: Standard constructor for this class
@@ -64,47 +54,6 @@ namespace MessageLoggerForm
          ***************************************************/
         public Class_Interpreter()
         {
-            
-        }
-
-        /****************************************************
-         * @brief: Standard constructor for this class
-         * @param: none
-         * @return: none
-         ***************************************************/
-        public Class_Interpreter(ref string LblReqLed, ref string LblResLed, ref string LblBrightnessReq, ref string LblBrightnessRes, ref string LblAutoReq,
-                                 ref string LblAutoRes, ref string LblVoltage, ref string LblCurrent, ref string LblPower, ref string LblTemp)
-        {
-            this.LblReqLed = LblReqLed;
-            this.LblResLed = LblResLed;
-            this.LblBrightnessReq = LblBrightnessReq;
-            this.LblBrightnessRes = LblBrightnessRes;
-            this.LblAutoReq = LblAutoReq;
-            this.LblAutoRes = LblAutoRes;
-            this.LblVoltage = LblVoltage;
-            this.LblCurrent = LblCurrent;
-            this.LblPower = LblPower;
-            this.LblTemp = LblTemp;
-        }
-
-        /****************************************************
-         * @brief: Standard constructor for this class
-         * @param: none
-         * @return: none
-         ***************************************************/
-        public void GetLables(ref string LblReqLed, ref string LblResLed, ref string LblBrightnessReq, ref string LblBrightnessRes, ref string LblAutoReq,
-                                 ref string LblAutoRes, ref string LblVoltage, ref string LblCurrent, ref string LblPower, ref string LblTemp)
-        {
-            LblReqLed        = this.LblReqLed;
-            LblResLed        = this.LblResLed;
-            LblBrightnessReq = this.LblBrightnessReq;  
-            LblBrightnessRes = this.LblBrightnessRes;  
-            LblAutoReq       = this.LblAutoReq;   
-            LblAutoRes       = this.LblAutoRes;   
-            LblVoltage       = this.LblVoltage;  
-            LblCurrent       = this.LblCurrent;  
-            LblPower         = this.LblPower; 
-            LblTemp          = this.LblTemp; 
         }
 
         /****************************************************
@@ -210,15 +159,16 @@ namespace MessageLoggerForm
                             MsgLib_GetMsgOutputStatus(aucPayload, out sMsg);
 
                             sPayloadInterpreation = "Output: " + sMsg.b3OutputIdx + " | ";
-
                             sPayloadInterpreation += "Brightness: " + sMsg.b7Brightness + "%" + " | ";
-                            LblBrightnessReq = sMsg.b7Brightness + "%";
-
                             sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
-                            LblReqLed = Convert.ToBoolean(sMsg.bLedStatus) ? "ON" : "OFF";
-
                             sPayloadInterpreation += "Automatic Mode: " + Convert.ToBoolean(sMsg.bAutomaticModeActive).ToString() + " | ";
-                            LblAutoReq = Convert.ToBoolean(sMsg.bAutomaticModeActive) ? "ON" : "OFF";
+
+                            if (sMsg.b3OutputIdx < Form1.ucUsedLables)
+                            {
+                                Form1._labels[sMsg.b3OutputIdx].szBrightnessReq = sMsg.b7Brightness + "%";
+                                Form1._labels[sMsg.b3OutputIdx].szReqLed = Convert.ToBoolean(sMsg.bLedStatus) ? "ON" : "OFF";
+                                Form1._labels[sMsg.b3OutputIdx].szAutoReq = Convert.ToBoolean(sMsg.bAutomaticModeActive) ? "ON" : "OFF";
+                            }
 
                             if (Convert.ToBoolean(sMsg.bInitMenuActive) == true && Convert.ToBoolean(sMsg.bInitMenuActiveInv) == false)
                             {
@@ -246,14 +196,16 @@ namespace MessageLoggerForm
                             MsgLib_GetMsgUpdateOutputStatus(aucPayload, out sMsg);
 
                             sPayloadInterpreation = "Output: " + sMsg.b3OutputIndex + " | ";
-
                             sPayloadInterpreation += "Brightness: " + sMsg.b7Brightness + "%" + " | ";
-                            LblBrightnessRes = sMsg.b7Brightness + "%";
-
                             sPayloadInterpreation += "LED-Status: " + Convert.ToBoolean(sMsg.bLedStatus).ToString() + " | ";
-                            LblResLed = Convert.ToBoolean(sMsg.bLedStatus) ? "ON" : "OFF";
 
-                            LblAutoRes = "N/A";
+                            if(sMsg.b3OutputIndex < Form1.ucUsedLables)
+                            {
+                                Form1._labels[sMsg.b3OutputIndex].szBrightnessRes = sMsg.b7Brightness + "%";
+                                Form1._labels[sMsg.b3OutputIndex].szResLed = Convert.ToBoolean(sMsg.bLedStatus) ? "ON" : "OFF";
+                                Form1._labels[sMsg.b3OutputIndex].szAutoRes = "N/A";
+                            }
+
                             sPayloadInterpreation += "Nightmode: " + Convert.ToBoolean(sMsg.bNightModeOnOff).ToString() + " | ";
                             sPayloadInterpreation += "PIR detected: " + Convert.ToBoolean(sMsg.bMotionDetectionOnOff).ToString() + " | ";
                             sPayloadInterpreation += "Burn time: " + sMsg.slRemainingBurnTime;
@@ -287,18 +239,19 @@ namespace MessageLoggerForm
                             MsgLib_GetMsgOutputStatusResponse(aucPayload, out sMsg);
 
                             sPayloadInterpreation = "Output: " + sMsg.ucOutputIndex + " | ";
-                            sPayloadInterpreation += "Voltage: " + sMsg.ulVoltage + "mV" + " | ";
-                            LblVoltage = sMsg.ulVoltage + "mV";
+                            sPayloadInterpreation += "Voltage: " + sMsg.ulVoltage + "mV" + " | ";                            
                             sPayloadInterpreation += "Current: " + sMsg.uiCurrent + "mA" + " | ";
-                            LblCurrent = sMsg.uiCurrent + "mA";
-
-                            LblPower = Convert.ToString((sMsg.ulVoltage * sMsg.uiCurrent) / 1000) + "W";
-
                             string Temp = Convert.ToString(sMsg.siTemperature);
                             Temp = Temp.Insert((Temp.Length - 1), ".");
                             sPayloadInterpreation += "Temp: " + Temp + "°C";
-                            LblTemp = Temp + "°C";
 
+                            if (sMsg.ucOutputIndex < Form1.ucUsedLables)
+                            {
+                                Form1._labels[sMsg.ucOutputIndex].szCurrent = sMsg.uiCurrent + "mA";
+                                Form1._labels[sMsg.ucOutputIndex].szVoltage = sMsg.ulVoltage + "mV";
+                                Form1._labels[sMsg.ucOutputIndex].szPower = Convert.ToString((sMsg.ulVoltage * sMsg.uiCurrent) / 1000) + "W";
+                                Form1._labels[sMsg.ucOutputIndex].szTemp = Temp + "°C";
+                            }
                         }
                         break;
                     }

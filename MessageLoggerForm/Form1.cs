@@ -54,6 +54,7 @@ namespace MessageLoggerForm
         ****************************************************************************************************/
         const UInt16 uiBaudRate = 38400;
         //const int uiBaudRate = 115200;
+        public const byte ucUsedLables = 4;
 
         //Messages
         private UInt32 ulMsgIdxCnt = 0;
@@ -74,16 +75,7 @@ namespace MessageLoggerForm
         private BackgroundWorker[] backgroundWorkersArr;
 
         Class_Interpreter _interpreter;
-        string sLocReqLed = "";
-        string sLocResLed = "";
-        string sLocBrightnessReq = "";
-        string sLocBrightnessRes = "";
-        string sLocAutoReq = "";
-        string sLocAutoRes = "";
-        string sLocVoltage = "";
-        string sLocCurrent = "";
-        string sLocPower = "";
-        string sLocTemp = "";
+        public static Class_Lables[] _labels;
 
         const bool bAppendInFile = true;
 
@@ -131,9 +123,18 @@ namespace MessageLoggerForm
             //Initialize Background worker
             InitializeBackgroundWorker();
 
+            //Initialize lables class
+            _labels = new Class_Lables[ucUsedLables];
+
+            for(byte ucIdx = 0; ucIdx < ucUsedLables; ucIdx++)
+            {
+                _labels[ucIdx] = new Class_Lables();
+            }
+
             //Initialize interpreter
-            _interpreter = new Class_Interpreter(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq,
-                                                                   ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
+            //_interpreter = new Class_Interpreter(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq,
+            //                                                       ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
+            _interpreter = new Class_Interpreter();
         }
 
         /****************************************************************************************************
@@ -426,7 +427,7 @@ namespace MessageLoggerForm
 
             //Interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
             _interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
-            _interpreter.GetLables(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq, ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
+            //_interpreter.GetLables(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq, ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
 
             /* Create new list view item to enable the adding */
             ListViewItem lvItem = new ListViewItem(asMsgArray);
@@ -443,16 +444,60 @@ namespace MessageLoggerForm
                     /* Call per invoke to put the item to the list view */
                     this.Invoke((MethodInvoker)delegate
                    {
-                       LblLedStatusReq.Text = sLocReqLed;
-                       LblLedStatusResp.Text = sLocResLed;
-                       LblBrightnessReq.Text = sLocBrightnessReq;
-                       LblBrightnessResp.Text = sLocBrightnessRes;
-                       LblAutomaticModeReq.Text = sLocAutoReq;
-                       LblAutomaticModeRes.Text = sLocAutoRes;
-                       LblVoltage.Text = sLocVoltage;
-                       LblCurrent.Text = sLocCurrent;
-                       LblPower.Text = sLocPower;
-                       LblTemperature.Text = sLocTemp;
+                       for (byte ucLblIdx = 0; ucLblIdx < ucUsedLables; ucLblIdx++)
+                       {
+                           LblLedStatusReq.Text = _labels[ucLblIdx].szReqLed; ;
+                           LblLedStatusResp.Text = _labels[ucLblIdx].szResLed;
+                           LblBrightnessReq.Text = _labels[ucLblIdx].szBrightnessReq;
+                           LblBrightnessResp.Text = _labels[ucLblIdx].szBrightnessRes;
+                           LblAutomaticModeReq.Text = _labels[ucLblIdx].szAutoReq;
+                           LblAutomaticModeRes.Text = _labels[ucLblIdx].szAutoRes;
+
+                           switch (ucLblIdx)
+                           {
+                                case 0:
+                                {
+                                    LblVoltage_0.Text = _labels[ucLblIdx].szVoltage;
+                                    LblCurrent_0.Text = _labels[ucLblIdx].szCurrent;
+                                    LblPower_0.Text = _labels[ucLblIdx].szPower;
+                                    LblTemperature_0.Text = _labels[ucLblIdx].szTemp;
+                                    break;
+                                }
+
+                               case 1:
+                                {
+                                    LblVoltage_1.Text = _labels[ucLblIdx].szVoltage;
+                                    LblCurrent_1.Text = _labels[ucLblIdx].szCurrent;
+                                    LblPower_1.Text = _labels[ucLblIdx].szPower;
+                                    LblTemperature_1.Text = _labels[ucLblIdx].szTemp;
+                                    break;
+                                }
+
+                               case 2:
+                                {
+                                    LblVoltage_2.Text = _labels[ucLblIdx].szVoltage;
+                                    LblCurrent_2.Text = _labels[ucLblIdx].szCurrent;
+                                    LblPower_2.Text = _labels[ucLblIdx].szPower;
+                                    LblTemperature_2.Text = _labels[ucLblIdx].szTemp;
+                                    break;
+                                }
+                               default:
+                                   break;
+                           }
+                       }
+
+                       //LblLedStatusReq.Text = sLocReqLed;
+                       //LblLedStatusResp.Text = sLocResLed;
+                       //LblBrightnessReq.Text = sLocBrightnessReq;
+                       //LblBrightnessResp.Text = sLocBrightnessRes;
+                       //LblAutomaticModeReq.Text = sLocAutoReq;
+                       //LblAutomaticModeRes.Text = sLocAutoRes;
+                       //
+                       //
+                       //LblVoltage_0.Text = sLocVoltage;
+                       //LblCurrent_0.Text = sLocCurrent;
+                       //LblPower_0.Text = sLocPower;
+                       //LblTemperature_0.Text = sLocTemp;
 
                        listView1.Items.Insert(0, lvItem);
                    });

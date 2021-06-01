@@ -51,19 +51,23 @@
             this.BtnClearListView = new System.Windows.Forms.Button();
             this.BtnResizeListView = new System.Windows.Forms.Button();
             this.grpBoardStatus = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.LblTemperature_0 = new System.Windows.Forms.Label();
+            this.LblPower_0 = new System.Windows.Forms.Label();
+            this.LblCurrent_0 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.LblVoltage_0 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.ChkBoxShowACK = new System.Windows.Forms.CheckBox();
+            this.ChkBoxUpdateListView = new System.Windows.Forms.CheckBox();
             this.GrpBoxLogging = new System.Windows.Forms.GroupBox();
             this.ChkBoxLogListView = new System.Windows.Forms.CheckBox();
             this.ChkBoxLogMsgBuffer = new System.Windows.Forms.CheckBox();
             this.ChkBoxLogRecData = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.LblTemperature = new System.Windows.Forms.Label();
-            this.LblPower = new System.Windows.Forms.Label();
-            this.LblCurrent = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.LblVoltage = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.LblAutomaticModeRes = new System.Windows.Forms.Label();
             this.LblAutomaticModeReq = new System.Windows.Forms.Label();
@@ -94,8 +98,16 @@
             this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.serialPort2 = new System.IO.Ports.SerialPort(this.components);
-            this.ChkBoxUpdateListView = new System.Windows.Forms.CheckBox();
-            this.ChkBoxShowACK = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.LblVoltage_1 = new System.Windows.Forms.Label();
+            this.LblVoltage_2 = new System.Windows.Forms.Label();
+            this.LblCurrent_1 = new System.Windows.Forms.Label();
+            this.LblCurrent_2 = new System.Windows.Forms.Label();
+            this.LblPower_2 = new System.Windows.Forms.Label();
+            this.LblPower_1 = new System.Windows.Forms.Label();
+            this.LblTemperature_1 = new System.Windows.Forms.Label();
+            this.LblTemperature_2 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -103,8 +115,9 @@
             this.tableLayoutPanel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.grpBoardStatus.SuspendLayout();
-            this.GrpBoxLogging.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.GrpBoxLogging.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabCtrlSerialInterface.SuspendLayout();
             this.tabPageSerial0.SuspendLayout();
@@ -132,7 +145,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 3);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1030, 648);
+            this.listView1.Size = new System.Drawing.Size(1088, 729);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -191,7 +204,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1044, 680);
+            this.tabControl1.Size = new System.Drawing.Size(1102, 761);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
@@ -200,7 +213,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1036, 654);
+            this.tabPage1.Size = new System.Drawing.Size(1094, 735);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Messages";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -211,7 +224,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1036, 654);
+            this.tabPage2.Size = new System.Drawing.Size(1094, 735);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Serial Data";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -242,7 +255,7 @@
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(1313, 686);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1386, 767);
             this.tableLayoutPanel3.TabIndex = 6;
             // 
             // tableLayoutPanel4
@@ -252,20 +265,20 @@
             this.tableLayoutPanel4.Controls.Add(this.panel1, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.grpBoardStatus, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.tabCtrlSerialInterface, 0, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(1053, 3);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(1111, 3);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 3;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(249, 680);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(272, 752);
             this.tableLayoutPanel4.TabIndex = 8;
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.BtnClearListView);
             this.panel1.Controls.Add(this.BtnResizeListView);
-            this.panel1.Location = new System.Drawing.Point(3, 637);
+            this.panel1.Location = new System.Drawing.Point(3, 709);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(243, 39);
             this.panel1.TabIndex = 2;
@@ -292,18 +305,181 @@
             // 
             // grpBoardStatus
             // 
+            this.grpBoardStatus.Controls.Add(this.groupBox2);
             this.grpBoardStatus.Controls.Add(this.ChkBoxShowACK);
             this.grpBoardStatus.Controls.Add(this.ChkBoxUpdateListView);
             this.grpBoardStatus.Controls.Add(this.GrpBoxLogging);
-            this.grpBoardStatus.Controls.Add(this.tableLayoutPanel2);
             this.grpBoardStatus.Controls.Add(this.tableLayoutPanel1);
             this.grpBoardStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpBoardStatus.Location = new System.Drawing.Point(3, 161);
+            this.grpBoardStatus.Location = new System.Drawing.Point(3, 179);
             this.grpBoardStatus.Name = "grpBoardStatus";
-            this.grpBoardStatus.Size = new System.Drawing.Size(243, 470);
+            this.grpBoardStatus.Size = new System.Drawing.Size(266, 524);
             this.grpBoardStatus.TabIndex = 5;
             this.grpBoardStatus.TabStop = false;
             this.grpBoardStatus.Text = "Board Status";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.tableLayoutPanel2);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupBox2.Location = new System.Drawing.Point(3, 373);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(260, 148);
+            this.groupBox2.TabIndex = 10;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Outputs";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.Controls.Add(this.LblTemperature_0, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.LblPower_0, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.LblCurrent_0, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label2, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label3, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.LblVoltage_0, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.label6, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label7, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label9, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.LblVoltage_1, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.LblVoltage_2, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.LblCurrent_1, 2, 2);
+            this.tableLayoutPanel2.Controls.Add(this.LblCurrent_2, 3, 2);
+            this.tableLayoutPanel2.Controls.Add(this.LblPower_2, 3, 3);
+            this.tableLayoutPanel2.Controls.Add(this.LblPower_1, 2, 3);
+            this.tableLayoutPanel2.Controls.Add(this.LblTemperature_1, 2, 4);
+            this.tableLayoutPanel2.Controls.Add(this.LblTemperature_2, 3, 4);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33332F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(254, 129);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // LblTemperature_0
+            // 
+            this.LblTemperature_0.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblTemperature_0.AutoSize = true;
+            this.LblTemperature_0.Location = new System.Drawing.Point(128, 110);
+            this.LblTemperature_0.Name = "LblTemperature_0";
+            this.LblTemperature_0.Size = new System.Drawing.Size(24, 13);
+            this.LblTemperature_0.TabIndex = 12;
+            this.LblTemperature_0.Text = "0°C";
+            // 
+            // LblPower_0
+            // 
+            this.LblPower_0.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblPower_0.AutoSize = true;
+            this.LblPower_0.Location = new System.Drawing.Point(128, 88);
+            this.LblPower_0.Name = "LblPower_0";
+            this.LblPower_0.Size = new System.Drawing.Size(24, 13);
+            this.LblPower_0.TabIndex = 11;
+            this.LblPower_0.Text = "0W";
+            // 
+            // LblCurrent_0
+            // 
+            this.LblCurrent_0.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblCurrent_0.AutoSize = true;
+            this.LblCurrent_0.Location = new System.Drawing.Point(130, 67);
+            this.LblCurrent_0.Name = "LblCurrent_0";
+            this.LblCurrent_0.Size = new System.Drawing.Size(20, 13);
+            this.LblCurrent_0.TabIndex = 10;
+            this.LblCurrent_0.Text = "0A";
+            // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(39, 46);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Voltage";
+            // 
+            // label3
+            // 
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(40, 67);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Current";
+            // 
+            // label4
+            // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(42, 88);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(37, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Power";
+            // 
+            // LblVoltage_0
+            // 
+            this.LblVoltage_0.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblVoltage_0.AutoSize = true;
+            this.LblVoltage_0.Location = new System.Drawing.Point(130, 46);
+            this.LblVoltage_0.Name = "LblVoltage_0";
+            this.LblVoltage_0.Size = new System.Drawing.Size(20, 13);
+            this.LblVoltage_0.TabIndex = 9;
+            this.LblVoltage_0.Text = "0V";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(27, 110);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(67, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Temperature";
+            // 
+            // label6
+            // 
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(124, 14);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(33, 13);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Out 0";
+            // 
+            // ChkBoxShowACK
+            // 
+            this.ChkBoxShowACK.AutoSize = true;
+            this.ChkBoxShowACK.Checked = true;
+            this.ChkBoxShowACK.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ChkBoxShowACK.Location = new System.Drawing.Point(9, 324);
+            this.ChkBoxShowACK.Name = "ChkBoxShowACK";
+            this.ChkBoxShowACK.Size = new System.Drawing.Size(121, 17);
+            this.ChkBoxShowACK.TabIndex = 9;
+            this.ChkBoxShowACK.Text = "Show Acknowledge";
+            this.ChkBoxShowACK.UseVisualStyleBackColor = true;
+            // 
+            // ChkBoxUpdateListView
+            // 
+            this.ChkBoxUpdateListView.AutoSize = true;
+            this.ChkBoxUpdateListView.Checked = true;
+            this.ChkBoxUpdateListView.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ChkBoxUpdateListView.Location = new System.Drawing.Point(9, 301);
+            this.ChkBoxUpdateListView.Name = "ChkBoxUpdateListView";
+            this.ChkBoxUpdateListView.Size = new System.Drawing.Size(103, 17);
+            this.ChkBoxUpdateListView.TabIndex = 8;
+            this.ChkBoxUpdateListView.Text = "Update ListView";
+            this.ChkBoxUpdateListView.UseVisualStyleBackColor = true;
             // 
             // GrpBoxLogging
             // 
@@ -346,109 +522,6 @@
             this.ChkBoxLogRecData.TabIndex = 0;
             this.ChkBoxLogRecData.Text = "Log received data";
             this.ChkBoxLogRecData.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.LblTemperature, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.LblPower, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.LblCurrent, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label3, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.LblVoltage, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 3);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(9, 364);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(200, 100);
-            this.tableLayoutPanel2.TabIndex = 1;
-            // 
-            // LblTemperature
-            // 
-            this.LblTemperature.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblTemperature.AutoSize = true;
-            this.LblTemperature.Location = new System.Drawing.Point(138, 81);
-            this.LblTemperature.Name = "LblTemperature";
-            this.LblTemperature.Size = new System.Drawing.Size(24, 13);
-            this.LblTemperature.TabIndex = 12;
-            this.LblTemperature.Text = "0°C";
-            // 
-            // LblPower
-            // 
-            this.LblPower.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblPower.AutoSize = true;
-            this.LblPower.Location = new System.Drawing.Point(138, 56);
-            this.LblPower.Name = "LblPower";
-            this.LblPower.Size = new System.Drawing.Size(24, 13);
-            this.LblPower.TabIndex = 11;
-            this.LblPower.Text = "0W";
-            // 
-            // LblCurrent
-            // 
-            this.LblCurrent.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblCurrent.AutoSize = true;
-            this.LblCurrent.Location = new System.Drawing.Point(140, 31);
-            this.LblCurrent.Name = "LblCurrent";
-            this.LblCurrent.Size = new System.Drawing.Size(20, 13);
-            this.LblCurrent.TabIndex = 10;
-            this.LblCurrent.Text = "0A";
-            // 
-            // label2
-            // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(28, 6);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Voltage";
-            // 
-            // label3
-            // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(29, 31);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Current";
-            // 
-            // label4
-            // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(31, 56);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(37, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Power";
-            // 
-            // LblVoltage
-            // 
-            this.LblVoltage.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblVoltage.AutoSize = true;
-            this.LblVoltage.Location = new System.Drawing.Point(140, 6);
-            this.LblVoltage.Name = "LblVoltage";
-            this.LblVoltage.Size = new System.Drawing.Size(20, 13);
-            this.LblVoltage.TabIndex = 9;
-            this.LblVoltage.Text = "0V";
-            // 
-            // label5
-            // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 81);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(67, 13);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Temperature";
             // 
             // tableLayoutPanel1
             // 
@@ -597,7 +670,7 @@
             this.tabCtrlSerialInterface.Location = new System.Drawing.Point(3, 3);
             this.tabCtrlSerialInterface.Name = "tabCtrlSerialInterface";
             this.tabCtrlSerialInterface.SelectedIndex = 0;
-            this.tabCtrlSerialInterface.Size = new System.Drawing.Size(243, 152);
+            this.tabCtrlSerialInterface.Size = new System.Drawing.Size(266, 170);
             this.tabCtrlSerialInterface.TabIndex = 8;
             // 
             // tabPageSerial0
@@ -606,7 +679,7 @@
             this.tabPageSerial0.Location = new System.Drawing.Point(4, 22);
             this.tabPageSerial0.Name = "tabPageSerial0";
             this.tabPageSerial0.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSerial0.Size = new System.Drawing.Size(235, 126);
+            this.tabPageSerial0.Size = new System.Drawing.Size(258, 144);
             this.tabPageSerial0.TabIndex = 0;
             this.tabPageSerial0.Text = "Serial 1";
             this.tabPageSerial0.UseVisualStyleBackColor = true;
@@ -622,7 +695,7 @@
             this.grpSerialInterface1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpSerialInterface1.Location = new System.Drawing.Point(3, 3);
             this.grpSerialInterface1.Name = "grpSerialInterface1";
-            this.grpSerialInterface1.Size = new System.Drawing.Size(229, 120);
+            this.grpSerialInterface1.Size = new System.Drawing.Size(252, 138);
             this.grpSerialInterface1.TabIndex = 7;
             this.grpSerialInterface1.TabStop = false;
             this.grpSerialInterface1.Text = "Serial Interface 1";
@@ -690,7 +763,7 @@
             this.tabPageSerial1.Location = new System.Drawing.Point(4, 22);
             this.tabPageSerial1.Name = "tabPageSerial1";
             this.tabPageSerial1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSerial1.Size = new System.Drawing.Size(235, 126);
+            this.tabPageSerial1.Size = new System.Drawing.Size(235, 144);
             this.tabPageSerial1.TabIndex = 1;
             this.tabPageSerial1.Text = "Serial 2";
             this.tabPageSerial1.UseVisualStyleBackColor = true;
@@ -706,7 +779,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(229, 120);
+            this.groupBox1.Size = new System.Drawing.Size(229, 138);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Serial Interface 2";
@@ -774,35 +847,111 @@
             this.serialPort2.ReadBufferSize = 2048;
             this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort2_DataReceived);
             // 
-            // ChkBoxUpdateListView
+            // label7
             // 
-            this.ChkBoxUpdateListView.AutoSize = true;
-            this.ChkBoxUpdateListView.Checked = true;
-            this.ChkBoxUpdateListView.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ChkBoxUpdateListView.Location = new System.Drawing.Point(9, 301);
-            this.ChkBoxUpdateListView.Name = "ChkBoxUpdateListView";
-            this.ChkBoxUpdateListView.Size = new System.Drawing.Size(103, 17);
-            this.ChkBoxUpdateListView.TabIndex = 8;
-            this.ChkBoxUpdateListView.Text = "Update ListView";
-            this.ChkBoxUpdateListView.UseVisualStyleBackColor = true;
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(167, 14);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(33, 13);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Out 1";
             // 
-            // ChkBoxShowACK
+            // label9
             // 
-            this.ChkBoxShowACK.AutoSize = true;
-            this.ChkBoxShowACK.Checked = true;
-            this.ChkBoxShowACK.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ChkBoxShowACK.Location = new System.Drawing.Point(9, 324);
-            this.ChkBoxShowACK.Name = "ChkBoxShowACK";
-            this.ChkBoxShowACK.Size = new System.Drawing.Size(121, 17);
-            this.ChkBoxShowACK.TabIndex = 9;
-            this.ChkBoxShowACK.Text = "Show Acknowledge";
-            this.ChkBoxShowACK.UseVisualStyleBackColor = true;
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(214, 14);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(33, 13);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "Out 2";
+            // 
+            // LblVoltage_1
+            // 
+            this.LblVoltage_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblVoltage_1.AutoSize = true;
+            this.LblVoltage_1.Location = new System.Drawing.Point(173, 46);
+            this.LblVoltage_1.Name = "LblVoltage_1";
+            this.LblVoltage_1.Size = new System.Drawing.Size(20, 13);
+            this.LblVoltage_1.TabIndex = 16;
+            this.LblVoltage_1.Text = "0V";
+            // 
+            // LblVoltage_2
+            // 
+            this.LblVoltage_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblVoltage_2.AutoSize = true;
+            this.LblVoltage_2.Location = new System.Drawing.Point(220, 46);
+            this.LblVoltage_2.Name = "LblVoltage_2";
+            this.LblVoltage_2.Size = new System.Drawing.Size(20, 13);
+            this.LblVoltage_2.TabIndex = 17;
+            this.LblVoltage_2.Text = "0V";
+            // 
+            // LblCurrent_1
+            // 
+            this.LblCurrent_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblCurrent_1.AutoSize = true;
+            this.LblCurrent_1.Location = new System.Drawing.Point(173, 67);
+            this.LblCurrent_1.Name = "LblCurrent_1";
+            this.LblCurrent_1.Size = new System.Drawing.Size(20, 13);
+            this.LblCurrent_1.TabIndex = 18;
+            this.LblCurrent_1.Text = "0A";
+            // 
+            // LblCurrent_2
+            // 
+            this.LblCurrent_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblCurrent_2.AutoSize = true;
+            this.LblCurrent_2.Location = new System.Drawing.Point(220, 67);
+            this.LblCurrent_2.Name = "LblCurrent_2";
+            this.LblCurrent_2.Size = new System.Drawing.Size(20, 13);
+            this.LblCurrent_2.TabIndex = 19;
+            this.LblCurrent_2.Text = "0A";
+            // 
+            // LblPower_2
+            // 
+            this.LblPower_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblPower_2.AutoSize = true;
+            this.LblPower_2.Location = new System.Drawing.Point(218, 88);
+            this.LblPower_2.Name = "LblPower_2";
+            this.LblPower_2.Size = new System.Drawing.Size(24, 13);
+            this.LblPower_2.TabIndex = 20;
+            this.LblPower_2.Text = "0W";
+            // 
+            // LblPower_1
+            // 
+            this.LblPower_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblPower_1.AutoSize = true;
+            this.LblPower_1.Location = new System.Drawing.Point(171, 88);
+            this.LblPower_1.Name = "LblPower_1";
+            this.LblPower_1.Size = new System.Drawing.Size(24, 13);
+            this.LblPower_1.TabIndex = 21;
+            this.LblPower_1.Text = "0W";
+            // 
+            // LblTemperature_1
+            // 
+            this.LblTemperature_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblTemperature_1.AutoSize = true;
+            this.LblTemperature_1.Location = new System.Drawing.Point(163, 110);
+            this.LblTemperature_1.Name = "LblTemperature_1";
+            this.LblTemperature_1.Size = new System.Drawing.Size(41, 13);
+            this.LblTemperature_1.TabIndex = 22;
+            this.LblTemperature_1.Text = "label14";
+            // 
+            // LblTemperature_2
+            // 
+            this.LblTemperature_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblTemperature_2.AutoSize = true;
+            this.LblTemperature_2.Location = new System.Drawing.Point(210, 110);
+            this.LblTemperature_2.Name = "LblTemperature_2";
+            this.LblTemperature_2.Size = new System.Drawing.Size(41, 13);
+            this.LblTemperature_2.TabIndex = 23;
+            this.LblTemperature_2.Text = "label15";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1313, 686);
+            this.ClientSize = new System.Drawing.Size(1386, 767);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Name = "Form1";
             this.Text = "Message Logger";
@@ -814,10 +963,11 @@
             this.panel1.ResumeLayout(false);
             this.grpBoardStatus.ResumeLayout(false);
             this.grpBoardStatus.PerformLayout();
-            this.GrpBoxLogging.ResumeLayout(false);
-            this.GrpBoxLogging.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            this.GrpBoxLogging.ResumeLayout(false);
+            this.GrpBoxLogging.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tabCtrlSerialInterface.ResumeLayout(false);
@@ -851,14 +1001,12 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.GroupBox grpBoardStatus;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label LblTemperature;
-        private System.Windows.Forms.Label LblPower;
-        private System.Windows.Forms.Label LblCurrent;
+        private System.Windows.Forms.Label LblPower_0;
+        private System.Windows.Forms.Label LblCurrent_0;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label LblVoltage;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label LblVoltage_0;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label LblAutomaticModeRes;
         private System.Windows.Forms.Label LblAutomaticModeReq;
@@ -900,6 +1048,20 @@
         private System.Windows.Forms.CheckBox ChkBoxLogRecData;
         private System.Windows.Forms.CheckBox ChkBoxUpdateListView;
         private System.Windows.Forms.CheckBox ChkBoxShowACK;
+        private System.Windows.Forms.Label LblTemperature_0;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label LblVoltage_1;
+        private System.Windows.Forms.Label LblVoltage_2;
+        private System.Windows.Forms.Label LblCurrent_1;
+        private System.Windows.Forms.Label LblCurrent_2;
+        private System.Windows.Forms.Label LblPower_2;
+        private System.Windows.Forms.Label LblPower_1;
+        private System.Windows.Forms.Label LblTemperature_1;
+        private System.Windows.Forms.Label LblTemperature_2;
     }
 }
 
