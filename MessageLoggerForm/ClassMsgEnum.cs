@@ -32,6 +32,7 @@ namespace MessageLoggerForm
             eMsgCurrentTime         = 0x0E,     /*<-- The current time from the ethernet. Slave => Master  --> */
             eMsgStillAlive          = 0x0F,     /*<-- Alive check message before the slave is reseted   --> */
             eMsgDebug               = 0x10,     /*<-- Debug message --> */
+            eMsgInitDone            = 0x11,     /*<-- Message for user settings sending done -->*/
             eMsgLastEntry           = 0xFF
         }
 

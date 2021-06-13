@@ -296,6 +296,8 @@ namespace MessageLoggerForm
                             case 0x1027: sPayloadInterpreation = "eSoftwareTimer_TimerLimit"; break;
                             case 0x1028: sPayloadInterpreation = "eSoftwareTimer_InvalidRequest"; break;
                             case 0x1029: sPayloadInterpreation = "eEventError_NotProcessed"; break;
+                            case 0x102A: sPayloadInterpreation = "eOsTimerCreateFault"; break;
+                            case 0x102B: sPayloadInterpreation = "eOsTimerDeleteFault"; break;
                             case 0xA001: sPayloadInterpreation = "eOutputVoltageFault_0"; break;
                             case 0xA002: sPayloadInterpreation = "eOutputVoltageFault_1"; break;
                             case 0xA003: sPayloadInterpreation = "eOutputVoltageFault_2"; break;
@@ -431,6 +433,12 @@ namespace MessageLoggerForm
 
                         sPayloadInterpreation = "Req: " + sMsg.bRequest.ToString("X2") + " | ";
                         sPayloadInterpreation += "Res: " + sMsg.bResponse.ToString("X2");
+                        break;
+                    }
+
+                case ClassMsgEnum.teMessageId.eMsgInitDone:
+                    {
+                        sID = "User Settings Done";
                         break;
                     }
 
