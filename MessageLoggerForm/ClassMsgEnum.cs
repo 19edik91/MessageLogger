@@ -13,45 +13,117 @@ namespace MessageLoggerForm
         public const byte PREAMBE = 0x1C;
 
         /************************************ Message Ids **********************************/
-        public enum teMessageId
+        public class teMessageId : Class_Helper.Enumeration
         {
-            eMsgNoId                = 0x00,     /*<-- No message --> */
-            eMsgRequestOutputStatus = 0x01,     /*<-- Request for output values. Slave => Master        --> */
-            eMsgUpdateOutputStatus  = 0x02,     /*<-- Updated output values. Slave <= Master            --> */
-            eMsgVersion             = 0x03,     /*<-- Message for Software Version.  Slave <= Master    --> */
-            eMsgInitOutputStatus    = 0x04,     /*<-- Message with the output values from the FLASH.  Slave <= Master    --> */
-            eMsgErrorCode           = 0x05,     /*<-- Fault code message. Currently unknown handling    --> */
-            eMsgSleep               = 0x06,     /*<-- Sleep request. Slave <= Master                    --> */
-            eMsgWakeUp              = 0x07,     /*<-- Wake up request. Slave <=> Master                 --> */
-            eMsgAutoInitHardware    = 0x08,     /*<-- Automatic Hardware init request. Slave => Master  --> */
-            eMsgManualInitHardware  = 0x09,     /*<-- Message with the Min-Max-Values. Slave => Master  --> */
-            eMsgManualInitHwDone    = 0x0A,     /*<-- Message to trigger saving of the system data. Slave => Master  --> */
-            eMsgUserTimer           = 0x0B,     /*<-- Message with the user timers. Slave <=> Master    --> */
-            eMsgSystemStarted       = 0x0C,     /*<-- Slave started message. Slave => Master            --> */
-            eMsgOutputState         = 0x0D,     /*<-- Sends the current, voltage and temperature values. Slave <= Master --> */
-            eMsgCurrentTime         = 0x0E,     /*<-- The current time from the ethernet. Slave => Master  --> */
-            eMsgStillAlive          = 0x0F,     /*<-- Alive check message before the slave is reseted   --> */
-            eMsgDebug               = 0x10,     /*<-- Debug message --> */
-            eMsgInitDone            = 0x11,     /*<-- Message for user settings sending done -->*/
-            eMsgLastEntry           = 0xFF
+            public static teMessageId eMsgRequestOutputStatus = new teMessageId(nameof(eMsgRequestOutputStatus), 0x01);
+            public static teMessageId eMsgUpdateOutputStatus = new teMessageId(nameof(eMsgUpdateOutputStatus), 0x02);
+            public static teMessageId eMsgVersion = new teMessageId(nameof(eMsgVersion), 0x03);
+            public static teMessageId eMsgInitOutputStatus = new teMessageId(nameof(eMsgInitOutputStatus), 0x04);
+            public static teMessageId eMsgErrorCode = new teMessageId(nameof(eMsgErrorCode), 0x05);
+            public static teMessageId eMsgSleep = new teMessageId(nameof(eMsgSleep), 0x06);
+            public static teMessageId eMsgWakeUp = new teMessageId(nameof(eMsgWakeUp), 0x07);
+            public static teMessageId eMsgAutoInitHardware = new teMessageId(nameof(eMsgAutoInitHardware), 0x08);
+            public static teMessageId eMsgManualInitHardware = new teMessageId(nameof(eMsgManualInitHardware), 0x09);
+            public static teMessageId eMsgManualInitHwDone = new teMessageId(nameof(eMsgManualInitHwDone), 0x0A);
+            public static teMessageId eMsgUserTimer = new teMessageId(nameof(eMsgUserTimer), 0x0B);
+            public static teMessageId eMsgSystemStarted = new teMessageId(nameof(eMsgSystemStarted), 0x0C);
+            public static teMessageId eMsgOutputState = new teMessageId(nameof(eMsgOutputState), 0x0D);
+            public static teMessageId eMsgCurrentTime = new teMessageId(nameof(eMsgCurrentTime), 0x0E);
+            public static teMessageId eMsgStillAlive = new teMessageId(nameof(eMsgStillAlive), 0x0F);
+            public static teMessageId eMsgDebug = new teMessageId(nameof(eMsgDebug), 0x10);
+            public static teMessageId eMsgInitDone = new teMessageId(nameof(eMsgInitDone), 0x11);
+            public static teMessageId eMsgLastEntry = new teMessageId(nameof(eMsgLastEntry), 0xFF);
+
+            public teMessageId(string name, int id) : base(name, id){}
+
+
+            public static IEnumerable<teMessageId> List()
+            {
+                return new[]
+                {
+                    eMsgRequestOutputStatus,
+                    eMsgUpdateOutputStatus,
+                    eMsgVersion,
+                    eMsgInitOutputStatus,
+                    eMsgErrorCode,
+                    eMsgSleep,
+                    eMsgWakeUp,
+                    eMsgAutoInitHardware,
+                    eMsgManualInitHardware,
+                    eMsgManualInitHwDone,
+                    eMsgUserTimer,
+                    eMsgSystemStarted,
+                    eMsgOutputState,
+                    eMsgCurrentTime,
+                    eMsgStillAlive,
+                    eMsgDebug,
+                    eMsgInitDone,
+                    eMsgLastEntry
+                };
+            }
         }
 
-        public enum teMessageCmd
+
+        public class teMessageCmd : Class_Helper.Enumeration
         {
-            eNoCmd = 0x00,
-            eCmdGet = 0x01,
-            eCmdSet = 0x02
+            public static teMessageCmd eNoCmd = new teMessageCmd(nameof(eNoCmd), 0x00);
+            public static teMessageCmd eCmdGet = new teMessageCmd(nameof(eCmdGet), 0x01);
+            public static teMessageCmd eCmdSet = new teMessageCmd(nameof(eCmdSet), 0x02);
+
+            public teMessageCmd(string name, int id) : base(name, id) { }
+
+            public static IEnumerable<teMessageCmd> List()
+            {
+                return new[] 
+                {
+                    eNoCmd,
+                    eCmdGet,
+                    eCmdSet
+                };
+            }
         }
 
 
-        public enum teMessageType
+        public class teMessageType : Class_Helper.Enumeration
         {
-            eNoType = 0x00,
-            eTypeRequestResponse = 0x01,
-            eTypeRequestNoResponse = 0x02,
-            eTypeResponseDenied = 0x04,
-            eTypeResponseUnknown = 0x08,
-            eTypeResponseAck = 0x10
+            public static teMessageType eNoType = new teMessageType(nameof(eNoType), 0x00);
+            public static teMessageType eTypeRequestResponse = new teMessageType(nameof(eTypeRequestResponse), 0x01);
+            public static teMessageType eTypeRequestNoResponse = new teMessageType(nameof(eTypeRequestNoResponse), 0x02);
+            public static teMessageType eTypeResponseDenied = new teMessageType(nameof(eTypeResponseDenied), 0x04);
+            public static teMessageType eTypeResponseUnknown = new teMessageType(nameof(eTypeResponseUnknown), 0x08);
+            public static teMessageType eTypeResponseAck = new teMessageType(nameof(eTypeResponseAck), 0x10);
+
+            public teMessageType(string name, int id) : base(name, id) { }
+
+            public static IEnumerable<teMessageType> List()
+            {
+                return new[]
+                {
+                    eNoType,
+                    eTypeRequestResponse,
+                    eTypeRequestNoResponse,
+                    eTypeResponseDenied,
+                    eTypeResponseUnknown,
+                    eTypeResponseAck
+                };
+            }
+        }
+
+
+        public static string GetMessageIdName(int Id)
+        {
+            string szName = "";
+            IEnumerable<teMessageId> eMsgIds = teMessageId.List();
+
+            foreach(var item in eMsgIds)
+            {
+                if(item.Id == Id)
+                {
+                    szName = item.Name;
+                }
+            }
+
+            return szName;
         }
     }
 }

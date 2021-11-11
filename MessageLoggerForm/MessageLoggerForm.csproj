@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassMsgEnum.cs" />
+    <Compile Include="Class_Helper.cs" />
     <Compile Include="Class_Labels.cs" />
     <Compile Include="Class_Message.cs" />
     <Compile Include="Form1.cs">

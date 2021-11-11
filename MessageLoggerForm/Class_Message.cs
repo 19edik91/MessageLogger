@@ -17,16 +17,15 @@ namespace MessageLoggerForm
             public byte ucDestAddress;
             public byte ucSourceAddress;
             public byte ucMsgType;
+            public byte ucPayloadLen;
         };
 
-        public const byte DATA_MAX_SIZE = 9;
-
         //! Payload content. Wolf uses object and command inside of payload. Not our idea!
-        public unsafe struct tsPayload
+        public struct tsPayload
         {
             public byte ucMsgId;
             public byte ucCommand;
-            public fixed byte ucData[DATA_MAX_SIZE];
+            public byte[] aucData;
         };
 
         //! Format of whole message frame
