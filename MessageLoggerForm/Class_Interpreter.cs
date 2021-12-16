@@ -235,7 +235,7 @@ namespace MessageLoggerForm
 
                         if (bInterpretationNeeded)
                         {
-                            MsgStructureCasted.tsMsgOutputStateResponseCS sMsg;
+                            MsgStructure.tsMsgOutputStateResponseCS sMsg;
                             MsgLib_GetMsgOutputStatusResponse(aucPayload, out sMsg);
 
                             sPayloadInterpreation = "Output: " + sMsg.ucOutputIndex + " | ";

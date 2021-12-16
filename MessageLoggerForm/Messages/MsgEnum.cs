@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessageLoggerForm
 {
-    public class ClassMsgEnum
+    public class MsgEnum
     {
         public const byte ADDRESS_MASTER = 0x10;
         public const byte ADDRESS_SLAVE1 = 0x01;

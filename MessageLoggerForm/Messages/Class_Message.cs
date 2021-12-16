@@ -111,7 +111,7 @@ namespace MessageLoggerForm
         public UInt16 GetPayLoadSizeInt()
         {
             /* Returns the payload size (Obj + Cmd + Payload) */
-            return this.uiMsgSize;
+            return uiMsgSize;
         }
 
         /****************************************************
@@ -119,7 +119,7 @@ namespace MessageLoggerForm
          ***************************************************/
         public string GetMessageName()
         {
-            return this.sMsgName;
+            return sMsgName;
         }
     }
 }
