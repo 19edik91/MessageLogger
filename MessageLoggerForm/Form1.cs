@@ -52,8 +52,6 @@ namespace MessageLoggerForm
         /****************************************************************************************************
         * Variables
         ****************************************************************************************************/
-        const UInt16 uiBaudRate = 38400;
-        //const int uiBaudRate = 115200;
         public const byte ucUsedLables = 4;
 
         //Messages
@@ -113,7 +111,9 @@ namespace MessageLoggerForm
             _mutexMessage = new Mutex();
 
             //Init combo box 
-            GetAvailablePorts();
+            var lstComPorts = Class_Helper.ComPorts.GetAvailablePorts();
+            //TODO: Fill combo boxes
+
 
             InitModule();
 
@@ -166,72 +166,7 @@ namespace MessageLoggerForm
         }
 
 
-        /****************************************************************************************************
-        * @brief: Reads all available ports and put them into the combo-box.
-        * @param: none
-        * @return: none
-        ****************************************************************************************************/
-        void GetAvailablePorts()
-        {
-            using (ManagementClass i_Entity = new ManagementClass("Win32_PnPEntity"))
-            {
-                foreach (ManagementObject i_Inst in i_Entity.GetInstances())
-                {
-                    Object o_Guid = i_Inst.GetPropertyValue("ClassGuid");
-                    if (o_Guid == null || o_Guid.ToString().ToUpper() != "{4D36E978-E325-11CE-BFC1-08002BE10318}")
-                        continue; // Skip all devices except device class "PORTS"
 
-                    String s_Caption = i_Inst.GetPropertyValue("Caption").ToString();
-                    String s_Manufact = i_Inst.GetPropertyValue("Manufacturer").ToString();
-                    String s_DeviceID = i_Inst.GetPropertyValue("PnpDeviceID").ToString();
-                    String s_RegPath = "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Enum\\" + s_DeviceID + "\\Device Parameters";
-                    String s_PortName = Registry.GetValue(s_RegPath, "PortName", "").ToString();
-
-                    int s32_Pos = s_Caption.IndexOf(" (COM");
-                    if (s32_Pos > 0) // remove COM port from description
-                        s_Caption = s_Caption.Substring(0, s32_Pos);
-
-                    Console.WriteLine("Port Name:    " + s_PortName);
-                    Console.WriteLine("Description:  " + s_Caption);
-                    Console.WriteLine("Manufacturer: " + s_Manufact);
-                    Console.WriteLine("Device ID:    " + s_DeviceID);
-                    Console.WriteLine("-----------------------------------");
-
-
-                    if(s_Caption.Contains("SERIAL") == true)
-                    {
-                        Console.WriteLine("Used Port: " + s_PortName);
-
-                        if (ComboBoxSerialComPorts0.Items.Contains(s_PortName) == false)
-                        {
-                            ComboBoxSerialComPorts0.Items.Add(s_PortName);
-                        }
-
-                        if (ComboBoxSerialComPorts1.Items.Contains(s_PortName) == false)
-                        {
-                            ComboBoxSerialComPorts1.Items.Add(s_PortName);
-                        }
-                    }
-                }
-            }
-
-
-            //String[] sPorts = SerialPort.GetPortNames();
-            //
-            ///* Check if comport is already in the list */
-            //foreach(string sPort in sPorts)
-            //{
-            //    if(ComboBoxSerialComPorts0.Items.Contains(sPort) == false)
-            //    {
-            //        ComboBoxSerialComPorts0.Items.Add(sPort);
-            //    }
-            //
-            //    if (ComboBoxSerialComPorts1.Items.Contains(sPort) == false)
-            //    {
-            //        ComboBoxSerialComPorts1.Items.Add(sPort);
-            //    }
-            //}            
-        }
 
         /****************************************************************************************************
           * @brief: Event handler for the "COM-Port-START" button. Checks if a COM-Port is selected and opens

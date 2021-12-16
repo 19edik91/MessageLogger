@@ -63,7 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messages\ClassMsgEnum.cs" />
+    <Compile Include="COM\Class_COM.cs" />
+    <Compile Include="Messages\MsgEnum.cs" />
     <Compile Include="Class_Helper.cs" />
     <Compile Include="Class_Labels.cs" />
     <Compile Include="Messages\Class_Message.cs" />
@@ -74,7 +75,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Class_Interpreter.cs" />
-    <Compile Include="Messages\MsgStructureCasted.cs" />
+    <Compile Include="Messages\MsgStructure.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

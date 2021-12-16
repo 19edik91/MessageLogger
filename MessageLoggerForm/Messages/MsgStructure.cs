@@ -3,14 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace MessageLoggerForm
 {
     public class MsgStructure
     {
-        /* This file is for the casted message structures which are used by the C# project. 
-           Booleans have to be changed into "bytes" otherwise the casting will fail! */
+        /********************************** Message frame **********************************/
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tsFrameHeader
+        {
+            public byte ucPreamble;
+            public byte ucDestAddress;
+            public byte ucSourceAddress;
+            public byte ucMsgType;
+            public byte ucPayloadLen;
+        };
 
+        //! Payload content
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tsPayload
+        {
+            public byte ucMsgId;        //Name of the message
+            public byte ucCommand;      //Command of the message
+            public byte ucQueryID;      //Query ID - Counter which increments for each message
+            public byte[] aucData;      //Data array
+        };
+
+        //! Format of whole message frame
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tsMessageFrame
+        {
+            public tsFrameHeader sHeader;
+            public tsPayload sPayload;
+            public uint ulCrc32;
+        };
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tMsgRequestOutputState
         {
             public byte ucBrightness;              /* Requested brightness for this output */
@@ -24,6 +53,7 @@ namespace MessageLoggerForm
             public byte ucBurnTime;                /* Requested burning time */
         };
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tMsgHeartBeatOutput
         {
             public byte ucBrightness;
@@ -32,7 +62,8 @@ namespace MessageLoggerForm
         };
 
         //public struct tMsgInitOutputState tMsgRequestOutputState;
-
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tMsgUpdateOutputStateCS
         {
             public byte ucBrightness;
@@ -43,7 +74,8 @@ namespace MessageLoggerForm
             public byte ucOutputIndex;
             public int  slRemainingBurnTime;
         };
-
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgOutputStateResponseCS
         {
             public uint    ulVoltage;          /* Voltage in millivolt */
@@ -52,7 +84,7 @@ namespace MessageLoggerForm
             public byte    ucOutputIndex;
         };
 
-
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tMsgCurrentTimeCS
         {
             public uint ulTicks;
@@ -60,18 +92,19 @@ namespace MessageLoggerForm
             public byte ucMinutes;
         };
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgVersionCS
         {
             public ushort uiVersion;
         };
 
-
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgFaultMessageCS
         {
             public ushort uiErrorCode;
         };
 
-
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgManualInitCS
         {
             public byte ucSetMinValue;
@@ -79,7 +112,7 @@ namespace MessageLoggerForm
             public byte ucOutputIndex;
         };
 
-
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgUserTimerCS
         {
             public byte ucStartHour;
@@ -89,17 +122,20 @@ namespace MessageLoggerForm
             public byte ucTimerIdx;
         };
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgStillAliveCS
         {
 	        public byte bResponse;
 	        public byte bRequest;
         };
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgErrorCode
         {
             public short uiErrorCode;
         };
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgDebu
         {
             public char[] aucDebugMsg;

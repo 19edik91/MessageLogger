@@ -10,34 +10,6 @@ namespace MessageLoggerForm
     public class Class_Message
     {
         
-        /********************************** Message frame **********************************/
-        public struct tsFrameHeader
-        {
-            public byte ucPreamble;
-            public byte ucDestAddress;
-            public byte ucSourceAddress;
-            public byte ucMsgType;
-            public byte ucPayloadLen;
-        };
-
-        //! Payload content
-        public struct tsPayload
-        {
-            public byte ucMsgId;        //Name of the message
-            public byte ucCommand;      //Command of the message
-            public byte ucQueryID;      //Query ID - Counter which increments for each message
-            public byte[] aucData;      //Data array
-        };
-
-        //! Format of whole message frame
-        public struct tsMessageFrame
-        {
-            public tsFrameHeader sHeader;
-            public tsPayload sPayload;
-            public UInt32 ulCrc32;
-        };
-
-
         /*************************
         * variables and defines
         ************************/
