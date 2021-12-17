@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Management;
+using System.IO;
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace MessageLoggerForm
 {
@@ -83,6 +85,73 @@ namespace MessageLoggerForm
                 }
 
                 return lstComPorts;
+            }
+        }
+
+        /// <summary>
+        /// Serializer class - casts either a structure to a byte-array or vice-versa
+        /// </summary>
+        public static class Serializer
+        {
+            /// <summary>
+            /// Creats a byte array from the used type by marshaling.
+            /// </summary>
+            /// <typeparam name="T"> The type which shall be used to serialize</typeparam>
+            /// <param name="str"> The type (structure) object which shall be serialized </param>
+            /// <returns></returns>
+            public static byte[] SerializeMarsh<T>(T str) where T : struct
+            {
+                IntPtr ptr = IntPtr.Zero;
+                byte[] array;
+
+                try
+                {
+                    var strSize = Marshal.SizeOf(typeof(T));
+                    array = new byte[strSize];
+
+                    ptr = Marshal.AllocHGlobal(strSize);
+
+                    Marshal.StructureToPtr(str, ptr, true);
+                    Marshal.Copy(ptr, array, 0, strSize);
+                }
+                finally
+                {
+                    if(ptr != IntPtr.Zero)
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+                }
+
+                return array;
+            }
+
+            /// <summary>
+            /// Creaets a type-object (structure) from the given array
+            /// </summary>
+            /// <typeparam name="T"> The type which shall be used to de-serialize the bytestream</typeparam>
+            /// <param name="array"> The byte stream which shall be casted </param>
+            /// <returns></returns>
+            public static T DeserializeMarsh<T>(byte[] array) where T : struct
+            {
+                IntPtr ptr = IntPtr.Zero;
+                T str = default;
+
+                try
+                {
+                    var strSize = Marshal.SizeOf(typeof(T));
+                    ptr = Marshal.AllocHGlobal(strSize);
+                    Marshal.Copy(array, 0, ptr, strSize);
+                    str = (T)Marshal.PtrToStructure(ptr, typeof(T));
+                }
+                finally
+                {
+                    if (ptr != IntPtr.Zero)
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+                }               
+
+                return str;
             }
         }
 

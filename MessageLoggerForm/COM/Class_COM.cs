@@ -16,6 +16,7 @@ namespace MessageLoggerForm.COM
         private int _baudRate = 38400;
         private SerialPort _serialPort = default;
         private Queue<byte> _receivedData = default;
+        public string portName { get => _serialPort.PortName; }
 
         public Class_COM(int baudRate = 38400)
         {
@@ -70,7 +71,7 @@ namespace MessageLoggerForm.COM
                 SP_Read = _serialPort.Read(aucPortBuffer, default, aucPortBuffer.Length);
 
                 //Discard port buffer to avoid an overfill
-                _serialPort.DiscardInBuffer();
+                // _serialPort.DiscardInBuffer();
 
                 for(int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
                 {
@@ -153,6 +154,16 @@ namespace MessageLoggerForm.COM
                 lstData.Add(_receivedData.Dequeue());
             }
             return lstData;
+        }
+        
+
+        /// <summary>
+        /// Returns the "IsOpen" value
+        /// </summary>
+        /// <returns></returns>
+        public bool IsOpen()
+        {
+            return _serialPort.IsOpen;
         }
     }
 }

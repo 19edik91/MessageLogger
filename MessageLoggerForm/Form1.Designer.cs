@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.listView1 = new System.Windows.Forms.ListView();
             this.LVIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.LVTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,7 +43,6 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.RichTextBoxSerialData = new System.Windows.Forms.RichTextBox();
-            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -62,6 +60,16 @@
             this.LblVoltage_0 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.LblVoltage_1 = new System.Windows.Forms.Label();
+            this.LblVoltage_2 = new System.Windows.Forms.Label();
+            this.LblCurrent_1 = new System.Windows.Forms.Label();
+            this.LblCurrent_2 = new System.Windows.Forms.Label();
+            this.LblPower_2 = new System.Windows.Forms.Label();
+            this.LblPower_1 = new System.Windows.Forms.Label();
+            this.LblTemperature_1 = new System.Windows.Forms.Label();
+            this.LblTemperature_2 = new System.Windows.Forms.Label();
             this.ChkBoxShowACK = new System.Windows.Forms.CheckBox();
             this.ChkBoxUpdateListView = new System.Windows.Forms.CheckBox();
             this.GrpBoxLogging = new System.Windows.Forms.GroupBox();
@@ -97,17 +105,6 @@
             this.BtnComPortStart1 = new System.Windows.Forms.Button();
             this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.serialPort2 = new System.IO.Ports.SerialPort(this.components);
-            this.label7 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.LblVoltage_1 = new System.Windows.Forms.Label();
-            this.LblVoltage_2 = new System.Windows.Forms.Label();
-            this.LblCurrent_1 = new System.Windows.Forms.Label();
-            this.LblCurrent_2 = new System.Windows.Forms.Label();
-            this.LblPower_2 = new System.Windows.Forms.Label();
-            this.LblPower_1 = new System.Windows.Forms.Label();
-            this.LblTemperature_1 = new System.Windows.Forms.Label();
-            this.LblTemperature_2 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -236,12 +233,6 @@
             this.RichTextBoxSerialData.Size = new System.Drawing.Size(920, 641);
             this.RichTextBoxSerialData.TabIndex = 0;
             this.RichTextBoxSerialData.Text = "";
-            // 
-            // serialPort1
-            // 
-            this.serialPort1.BaudRate = 115200;
-            this.serialPort1.ReadBufferSize = 2048;
-            this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort1_DataReceived);
             // 
             // tableLayoutPanel3
             // 
@@ -456,6 +447,106 @@
             this.label6.Size = new System.Drawing.Size(33, 13);
             this.label6.TabIndex = 13;
             this.label6.Text = "Out 0";
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(167, 14);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(33, 13);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Out 1";
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(214, 14);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(33, 13);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "Out 2";
+            // 
+            // LblVoltage_1
+            // 
+            this.LblVoltage_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblVoltage_1.AutoSize = true;
+            this.LblVoltage_1.Location = new System.Drawing.Point(173, 46);
+            this.LblVoltage_1.Name = "LblVoltage_1";
+            this.LblVoltage_1.Size = new System.Drawing.Size(20, 13);
+            this.LblVoltage_1.TabIndex = 16;
+            this.LblVoltage_1.Text = "0V";
+            // 
+            // LblVoltage_2
+            // 
+            this.LblVoltage_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblVoltage_2.AutoSize = true;
+            this.LblVoltage_2.Location = new System.Drawing.Point(220, 46);
+            this.LblVoltage_2.Name = "LblVoltage_2";
+            this.LblVoltage_2.Size = new System.Drawing.Size(20, 13);
+            this.LblVoltage_2.TabIndex = 17;
+            this.LblVoltage_2.Text = "0V";
+            // 
+            // LblCurrent_1
+            // 
+            this.LblCurrent_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblCurrent_1.AutoSize = true;
+            this.LblCurrent_1.Location = new System.Drawing.Point(173, 67);
+            this.LblCurrent_1.Name = "LblCurrent_1";
+            this.LblCurrent_1.Size = new System.Drawing.Size(20, 13);
+            this.LblCurrent_1.TabIndex = 18;
+            this.LblCurrent_1.Text = "0A";
+            // 
+            // LblCurrent_2
+            // 
+            this.LblCurrent_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblCurrent_2.AutoSize = true;
+            this.LblCurrent_2.Location = new System.Drawing.Point(220, 67);
+            this.LblCurrent_2.Name = "LblCurrent_2";
+            this.LblCurrent_2.Size = new System.Drawing.Size(20, 13);
+            this.LblCurrent_2.TabIndex = 19;
+            this.LblCurrent_2.Text = "0A";
+            // 
+            // LblPower_2
+            // 
+            this.LblPower_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblPower_2.AutoSize = true;
+            this.LblPower_2.Location = new System.Drawing.Point(218, 88);
+            this.LblPower_2.Name = "LblPower_2";
+            this.LblPower_2.Size = new System.Drawing.Size(24, 13);
+            this.LblPower_2.TabIndex = 20;
+            this.LblPower_2.Text = "0W";
+            // 
+            // LblPower_1
+            // 
+            this.LblPower_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblPower_1.AutoSize = true;
+            this.LblPower_1.Location = new System.Drawing.Point(171, 88);
+            this.LblPower_1.Name = "LblPower_1";
+            this.LblPower_1.Size = new System.Drawing.Size(24, 13);
+            this.LblPower_1.TabIndex = 21;
+            this.LblPower_1.Text = "0W";
+            // 
+            // LblTemperature_1
+            // 
+            this.LblTemperature_1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblTemperature_1.AutoSize = true;
+            this.LblTemperature_1.Location = new System.Drawing.Point(163, 110);
+            this.LblTemperature_1.Name = "LblTemperature_1";
+            this.LblTemperature_1.Size = new System.Drawing.Size(41, 13);
+            this.LblTemperature_1.TabIndex = 22;
+            this.LblTemperature_1.Text = "label14";
+            // 
+            // LblTemperature_2
+            // 
+            this.LblTemperature_2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LblTemperature_2.AutoSize = true;
+            this.LblTemperature_2.Location = new System.Drawing.Point(210, 110);
+            this.LblTemperature_2.Name = "LblTemperature_2";
+            this.LblTemperature_2.Size = new System.Drawing.Size(41, 13);
+            this.LblTemperature_2.TabIndex = 23;
+            this.LblTemperature_2.Text = "label15";
             // 
             // ChkBoxShowACK
             // 
@@ -763,7 +854,7 @@
             this.tabPageSerial1.Location = new System.Drawing.Point(4, 22);
             this.tabPageSerial1.Name = "tabPageSerial1";
             this.tabPageSerial1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSerial1.Size = new System.Drawing.Size(235, 144);
+            this.tabPageSerial1.Size = new System.Drawing.Size(258, 144);
             this.tabPageSerial1.TabIndex = 1;
             this.tabPageSerial1.Text = "Serial 2";
             this.tabPageSerial1.UseVisualStyleBackColor = true;
@@ -779,7 +870,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(229, 138);
+            this.groupBox1.Size = new System.Drawing.Size(252, 138);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Serial Interface 2";
@@ -840,112 +931,6 @@
             this.label8.Size = new System.Drawing.Size(56, 13);
             this.label8.TabIndex = 2;
             this.label8.Text = "COM Port:";
-            // 
-            // serialPort2
-            // 
-            this.serialPort2.BaudRate = 115200;
-            this.serialPort2.ReadBufferSize = 2048;
-            this.serialPort2.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort2_DataReceived);
-            // 
-            // label7
-            // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(167, 14);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(33, 13);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "Out 1";
-            // 
-            // label9
-            // 
-            this.label9.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(214, 14);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(33, 13);
-            this.label9.TabIndex = 15;
-            this.label9.Text = "Out 2";
-            // 
-            // LblVoltage_1
-            // 
-            this.LblVoltage_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblVoltage_1.AutoSize = true;
-            this.LblVoltage_1.Location = new System.Drawing.Point(173, 46);
-            this.LblVoltage_1.Name = "LblVoltage_1";
-            this.LblVoltage_1.Size = new System.Drawing.Size(20, 13);
-            this.LblVoltage_1.TabIndex = 16;
-            this.LblVoltage_1.Text = "0V";
-            // 
-            // LblVoltage_2
-            // 
-            this.LblVoltage_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblVoltage_2.AutoSize = true;
-            this.LblVoltage_2.Location = new System.Drawing.Point(220, 46);
-            this.LblVoltage_2.Name = "LblVoltage_2";
-            this.LblVoltage_2.Size = new System.Drawing.Size(20, 13);
-            this.LblVoltage_2.TabIndex = 17;
-            this.LblVoltage_2.Text = "0V";
-            // 
-            // LblCurrent_1
-            // 
-            this.LblCurrent_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblCurrent_1.AutoSize = true;
-            this.LblCurrent_1.Location = new System.Drawing.Point(173, 67);
-            this.LblCurrent_1.Name = "LblCurrent_1";
-            this.LblCurrent_1.Size = new System.Drawing.Size(20, 13);
-            this.LblCurrent_1.TabIndex = 18;
-            this.LblCurrent_1.Text = "0A";
-            // 
-            // LblCurrent_2
-            // 
-            this.LblCurrent_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblCurrent_2.AutoSize = true;
-            this.LblCurrent_2.Location = new System.Drawing.Point(220, 67);
-            this.LblCurrent_2.Name = "LblCurrent_2";
-            this.LblCurrent_2.Size = new System.Drawing.Size(20, 13);
-            this.LblCurrent_2.TabIndex = 19;
-            this.LblCurrent_2.Text = "0A";
-            // 
-            // LblPower_2
-            // 
-            this.LblPower_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblPower_2.AutoSize = true;
-            this.LblPower_2.Location = new System.Drawing.Point(218, 88);
-            this.LblPower_2.Name = "LblPower_2";
-            this.LblPower_2.Size = new System.Drawing.Size(24, 13);
-            this.LblPower_2.TabIndex = 20;
-            this.LblPower_2.Text = "0W";
-            // 
-            // LblPower_1
-            // 
-            this.LblPower_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblPower_1.AutoSize = true;
-            this.LblPower_1.Location = new System.Drawing.Point(171, 88);
-            this.LblPower_1.Name = "LblPower_1";
-            this.LblPower_1.Size = new System.Drawing.Size(24, 13);
-            this.LblPower_1.TabIndex = 21;
-            this.LblPower_1.Text = "0W";
-            // 
-            // LblTemperature_1
-            // 
-            this.LblTemperature_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblTemperature_1.AutoSize = true;
-            this.LblTemperature_1.Location = new System.Drawing.Point(163, 110);
-            this.LblTemperature_1.Name = "LblTemperature_1";
-            this.LblTemperature_1.Size = new System.Drawing.Size(41, 13);
-            this.LblTemperature_1.TabIndex = 22;
-            this.LblTemperature_1.Text = "label14";
-            // 
-            // LblTemperature_2
-            // 
-            this.LblTemperature_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.LblTemperature_2.AutoSize = true;
-            this.LblTemperature_2.Location = new System.Drawing.Point(210, 110);
-            this.LblTemperature_2.Name = "LblTemperature_2";
-            this.LblTemperature_2.Size = new System.Drawing.Size(41, 13);
-            this.LblTemperature_2.TabIndex = 23;
-            this.LblTemperature_2.Text = "label15";
             // 
             // Form1
             // 
@@ -1023,7 +1008,6 @@
         private System.Windows.Forms.Button BtnResizeListView;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BtnClearListView;
-        private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.TabControl tabCtrlSerialInterface;
         private System.Windows.Forms.TabPage tabPageSerial0;
         private System.Windows.Forms.GroupBox grpSerialInterface1;
@@ -1041,7 +1025,6 @@
         private System.Windows.Forms.Button BtnComPortStart1;
         private System.Windows.Forms.ComboBox ComboBoxSerialComPorts1;
         private System.Windows.Forms.Label label8;
-        private System.IO.Ports.SerialPort serialPort2;
         private System.Windows.Forms.GroupBox GrpBoxLogging;
         private System.Windows.Forms.CheckBox ChkBoxLogListView;
         private System.Windows.Forms.CheckBox ChkBoxLogMsgBuffer;

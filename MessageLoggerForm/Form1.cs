@@ -15,44 +15,40 @@ using System.Threading;
 using System.Management;
 using Microsoft.Win32;
 
+using MessageLoggerForm.COM;
+using MessageLoggerForm.Serial;
+using MessageLoggerForm.Data;
+
 namespace MessageLoggerForm
 {
     public partial class Form1 : Form
     {
-        /****************************************************************************************************
-        * C-DLL functions
-        ****************************************************************************************************/
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SumVariables(int a, int b);
+        private class SerialCom
+        {
+            public Class_COM cCOM_Port;
+            public Class_Serial cSerial;
 
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte MsgLib_GetMessageFrame(out Class_Message.tsMessageFrame psMessageFrame, IntPtr pucBuffer, byte ucBufferIdx);
+            public SerialCom()
+            {
+                cSerial = new Class_Serial();
+                cCOM_Port = new Class_COM();
+            }
 
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool MsgLib_PutDataInBuffer(byte[] pucBuffer, byte ucSize, byte ucBufferIdx);
+            public SerialCom(Class_COM cCom)
+            {
+                cSerial = new Class_Serial();
+                cCOM_Port = cCom;
+            }
+        }
 
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void InitModule();
-
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_ReadBuffer(IntPtr pucBuffer, byte ucSize, byte ucBufferIdx, bool bUpdateBuffer);
-
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte MsgLib_GetWrittenBufferSize(byte ucBufferIdx);
-
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_GetFifoBufferHandlerData(ref UInt16 puiFreeSize, ref UInt16 puiMaxSize, ref UInt16 puiPutIdx, ref UInt16 puiGetIdx, byte ucBufferIdx);
-
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_GetMessageBufferHandlerData(ref UInt16 puiMsgCnt, ref UInt16 puiMsgPutIdx, ref UInt16 puiMsgGetIdx, byte ucBufferIdx);
-
-        [DllImport("MessageLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void MsgLib_GetMessageBufferMessageData(ref UInt16 puiMsgByteCnt, ref UInt16 puiMsgStartIdx, ref UInt16 puiMsgSize, ref UInt16 puiMsgSavedStatus, ref UInt16 puiMsgRespondRec, byte ucBufferIdx, byte ucMsgIndex);
 
         /****************************************************************************************************
         * Variables
         ****************************************************************************************************/
         public const byte ucUsedLables = 4;
+
+        private List<SerialCom> _lstSerialCom;
+        private Class_Data.cData _cData;
 
         //Messages
         private UInt32 ulMsgIdxCnt = 0;
@@ -62,12 +58,6 @@ namespace MessageLoggerForm
         private int BufferCnt = 0;
         private string MsgFrame;
 
-        delegate void AddListItem(byte ucPortIdx);
-        AddListItem _serialDelegate;
-
-        Queue<Byte>[] _receivedSerialData;
-
-        Mutex[] _mutexSerial;
         Mutex _mutexMessage;
 
         private BackgroundWorker[] backgroundWorkersArr;
@@ -101,21 +91,13 @@ namespace MessageLoggerForm
             InitializeComponent();
 
             /* Initialize serial handling */
-            _serialDelegate = new AddListItem(ProcessSerialData);
-            _receivedSerialData = new Queue<byte>[2];
-            _receivedSerialData[0] = new Queue<byte>();
-            _receivedSerialData[1] = new Queue<byte>();
-            _mutexSerial = new Mutex[2];
-            _mutexSerial[0] = new Mutex();
-            _mutexSerial[1] = new Mutex();
             _mutexMessage = new Mutex();
 
-            //Init combo box 
-            var lstComPorts = Class_Helper.ComPorts.GetAvailablePorts();
-            //TODO: Fill combo boxes
+            _lstSerialCom = new List<SerialCom>();
+            _cData = new Class_Data.cData();
 
-
-            InitModule();
+            //Init combo boxes with available COM-Ports
+            BtnComPortInit_Click(default, default);
 
             //Activate the double buffered option in the list view
             SetDoubleBufferd(listView1);
@@ -137,6 +119,17 @@ namespace MessageLoggerForm
             _interpreter = new Class_Interpreter();
         }
 
+        /// <summary>
+        /// Event handler for a valid received message 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void MessageReceivedHandler(object sender, Class_Serial.MessageReceivedArgs args)
+        {
+             HandleNewMessage((Class_Serial)sender, int queuedMessages);
+
+        }
+
         /****************************************************************************************************
         * @brief: Creates background worker threads 
         * @param: none
@@ -145,7 +138,7 @@ namespace MessageLoggerForm
         void InitializeBackgroundWorker()
         {
             /* Initializes background worker. At first only one */
-            byte ucBgW_Count = 2;
+            byte ucBgW_Count = 1;
 
             backgroundWorkersArr = new BackgroundWorker[ucBgW_Count];
 
@@ -165,9 +158,29 @@ namespace MessageLoggerForm
             }
         }
 
+        /// <summary>
+        /// Gets the string from the selected combobox.
+        /// </summary>
+        /// <param name="btn"> The button which was pressed </param>
+        /// <returns></returns>
+        private string GetPortName(Button btn) => btn.Text switch
+        {
+            "BtnComPortStart0" => ComboBoxSerialComPorts0.Text,
+            "BtnComPortStart1" => ComboBoxSerialComPorts1.Text,
+            _ => throw new ArgumentException("Invalid COM-Port button text")
+        };
 
+        private void SetComPortStatusLblColor(Button btn, Color clr)
+        {
+            if (btn.Text == "BtnComPortStart0")
+                LblComPortStatus0.BackColor = clr;
+            else if (btn.Text == "BtnComPortStart1")
+                LblComPortStatus0.BackColor = clr;
+            else
+                throw new ArgumentException("Invalid COM-Port button text");
+        }
 
-
+        
         /****************************************************************************************************
           * @brief: Event handler for the "COM-Port-START" button. Checks if a COM-Port is selected and opens
           *         it with the predefined settings.
@@ -177,48 +190,20 @@ namespace MessageLoggerForm
         private void BtnComPortStart_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            SerialPort sp = null;
-            string portname = "";
 
-            if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
-            {
-                sp = serialPort1;
-                portname = ComboBoxSerialComPorts0.Text;
-            }
-            else if(Convert.ToBoolean(btn.Name == "BtnComPortStart1"))
-            {
-                sp = serialPort2;
-                portname = ComboBoxSerialComPorts1.Text;
-            }
-            
+            //Create new COM-Port object
+            Class_COM cComPort = new Class_COM();
 
             try
             {
-                if(ComboBoxSerialComPorts0.Text.Length != 0)
-                {
-                    //Set port name to the Combo box name
-                    sp.PortName = portname;
-                    sp.BaudRate = uiBaudRate;
-                    sp.ReadTimeout = 1000;
-                    sp.WriteTimeout = 1000;
-                    sp.Parity = Parity.None;
-                    sp.DataBits = 8;
-                    sp.StopBits = StopBits.One;
-                    sp.Handshake = Handshake.None;
-//                    sp.ReadBufferSize = 14;
-                    sp.ReceivedBytesThreshold = 1;
-                    sp.Open();
+                //Open the COM-Port with the selected name
+                cComPort.OpenPort(GetPortName(btn));
 
-                    if (Convert.ToBoolean(btn.Name == "BtnComPortStart0"))
-                        LblComPortStatus0.BackColor = Color.Green;
-                    else if (Convert.ToBoolean(btn.Name == "BtnComPortStart1"))
-                        LblComPortStatus1.BackColor = Color.Green;
+                //Change color of the label
+                SetComPortStatusLblColor(btn, Color.Green);
 
-                }
-                else
-                {
-                    MessageBox.Show("No COM-Port selected! ");
-                }
+                //Add a new serial object to COM-Port to list
+                _lstSerialCom.Add(new SerialCom(cComPort));
             }
             catch(InvalidOperationException)
             {
@@ -236,21 +221,20 @@ namespace MessageLoggerForm
         private void BtnComPortStop_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-
+            
             try
             {
-                if (Convert.ToBoolean(btn.Name == "BtnComPortStop0"))
-                {
-                    serialPort1.Close();
-                    serialPort1.Dispose();
-                    LblComPortStatus0.BackColor = Color.Red;
-                }
-                else if (Convert.ToBoolean(btn.Name == "BtnComPortStop1"))
-                {
-                    serialPort2.Close();
-                    serialPort2.Dispose();
-                    LblComPortStatus1.BackColor = Color.Red;
-                }
+                //Find the serial COM class in the serial-com-List
+                SerialCom cSerialCom = _lstSerialCom.Find(x => x.cCOM_Port.portName == GetPortName(btn));
+
+                //Close the COM-Port
+                cSerialCom.cCOM_Port.ClosePort();
+
+                //Change the COM-Port color
+                SetComPortStatusLblColor(btn, Color.Red);
+
+                //Delete this entry from the COM-Port list
+                _lstSerialCom.Remove(cSerialCom);
             }
             catch (InvalidOperationException)
             {
@@ -296,35 +280,21 @@ namespace MessageLoggerForm
         }
 
 
-        /****************************************************************************************************
-         * @brief: Function to put a structure into a byte array
-         * @param: obj - Object structure
-         * @return: byte[] - Byte array of the structure
-         ****************************************************************************************************/
-        byte[] StructureToByteArray(object obj)
+
+        /// <summary>
+        /// Fills an array for the list view with the interprated data.
+        /// </summary>
+        /// <param name="sMsgFrame">sMsgFrame - The message frame which shall be interprated and put into the list view</param>
+        private void FillListView(MsgStructure.tsMessageFrame sMsgFrame)
         {
-            int len = Marshal.SizeOf(obj);
 
-            byte[] arr = new byte[len];
+            //Use cdata to fill the data table
+            _cData.FillRow()
 
-            IntPtr ptr = Marshal.AllocHGlobal(len);
 
-            Marshal.StructureToPtr(obj, ptr, true);
 
-            Marshal.Copy(ptr, arr, 0, len);
 
-            Marshal.FreeHGlobal(ptr);
 
-            return arr;
-        }
-
-        /****************************************************************************************************
-         * @brief: Fills an array for the list view with the interprated data.
-         * @param: sMsgFrame - The message frame which shall be interprated and put into the list view
-         * @return: none
-         ****************************************************************************************************/
-        private unsafe void FillListView(Class_Message.tsMessageFrame sMsgFrame)
-        {
             /* Create string array with the count of list view colums */
             string[] asMsgArray = new string[listView1.Columns.Count];
 
@@ -456,239 +426,55 @@ namespace MessageLoggerForm
             }
         }
 
-
-        /****************************************************************************************************
-         * @brief: Prints the buffer handler values in the console 
-         * @param: none
-         * @return: none
-         ****************************************************************************************************/
-        private string PrintReceiveBufferHandlerValues(byte ucBufferIdx)
+        /// <summary>
+        /// Checks if serial data has been received. Retrieves it, saves the data into
+        /// a log-file when checkbox is checked and puts it into the serial class
+        /// </summary>
+        private void ProcessSerialData()
         {
-            UInt16 uiFreeSize = 0xFFFF;
-            UInt16 uiMaxSize = 0XFFFF;
-            UInt16 uiPutIdx = 0xFFFF;
-            UInt16 uiGetIdx = 0xFFFF;
-            MsgLib_GetFifoBufferHandlerData(ref uiFreeSize, ref uiMaxSize, ref uiPutIdx, ref uiGetIdx, ucBufferIdx);
-
-            string sFifoVal = "Free: " + uiFreeSize.ToString() + " ";
-            sFifoVal += "Size: " + uiMaxSize.ToString() + " ";
-            sFifoVal += "PutIdx: " + uiPutIdx.ToString() + " ";
-            sFifoVal += "GetIdx: " + uiGetIdx.ToString() + " ";
-
-            return sFifoVal;
-        }
-
-        /****************************************************************************************************
-         * @brief: Prints the buffer handler values in the console 
-         * @param: none
-         * @return: none
-         ****************************************************************************************************/
-        private string PrintMessageBufferHandlerValues(byte ucBufferIdx)
-        {
-            UInt16 uiMsgCnt = 0xFFFF;
-            UInt16 uiPutIdx = 0xFFFF;
-            UInt16 uiGetIdx = 0xFFFF;
-            MsgLib_GetMessageBufferHandlerData(ref uiMsgCnt, ref uiPutIdx, ref uiGetIdx, ucBufferIdx);
-
-            string sMsgBuffVal = "MsgCnt: " + uiMsgCnt.ToString() + " ";
-            sMsgBuffVal += "PutIdx: " + uiPutIdx.ToString() + " ";
-            sMsgBuffVal += "GetIdx: " + uiGetIdx.ToString() + " ";
-
-            return sMsgBuffVal;
-        }
-
-        /****************************************************************************************************
-         * @brief: Prints the buffer handler values in the console 
-         * @param: none
-         * @return: none
-         ****************************************************************************************************/
-        private string PrintMessageBufferMessageValues(byte ucBufferIdx, byte ucMsgEntryIndex)
-        {
-            UInt16 uiByteCnt = 0xFFFF;
-            UInt16 uiStartIdx = 0XFFFF;
-            UInt16 uiSize = 0xFFFF;
-            UInt16 uiSavedState = 0xFFFF;
-            UInt16 uiRespState = 0xFFFF;
-            MsgLib_GetMessageBufferMessageData(ref uiByteCnt, ref uiStartIdx, ref uiSize, ref uiSavedState, ref uiRespState, ucBufferIdx, ucMsgEntryIndex);
-
-            string sMsgVal = "MsgIdx: " + ucMsgEntryIndex.ToString() + " ";
-            sMsgVal += "Size: " + uiSize.ToString() + " ";
-            sMsgVal += "StartIdx: " + uiStartIdx.ToString() + " ";
-            sMsgVal += "Saved: " + uiSavedState.ToString() + " ";
-            sMsgVal += "Resp: " + uiRespState.ToString() + " ";
-
-            return sMsgVal;
-        }
-
-        /****************************************************************************************************
-         * @brief: Process the received serial data
-         * @param: none
-         * @return: none
-         ****************************************************************************************************/
-        private void ProcessSerialData(byte ucPortIndex)
-        {
-            /* Start blocking */
-            if (_mutexSerial[ucPortIndex].WaitOne(1000, true))
+            foreach (SerialCom serialCom in _lstSerialCom)
             {
-                /* Get the count of the received bytes */
-                int RecDataCnt = _receivedSerialData[ucPortIndex].Count;
+                //Get the received bytes
+                var byteStream = serialCom.cCOM_Port.ReadReceivedBytes();
 
-                if (RecDataCnt > 0)
+                // Save received data into text file
+                if (ChkBoxLogRecData.Checked == true)
                 {
-                    /* Copy data from received bytes into local array */
-                    byte[] arrayRec = new byte[RecDataCnt];
-                    _receivedSerialData[ucPortIndex].CopyTo(arrayRec, 0);
-                    _receivedSerialData[ucPortIndex].Clear();
+                    string Line = $"{DateTime.Now.TimeOfDay.ToString()} - Port: {serialCom.cCOM_Port.portName} - Put {byteStream.Count} Bytes | ";
+                    
+                    foreach(byte data in byteStream)
+                    {
+                        Line += data.ToString("X2") + " ";
+                    }                    
+                    Line += Environment.NewLine;
 
                     /* Save received data into text file */
-                    if (ChkBoxLogRecData.Checked == true)
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
                     {
-                        string Line = DateTime.Now.TimeOfDay.ToString() + " Port: " + ucPortIndex.ToString() + " Put " + RecDataCnt.ToString() + " Bytes | ";
-                        for (byte Idx = 0; Idx < RecDataCnt; Idx++)
-                        {
-                            Line += arrayRec[Idx].ToString("X2");
-                        }
-                        Line += " ";
-                        /* Save received data into text file */
-                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
-                        {
-                            file.WriteLine(Line);
-                        }
+                        file.WriteLine(Line);
                     }
-                    
-                    //Put the buffer into the serial handling
-                    MsgLib_PutDataInBuffer(arrayRec, (byte)arrayRec.Length, ucPortIndex);
-
-                    if (ChkBoxLogMsgBuffer.Checked == true)
-                    {
-                        ReadReceivedBytesFromBuffer(ucPortIndex, false);
-                    }
-
-                    /* Put the whole received buffer into the text box */
-                    //AddTextToSerialDataTextBox(arrayRec, RecDataCnt);
                 }
 
-                /* End blocking */
-                _mutexSerial[ucPortIndex].ReleaseMutex();
+                //Put the into the serial class to convert to correct message frames
+                serialCom.cSerial.DataReceived(byteStream);
             }
         }
 
-        /****************************************************************************************************
-         * @brief: Wrapper function to detect from which serial port the event was received
-         * @param: 
-         * @return: 
-         ****************************************************************************************************/
-        private void SerialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        /// <summary>
+        /// Gets the message frame from the serial class and puts it into the list view method
+        /// </summary>
+        /// <param name="cSerial"> The serial module which has generated the event </param>
+        /// <param name="queuedMessages"> The amount of messages which can be retrieved </param>
+        private void HandleNewMessage(Class_Serial cSerial, int queuedMessages)
         {
-            SerialPort sp = (SerialPort)sender;
-            SerialPort_DataReceived(sp, 0);
-        }
-
-        /****************************************************************************************************
-         * @brief: Wrapper function to detect from which serial port the event was received
-         * @param: 
-         * @return: 
-         ****************************************************************************************************/
-        private void SerialPort2_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            SerialPort sp = (SerialPort)sender;
-            SerialPort_DataReceived(sp, 1);
-        }
-
-
-        /****************************************************************************************************
-         * @brief: Interrupt handler on received data. The serial port is read and cleared afterwards. 
-         *         Puts the received data into the text box and fills the list view when a message is constructed.
-         * @param: sender - The serial port which started this event
-         * @return: none
-         ****************************************************************************************************/
-        private void SerialPort_DataReceived(SerialPort sp, byte PortIdx)
-        {
-            byte[] aucSerialPortBuffer = new byte[255];
-            int SP_Read;
-            try
+            for(int msgIdx = 0; msgIdx < queuedMessages; msgIdx++)
             {
-                /* Block multiple callbacks */
-                if (_mutexSerial[PortIdx].WaitOne(1000, true))
-                {
-                    //Read the serial port buffer
-                    SP_Read = sp.Read(aucSerialPortBuffer, 0, aucSerialPortBuffer.Length);
+                //Get the message frame
+                MsgStructure.tsMessageFrame msgFrame = cSerial.GetNextMessageFrame();
 
-                    //Clear the serial port buffer to avoid an overfill
-                    sp.DiscardInBuffer();
-
-                    for (int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
-                    {
-                        _receivedSerialData[PortIdx].Enqueue(aucSerialPortBuffer[buffIdx]);
-                    }
-
-                    /* Release mutex */
-                    _mutexSerial[PortIdx].ReleaseMutex();
-                }
+                //Update list view with new message
+                FillListView(msgFrame);
             }
-            catch(Exception ex)
-            {
-                
-                MessageBox.Show(ex.ToString());
-                sp.DiscardInBuffer();
-                return;
-            }
-        }
-
-
-        /****************************************************************************************************
-         * @brief: Handles the received bytes and fills the text box and also the list view. Was necessary
-         *         for decoupling the Data-Received thread from this handling thread otherwise the program
-         *         could be freezed when COM port is disabled.
-         * @param: 
-         * @return: none
-         ****************************************************************************************************/
-        private unsafe void HandleReceivedBytes(object state)
-        {
-            for (byte ucPortIdx = 0; ucPortIdx < 2; ucPortIdx++)
-            {
-                if (_mutexSerial[ucPortIdx].WaitOne(1000, true))
-                {
-
-                if ((ucPortIdx == 0 && serialPort1.IsOpen) || (ucPortIdx == 1 && serialPort2.IsOpen))
-                {
-                    /* When a message was constructed with the serial-handling put it into the list view */
-                    Class_Message.tsMessageFrame sMsgFrame;
-                    byte[] aucReadByteStream = new byte[255];
-                    byte ucReadCount = 0xFF;
-
-                    fixed (byte* p = aucReadByteStream)
-                    {
-                        ucReadCount = MsgLib_GetMessageFrame(out sMsgFrame, (IntPtr)p, ucPortIdx);
-                    }
-
-                    if (ucReadCount != 0xFF && ucReadCount > 0)
-                    {
-                        /* Save list view entry in text file */
-                        if (ChkBoxLogListView.Checked == true)
-                        {
-                            string localString = "Read count: " + ucReadCount.ToString() + " Buffer: ";
-
-                            for (byte ucIdx = 0; ucIdx < ucReadCount; ucIdx++)
-                            {
-                                localString += aucReadByteStream[ucIdx].ToString("X2") + " ";
-                            }
-
-                            localString += "\n";
-
-                            /* Save received data into text file */
-                            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\ListView.txt", bAppendInFile))
-                            {
-                                file.WriteLine(localString);
-                            }
-                        }
-
-                        FillListView(sMsgFrame);
-                    }
-                }
-                _mutexSerial[ucPortIdx].ReleaseMutex();
-                }
-            }            
         }
 
 
@@ -752,8 +538,15 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private void BtnComPortInit_Click(object sender, EventArgs e)
         {
-            //Init combo box 
-            GetAvailablePorts();
+            //Init combo box
+            var lstComPorts = Class_Helper.ComPorts.GetAvailablePorts();
+            foreach (string szComPort in lstComPorts)
+            {
+                if (ComboBoxSerialComPorts0.Items.Contains(szComPort) == false)
+                    ComboBoxSerialComPorts0.Items.Add(szComPort);
+                if (ComboBoxSerialComPorts1.Items.Contains(szComPort) == false)
+                    ComboBoxSerialComPorts1.Items.Add(szComPort);
+            }
         }
 
         /****************************************************************************************************
@@ -763,7 +556,7 @@ namespace MessageLoggerForm
           ****************************************************************************************************/
         private void BtnClearListView_Click(object sender, EventArgs e)
         {
-            this.listView1.Items.Clear();
+            listView1.Items.Clear();
         }
 
         /****************************************************************************************************
@@ -777,15 +570,7 @@ namespace MessageLoggerForm
             {
                 while (true)
                 {
-                    byte ucBgW_Idx = (byte)e.Argument;
-
-                    if (ucBgW_Idx == 0)
-                        HandleReceivedBytes(sender);
-                    else
-                    {
-                        ProcessSerialData(0);
-                        ProcessSerialData(1);
-                    }
+                    ProcessSerialData();
                 }
             }
             catch (Exception ex)
