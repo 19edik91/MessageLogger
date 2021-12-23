@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessageLoggerForm.Serial
 {
-    class Class_Serial
+    public class Class_Serial
     {
         //Customized event args
         public class MessageReceivedArgs : EventArgs
@@ -25,8 +25,8 @@ namespace MessageLoggerForm.Serial
 
         //Event. MessageReceived delegate specifies the signature for the MessageReceivedEvt event handler.
         //So it specifies that the event handler method in subscriber class must have an object and a MessageReceivedArgs parameter
-        public event EventHandler<MessageReceivedArgs> MessageReceivedEvt;
-
+        //public event EventHandler<MessageReceivedArgs> MessageReceivedEvt;
+        public event MessageReceived OnMessageReceived;
 
         /******** Serial-communicaiton constants **********/
         private const byte START_FLAG = 0xA5;
@@ -54,13 +54,13 @@ namespace MessageLoggerForm.Serial
         /// <summary>
         /// Method which is called from this class to notify all registered handlers
         /// </summary>
-        protected virtual void OnMessageReceived()
+        protected virtual void OnMessageReceivedFn()
         {
             //When the event is not null (has subscribers) than call the delegates
             //-> All event handlers which are registered with the MessageReceivedEvt
             MessageReceivedArgs args = new MessageReceivedArgs();
             args.messagesQueued = _msgFrames.Count;
-            MessageReceivedEvt?.Invoke(this, args);
+            OnMessageReceived?.Invoke(this, args);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace MessageLoggerForm.Serial
                     //TODO:
 
                     //Throw Event to inform about a valid message has been received
-                    OnMessageReceived();
+                    OnMessageReceivedFn();
 
                     //Enque casted message frame
                     _msgFrames.Enqueue(MsgStructure.tsMessageFrame.FromArray(_rxQueue.ToArray()));

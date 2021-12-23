@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTable\Class_Data.cs" />
+    <Compile Include="Messages\ErrorCode.cs" />
     <Compile Include="Serial\Class_Serial.cs" />
     <Compile Include="COM\Class_COM.cs" />
     <Compile Include="Messages\MsgEnum.cs" />

@@ -31,12 +31,14 @@ namespace MessageLoggerForm
             public SerialCom()
             {
                 cSerial = new Class_Serial();
+                cSerial.OnMessageReceived += new Class_Serial.MessageReceived(MessageReceivedHandler);
                 cCOM_Port = new Class_COM();
             }
 
             public SerialCom(Class_COM cCom)
             {
                 cSerial = new Class_Serial();
+                cSerial.OnMessageReceived += new Class_Serial.MessageReceived(MessageReceivedHandler);
                 cCOM_Port = cCom;
             }
         }
@@ -50,21 +52,8 @@ namespace MessageLoggerForm
         private List<SerialCom> _lstSerialCom;
         private Class_Data.cData _cData;
 
-        //Messages
-        private UInt32 ulMsgIdxCnt = 0;
-
-        const int siTryToRead = 255;
-        private byte[] aucBuffer = new byte[siTryToRead];
-        private int BufferCnt = 0;
-        private string MsgFrame;
-
-        Mutex _mutexMessage;
-
         private BackgroundWorker[] backgroundWorkersArr;
-
-        Class_Interpreter _interpreter;
         public static Class_Lables[] _labels;
-
         const bool bAppendInFile = true;
 
         /****************************************************************************************************
@@ -91,8 +80,6 @@ namespace MessageLoggerForm
             InitializeComponent();
 
             /* Initialize serial handling */
-            _mutexMessage = new Mutex();
-
             _lstSerialCom = new List<SerialCom>();
             _cData = new Class_Data.cData();
 
@@ -112,11 +99,6 @@ namespace MessageLoggerForm
             {
                 _labels[ucIdx] = new Class_Lables();
             }
-
-            //Initialize interpreter
-            //_interpreter = new Class_Interpreter(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq,
-            //                                                       ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
-            _interpreter = new Class_Interpreter();
         }
 
         /// <summary>
@@ -126,8 +108,8 @@ namespace MessageLoggerForm
         /// <param name="args"></param>
         private static void MessageReceivedHandler(object sender, Class_Serial.MessageReceivedArgs args)
         {
-             HandleNewMessage((Class_Serial)sender, int queuedMessages);
-
+            //Form1 frm = new Form1();
+             Program.form1.HandleNewMessage((Class_Serial)sender, args.messagesQueued);
         }
 
         /****************************************************************************************************
@@ -287,67 +269,29 @@ namespace MessageLoggerForm
         /// <param name="sMsgFrame">sMsgFrame - The message frame which shall be interprated and put into the list view</param>
         private void FillListView(MsgStructure.tsMessageFrame sMsgFrame)
         {
-
             //Use cdata to fill the data table
-            _cData.FillRow()
-
-
-
-
-
-            /* Create string array with the count of list view colums */
-            string[] asMsgArray = new string[listView1.Columns.Count];
-
-            DateTime sDate = DateTime.Now;
-            Class_Interpreter Interpreter = new Class_Interpreter();
-            
-            /* Add items to list view */
-            asMsgArray[0] = this.ulMsgIdxCnt.ToString();
-            ++this.ulMsgIdxCnt;
-
-            asMsgArray[1] = sDate.TimeOfDay.ToString();
-
-            /* Cast message structure to bytes */
-            byte[] aucMsgInBytes = StructureToByteArray(sMsgFrame);
-            for (byte ucBuffIdx = 0; ucBuffIdx < aucMsgInBytes.Count(); ucBuffIdx++)
-            {
-                asMsgArray[2] += aucMsgInBytes[ucBuffIdx].ToString("X2") + " ";
-            }
-
-            //asMsgArray[3] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucDestAddress);
-            //asMsgArray[4] = Interpreter.InteprateAddress(sMsgFrame.sHeader.ucSourceAddress);
-            //asMsgArray[5] = Interpreter.InteprateType(sMsgFrame.sHeader.ucMsgType);
-
-            /* Get the payload */
-            byte[] aucPayloadCpy = new byte[Class_Message.DATA_MAX_SIZE];
-
-            for(byte ucPayloadIdx = 0; ucPayloadIdx < Class_Message.DATA_MAX_SIZE; ucPayloadIdx++)
-            {
-                asMsgArray[6] += sMsgFrame.sPayload.ucData[ucPayloadIdx].ToString("X2") + " ";
-                aucPayloadCpy[ucPayloadIdx] = sMsgFrame.sPayload.ucData[ucPayloadIdx];
-            }
-
-            //asMsgArray[7] = Interpreter.InteprateIdAndPayload(sMsgFrame.sPayload.ucMsgId, aucPayloadCpy, ref asMsgArray[9]);
-            //asMsgArray[8] = Interpreter.InteprateCommand(sMsgFrame.sPayload.ucCommand);
-
-            //Interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
-            _interpreter.InteprateMessageFrame(sMsgFrame, ref asMsgArray[3], ref asMsgArray[4], ref asMsgArray[5], ref asMsgArray[8], ref asMsgArray[7], aucPayloadCpy, ref asMsgArray[9]);
-            //_interpreter.GetLables(ref sLocReqLed, ref sLocResLed, ref sLocBrightnessReq, ref sLocBrightnessRes, ref sLocAutoReq, ref sLocAutoRes, ref sLocVoltage, ref sLocCurrent, ref sLocPower, ref sLocTemp);
-
-            /* Create new list view item to enable the adding */
-            ListViewItem lvItem = new ListViewItem(asMsgArray);
+            _cData.FillRow(DateTime.Now,
+                sMsgFrame.aucData,
+                Class_Interpreter.GetAddress(sMsgFrame.ucDestAddress),
+                Class_Interpreter.GetAddress(sMsgFrame.ucSourceAddress),
+                Class_Interpreter.GetType((MsgEnum.teMessageType)sMsgFrame.ucMsgType),
+                sMsgFrame.ucQueryID,
+                Class_Interpreter.GetID((MsgEnum.teMessageId)sMsgFrame.ucMsgId),
+                Class_Interpreter.GetCommand((MsgEnum.teMessageCmd)sMsgFrame.ucCommand),
+                Class_Interpreter.GetPayload(sMsgFrame));
 
             /* Check if list view shall be updated */
             if (ChkBoxUpdateListView.Checked == true)
             {
-                if (ChkBoxShowACK.Checked == false && asMsgArray[5].Contains("ACK"))
+                if (ChkBoxShowACK.Checked == false 
+                    && sMsgFrame.ucMsgType == ((int)MsgEnum.teMessageType.eTypeAck))
                 {
                     //Do nothing
                 }
                 else
                 {
-                    /* Call per invoke to put the item to the list view */
-                    this.Invoke((MethodInvoker)delegate
+                   /* Call per invoke to put the item to the list view */
+                   this.Invoke((MethodInvoker)delegate
                    {
                        for (byte ucLblIdx = 0; ucLblIdx < ucUsedLables; ucLblIdx++)
                        {
@@ -357,7 +301,7 @@ namespace MessageLoggerForm
                            LblBrightnessResp.Text = _labels[ucLblIdx].szBrightnessRes;
                            LblAutomaticModeReq.Text = _labels[ucLblIdx].szAutoReq;
                            LblAutomaticModeRes.Text = _labels[ucLblIdx].szAutoRes;
-
+            
                            switch (ucLblIdx)
                            {
                                 case 0:
@@ -368,7 +312,7 @@ namespace MessageLoggerForm
                                     LblTemperature_0.Text = _labels[ucLblIdx].szTemp;
                                     break;
                                 }
-
+            
                                case 1:
                                 {
                                     LblVoltage_1.Text = _labels[ucLblIdx].szVoltage;
@@ -377,7 +321,7 @@ namespace MessageLoggerForm
                                     LblTemperature_1.Text = _labels[ucLblIdx].szTemp;
                                     break;
                                 }
-
+            
                                case 2:
                                 {
                                     LblVoltage_2.Text = _labels[ucLblIdx].szVoltage;
@@ -391,20 +335,7 @@ namespace MessageLoggerForm
                            }
                        }
 
-                       //LblLedStatusReq.Text = sLocReqLed;
-                       //LblLedStatusResp.Text = sLocResLed;
-                       //LblBrightnessReq.Text = sLocBrightnessReq;
-                       //LblBrightnessResp.Text = sLocBrightnessRes;
-                       //LblAutomaticModeReq.Text = sLocAutoReq;
-                       //LblAutomaticModeRes.Text = sLocAutoRes;
-                       //
-                       //
-                       //LblVoltage_0.Text = sLocVoltage;
-                       //LblCurrent_0.Text = sLocCurrent;
-                       //LblPower_0.Text = sLocPower;
-                       //LblTemperature_0.Text = sLocTemp;
-
-                       listView1.Items.Insert(0, lvItem);
+                       _cData.AddNewestRowToListView();
                    });
                 }
             }
@@ -412,11 +343,12 @@ namespace MessageLoggerForm
             /* Save list view entry in text file */
             if(ChkBoxLogListView.Checked == true)
             {
-                string localString = "";
-                foreach (string sArrEntry in asMsgArray)
-                {
-                    localString += sArrEntry + " ";
-                }
+                //TODO: Check for correct conversion
+                string localString = _cData.dt.Rows[0].ToString();
+                //foreach (string sArrEntry in asMsgArray)
+                //{
+                //    localString += sArrEntry + " ";
+                //}
 
                 /* Save received data into text file */
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\ListView.txt", bAppendInFile))
@@ -437,26 +369,30 @@ namespace MessageLoggerForm
                 //Get the received bytes
                 var byteStream = serialCom.cCOM_Port.ReadReceivedBytes();
 
-                // Save received data into text file
-                if (ChkBoxLogRecData.Checked == true)
+                //Check if list contains any data
+                if (byteStream.Count > 0)
                 {
-                    string Line = $"{DateTime.Now.TimeOfDay.ToString()} - Port: {serialCom.cCOM_Port.portName} - Put {byteStream.Count} Bytes | ";
-                    
-                    foreach(byte data in byteStream)
+                    // Save received data into text file
+                    if (ChkBoxLogRecData.Checked == true)
                     {
-                        Line += data.ToString("X2") + " ";
-                    }                    
-                    Line += Environment.NewLine;
+                        string Line = $"{DateTime.Now.TimeOfDay.ToString()} - Port: {serialCom.cCOM_Port.portName} - Put {byteStream.Count} Bytes | ";
 
-                    /* Save received data into text file */
-                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
-                    {
-                        file.WriteLine(Line);
+                        foreach (byte data in byteStream)
+                        {
+                            Line += data.ToString("X2") + " ";
+                        }
+                        Line += Environment.NewLine;
+
+                        /* Save received data into text file */
+                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
+                        {
+                            file.WriteLine(Line);
+                        }
                     }
-                }
 
-                //Put the into the serial class to convert to correct message frames
-                serialCom.cSerial.DataReceived(byteStream);
+                    //Put the list into the serial class to convert to correct message frames
+                    serialCom.cSerial.DataReceived(byteStream);
+                }
             }
         }
 
@@ -476,60 +412,6 @@ namespace MessageLoggerForm
                 FillListView(msgFrame);
             }
         }
-
-
-        /****************************************************************************************************
-         * @brief: Handles the received bytes and fills the text box and also the list view. Was necessary
-         *         for decoupling the Data-Received thread from this handling thread otherwise the program
-         *         could be freezed when COM port is disabled.
-         * @param: 
-         * @return: none
-         ****************************************************************************************************/
-        private unsafe byte[] ReadReceivedBytesFromBuffer(byte ucPortIdx, bool bUpdateBuffer)
-        {
-            /* Copy data from received bytes into local array */
-            byte ucBuffCnt = MsgLib_GetWrittenBufferSize(ucPortIdx);
-            byte[] arrayRec = new byte[ucBuffCnt];
-
-            if (ucBuffCnt > 0)
-            {
-                string szDateTime = DateTime.Now.TimeOfDay.ToString();
-                string sFifoValues = "FifoValues: " + PrintReceiveBufferHandlerValues(ucPortIdx);
-                string sMsgBuffValues = "MsgBuffValues: " + PrintMessageBufferHandlerValues(ucPortIdx);
-                string sMsgValues = "MsgValues: " + "\n";
-                for (int MsgIdx = 0; MsgIdx < 10; MsgIdx++)
-                {
-                    sMsgValues += PrintMessageBufferMessageValues(ucPortIdx, Convert.ToByte(MsgIdx));
-                    sMsgValues += "\n";
-                }
-
-
-                fixed (byte* p = arrayRec)
-                {
-                    MsgLib_ReadBuffer((IntPtr)p, ucBuffCnt, ucPortIdx, bUpdateBuffer);
-                }
-
-                /* Save data into text file */
-                string Line = "BufferCnt: " + ucBuffCnt.ToString() + "   ";
-                for (byte Idx = 0; Idx < ucBuffCnt; Idx++)
-                {
-                    Line += arrayRec[Idx].ToString("X2") + " ";
-                }
-                Line += "\n\n";
-
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Buffer_Lines.txt", bAppendInFile))
-                {
-                    file.WriteLine(szDateTime);
-                    file.WriteLine(sFifoValues);
-                    file.WriteLine(sMsgBuffValues);
-                    file.WriteLine(sMsgValues);
-                    file.WriteLine(Line);
-                }               
-            }
-            return arrayRec;
-        }
-
-
 
         /****************************************************************************************************
          * @brief: Checks for the available COM ports

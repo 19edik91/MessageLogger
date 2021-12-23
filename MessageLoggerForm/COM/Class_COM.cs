@@ -149,7 +149,7 @@ namespace MessageLoggerForm.COM
             List<byte> lstData = new List<byte>();
 
             //Go trough each entry of the queue and save it into the list
-            foreach (byte data in _receivedData)
+            while(_receivedData.Count > 0)
             {
                 lstData.Add(_receivedData.Dequeue());
             }
