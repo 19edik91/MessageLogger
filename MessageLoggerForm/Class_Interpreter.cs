@@ -209,6 +209,12 @@ namespace MessageLoggerForm
                         szRet = $"Request: {payload.bRequest:X2} | Response: {payload.bResponse:X2}";
                         break;
                     }
+
+                case MsgEnum.teMessageId.eMsgDebug:
+                    {
+                        szRet = Encoding.GetEncoding("UTF-8").GetString(sMsgFrame.aucData);                        
+                        break;
+                    }
                 default:
                     break;
             }

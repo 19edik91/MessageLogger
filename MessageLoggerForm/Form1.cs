@@ -139,23 +139,24 @@ namespace MessageLoggerForm
         /// <summary>
         /// Gets the string from the selected combobox.
         /// </summary>
-        /// <param name="btn"> The button which was pressed </param>
+        /// <param name="tabCtrlSelectIdx"> The selected tab control index </param>
         /// <returns></returns>
-        private string GetPortName(Button btn) => btn.Name switch
+        private string GetPortName(int tabCtrlSelectIdx ) => tabCtrlSelectIdx switch
         {
-            "BtnComPortStart0" => ComboBoxSerialComPorts0.Text,
-            "BtnComPortStart1" => ComboBoxSerialComPorts1.Text,
+            0 => ComboBoxSerialComPorts0.Text,
+            1 => ComboBoxSerialComPorts1.Text,
             _ => throw new ArgumentException("Invalid COM-Port button text")
         };
 
-        private void SetComPortStatusLblColor(Button btn, Color clr)
+
+        private void SetComPortStatusLblColor(int tabCtrlSelectIdx, Color clr)
         {
-            if (btn.Name == "BtnComPortStart0")
-                LblComPortStatus0.BackColor = clr;
-            else if (btn.Name == "BtnComPortStart1")
-                LblComPortStatus0.BackColor = clr;
-            else
-                throw new ArgumentException("Invalid COM-Port button text");
+            switch(tabCtrlSelectIdx)
+            {
+                case 0: LblComPortStatus0.BackColor = clr; break;
+                case 1: LblComPortStatus1.BackColor = clr; break;
+                default: throw new ArgumentException("Invalid COM-Port button text"); break;
+            }                
         }
 
         
@@ -167,24 +168,30 @@ namespace MessageLoggerForm
           ****************************************************************************************************/
         private void BtnComPortStart_Click(object sender, EventArgs e)
         {
-            Button btn = (Button)sender;
-
             //Create new COM-Port object
             Class_COM cComPort = new Class_COM();
 
             try
             {
                 //Open the COM-Port with the selected name
-                cComPort.OpenPort(GetPortName(btn));
+                cComPort.OpenPort(GetPortName(tabCtrlSerialInterface.SelectedIndex));
 
                 //Change color of the label
-                SetComPortStatusLblColor(btn, Color.Green);
+                SetComPortStatusLblColor(tabCtrlSerialInterface.SelectedIndex, Color.Green);
 
                 //Add a new serial object to COM-Port to list
                 SerialCom serialCom = new SerialCom(cComPort);
                 InitializeBackgroundWorker(serialCom);
 
                 _lstSerialCom.Add(serialCom);
+            }
+            catch(ArgumentException)
+            {
+                MessageBox.Show("No valid COM-Port selected!");
+            }
+            catch(UnauthorizedAccessException)
+            {
+                MessageBox.Show("Port already open!");
             }
             catch(InvalidOperationException)
             {
@@ -200,24 +207,22 @@ namespace MessageLoggerForm
          * @return: none
          ****************************************************************************************************/
         private void BtnComPortStop_Click(object sender, EventArgs e)
-        {
-            Button btn = (Button)sender;
-            
+        {           
             try
             {
                 //Find the serial COM class in the serial-com-List
-                SerialCom cSerialCom = _lstSerialCom.Find(x => x.cCOM_Port.portName == GetPortName(btn));
+                SerialCom cSerialCom = _lstSerialCom.Find(x => x.cCOM_Port.portName == GetPortName(tabCtrlSerialInterface.SelectedIndex));
 
                 //Close the COM-Port
                 cSerialCom.cCOM_Port.ClosePort();
 
                 //Change the COM-Port color
-                SetComPortStatusLblColor(btn, Color.Red);
+                SetComPortStatusLblColor(tabCtrlSerialInterface.SelectedIndex, Color.Red);
 
                 //Delete this entry from the COM-Port list
                 _lstSerialCom.Remove(cSerialCom);
             }
-            catch (InvalidOperationException)
+            catch(NullReferenceException)
             {
                 MessageBox.Show("COM Port has to be opened first");
             }
@@ -497,6 +502,30 @@ namespace MessageLoggerForm
             sMsgFrame.ucCommand = ((byte)MsgEnum.teMessageCmd.eCmdSet);
             sMsgFrame.ucDestAddress = MsgEnum.ADDRESS_SLAVE1;
             sMsgFrame.ucMsgType = (byte)MsgEnum.teMessageType.eTypeRequest;
+            sMsgFrame.ucPayloadLen = (byte)sMsgFrame.aucData.Length;
+            sMsgFrame.ucPreamble = MsgEnum.PREAMBE;
+            sMsgFrame.ucQueryID = 1;
+            sMsgFrame.ucSourceAddress = MsgEnum.ADDRESS_MASTER;
+            sMsgFrame.ulCrc32 = 0xFFFFFFFF;
+
+            //Create bus frame
+            Queue<byte> queByteStream = _lstSerialCom[tabCtrlSerialInterface.SelectedIndex].cSerial.CreateBusMessageFrame(sMsgFrame);
+
+            //Send over bus
+            _lstSerialCom[tabCtrlSerialInterface.SelectedIndex].cCOM_Port.WriteBytes(queByteStream.ToArray());
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MsgStructure.tsMsgDebug sDebug = new MsgStructure.tsMsgDebug();
+            sDebug.aucDebugMsg = "TestAffe".ToCharArray();
+
+            MsgStructure.tsMessageFrame sMsgFrame = new MsgStructure.tsMessageFrame();
+            sMsgFrame.aucData = Encoding.GetEncoding("UTF-8").GetBytes(sDebug.aucDebugMsg);
+            sMsgFrame.ucMsgId = (byte)MsgEnum.teMessageId.eMsgDebug;
+            sMsgFrame.ucCommand = ((byte)MsgEnum.teMessageCmd.eNoCmd);
+            sMsgFrame.ucDestAddress = MsgEnum.ADDRESS_SLAVE1;
+            sMsgFrame.ucMsgType = (byte)MsgEnum.teMessageType.eTypeDebug;
             sMsgFrame.ucPayloadLen = (byte)sMsgFrame.aucData.Length;
             sMsgFrame.ucPreamble = MsgEnum.PREAMBE;
             sMsgFrame.ucQueryID = 1;

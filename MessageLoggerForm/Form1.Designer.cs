@@ -95,6 +95,7 @@
             this.BtnComPortStart1 = new System.Windows.Forms.Button();
             this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.btnSendDebug = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -214,6 +215,7 @@
             // 
             // grpBoardStatus
             // 
+            this.grpBoardStatus.Controls.Add(this.btnSendDebug);
             this.grpBoardStatus.Controls.Add(this.btnTestSend);
             this.grpBoardStatus.Controls.Add(this.groupBox2);
             this.grpBoardStatus.Controls.Add(this.ChkBoxShowACK);
@@ -861,6 +863,16 @@
             this.label8.TabIndex = 2;
             this.label8.Text = "COM Port:";
             // 
+            // btnSendDebug
+            // 
+            this.btnSendDebug.Location = new System.Drawing.Point(142, 348);
+            this.btnSendDebug.Name = "btnSendDebug";
+            this.btnSendDebug.Size = new System.Drawing.Size(124, 23);
+            this.btnSendDebug.TabIndex = 12;
+            this.btnSendDebug.Text = "Send Debug message";
+            this.btnSendDebug.UseVisualStyleBackColor = true;
+            this.btnSendDebug.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -962,6 +974,7 @@
         private System.Windows.Forms.Label LblTemperature_1;
         private System.Windows.Forms.Label LblTemperature_2;
         private System.Windows.Forms.Button btnTestSend;
+        private System.Windows.Forms.Button btnSendDebug;
     }
 }
 
