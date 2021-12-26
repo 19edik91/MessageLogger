@@ -68,16 +68,16 @@ namespace MessageLoggerForm.Data
 
                 lv.View = View.Details;
                 lv.Items.Clear();
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Index.ToString(), Text = teDataTable.Index.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.TimeStamp.ToString(), Text = teDataTable.TimeStamp.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.ByteStream.ToString(), Text = teDataTable.ByteStream.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Destination.ToString(), Text = teDataTable.Destination.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Source.ToString(), Text = teDataTable.Source.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Kind.ToString(), Text = teDataTable.Kind.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.QueryId.ToString(), Text = teDataTable.QueryId.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Object.ToString(), Text = teDataTable.Object.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Command.ToString(), Text = teDataTable.Command.ToString(), Width = -1 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Interpretation.ToString(), Text = teDataTable.Interpretation.ToString(), Width = -1 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Index.ToString(), Text = teDataTable.Index.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.TimeStamp.ToString(), Text = teDataTable.TimeStamp.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.ByteStream.ToString(), Text = teDataTable.ByteStream.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Destination.ToString(), Text = teDataTable.Destination.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Source.ToString(), Text = teDataTable.Source.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Kind.ToString(), Text = teDataTable.Kind.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.QueryId.ToString(), Text = teDataTable.QueryId.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Object.ToString(), Text = teDataTable.Object.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Command.ToString(), Text = teDataTable.Command.ToString(), Width = -2 });
+                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Interpretation.ToString(), Text = teDataTable.Interpretation.ToString(), Width = -2 });
             }
 
             /// <summary>
@@ -86,6 +86,9 @@ namespace MessageLoggerForm.Data
             /// <returns></returns>
             public int GetLastIndex()
             {
+                if (dt.Rows.Count == 0)
+                    return 0;
+
                 return Convert.ToInt32(dt.Rows?[0][teDataTable.Index.ToString()]);
             }
 

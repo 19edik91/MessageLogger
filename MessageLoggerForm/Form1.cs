@@ -27,12 +27,15 @@ namespace MessageLoggerForm
         {
             public Class_COM cCOM_Port;
             public Class_Serial cSerial;
+            public BackgroundWorker bgw;
 
             public SerialCom()
             {
                 cSerial = new Class_Serial();
                 cSerial.OnMessageReceived += new Class_Serial.MessageReceived(MessageReceivedHandler);
                 cCOM_Port = new Class_COM();
+
+                
             }
 
             public SerialCom(Class_COM cCom)
@@ -83,14 +86,16 @@ namespace MessageLoggerForm
             _lstSerialCom = new List<SerialCom>();
             _cData = new Class_Data.cData();
 
+
+            _cData.lv.Dock = DockStyle.Fill;
+            _cData.lv.GridLines = true;
+            tabPage1.Controls.Add(_cData.lv);
+
             //Init combo boxes with available COM-Ports
             BtnComPortInit_Click(default, default);
 
             //Activate the double buffered option in the list view
-            SetDoubleBufferd(listView1);
-
-            //Initialize Background worker
-            InitializeBackgroundWorker();
+            SetDoubleBufferd(_cData.lv);
 
             //Initialize lables class
             _labels = new Class_Lables[ucUsedLables];
@@ -117,27 +122,18 @@ namespace MessageLoggerForm
         * @param: none
         * @return: none
         ****************************************************************************************************/
-        void InitializeBackgroundWorker()
+        void InitializeBackgroundWorker(SerialCom serialCom)
         {
-            /* Initializes background worker. At first only one */
-            byte ucBgW_Count = 1;
+            /* Create new background worker thread */
+            serialCom.bgw = new BackgroundWorker();
 
-            backgroundWorkersArr = new BackgroundWorker[ucBgW_Count];
+            /* Link them to the handler */
+            serialCom.bgw.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
+            serialCom.bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_Finished);
+            serialCom.bgw.WorkerSupportsCancellation = true;
 
-            for(byte ucBgW_Idx = 0; ucBgW_Idx < ucBgW_Count; ucBgW_Idx++)
-            {
-                /* Create new background worker thread */
-                backgroundWorkersArr[ucBgW_Idx] = new BackgroundWorker();
-
-                /* Link them to the handler */
-                backgroundWorkersArr[ucBgW_Idx].DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
-                backgroundWorkersArr[ucBgW_Idx].RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_Finished);
-
-                backgroundWorkersArr[ucBgW_Idx].WorkerSupportsCancellation = true;
-
-                /* Start the background worker */
-                backgroundWorkersArr[ucBgW_Idx].RunWorkerAsync(ucBgW_Idx);
-            }
+            /* Start the background worker */
+            serialCom.bgw.RunWorkerAsync(serialCom);
         }
 
         /// <summary>
@@ -145,7 +141,7 @@ namespace MessageLoggerForm
         /// </summary>
         /// <param name="btn"> The button which was pressed </param>
         /// <returns></returns>
-        private string GetPortName(Button btn) => btn.Text switch
+        private string GetPortName(Button btn) => btn.Name switch
         {
             "BtnComPortStart0" => ComboBoxSerialComPorts0.Text,
             "BtnComPortStart1" => ComboBoxSerialComPorts1.Text,
@@ -154,9 +150,9 @@ namespace MessageLoggerForm
 
         private void SetComPortStatusLblColor(Button btn, Color clr)
         {
-            if (btn.Text == "BtnComPortStart0")
+            if (btn.Name == "BtnComPortStart0")
                 LblComPortStatus0.BackColor = clr;
-            else if (btn.Text == "BtnComPortStart1")
+            else if (btn.Name == "BtnComPortStart1")
                 LblComPortStatus0.BackColor = clr;
             else
                 throw new ArgumentException("Invalid COM-Port button text");
@@ -185,7 +181,10 @@ namespace MessageLoggerForm
                 SetComPortStatusLblColor(btn, Color.Green);
 
                 //Add a new serial object to COM-Port to list
-                _lstSerialCom.Add(new SerialCom(cComPort));
+                SerialCom serialCom = new SerialCom(cComPort);
+                InitializeBackgroundWorker(serialCom);
+
+                _lstSerialCom.Add(serialCom);
             }
             catch(InvalidOperationException)
             {
@@ -255,7 +254,7 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private void ResizeListViewColumns(object sender, EventArgs e)
         {
-            foreach (ColumnHeader column in listView1.Columns)
+            foreach (ColumnHeader column in _cData.lv.Columns)
             {
                 column.Width = -2;
             }
@@ -362,37 +361,34 @@ namespace MessageLoggerForm
         /// Checks if serial data has been received. Retrieves it, saves the data into
         /// a log-file when checkbox is checked and puts it into the serial class
         /// </summary>
-        private void ProcessSerialData()
+        private void ProcessSerialData(SerialCom serialCom)
         {
-            foreach (SerialCom serialCom in _lstSerialCom)
+            //Get the received bytes
+            var byteStream = serialCom.cCOM_Port.ReadReceivedBytes();
+
+            //Check if list contains any data
+            if (byteStream.Count > 0)
             {
-                //Get the received bytes
-                var byteStream = serialCom.cCOM_Port.ReadReceivedBytes();
-
-                //Check if list contains any data
-                if (byteStream.Count > 0)
+                // Save received data into text file
+                if (ChkBoxLogRecData.Checked == true)
                 {
-                    // Save received data into text file
-                    if (ChkBoxLogRecData.Checked == true)
+                    string Line = $"{DateTime.Now.TimeOfDay.ToString()} - Port: {serialCom.cCOM_Port.portName} - Put {byteStream.Count} Bytes | ";
+
+                    foreach (byte data in byteStream)
                     {
-                        string Line = $"{DateTime.Now.TimeOfDay.ToString()} - Port: {serialCom.cCOM_Port.portName} - Put {byteStream.Count} Bytes | ";
-
-                        foreach (byte data in byteStream)
-                        {
-                            Line += data.ToString("X2") + " ";
-                        }
-                        Line += Environment.NewLine;
-
-                        /* Save received data into text file */
-                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
-                        {
-                            file.WriteLine(Line);
-                        }
+                        Line += data.ToString("X2") + " ";
                     }
+                    Line += Environment.NewLine;
 
-                    //Put the list into the serial class to convert to correct message frames
-                    serialCom.cSerial.DataReceived(byteStream);
+                    /* Save received data into text file */
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\kraemere\Desktop\Lines.txt", bAppendInFile))
+                    {
+                        file.WriteLine(Line);
+                    }
                 }
+
+                //Put the list into the serial class to convert to correct message frames
+                serialCom.cSerial.DataReceived(byteStream);
             }
         }
 
@@ -438,7 +434,7 @@ namespace MessageLoggerForm
           ****************************************************************************************************/
         private void BtnClearListView_Click(object sender, EventArgs e)
         {
-            listView1.Items.Clear();
+            _cData.lv.Items.Clear();
         }
 
         /****************************************************************************************************
@@ -450,9 +446,11 @@ namespace MessageLoggerForm
         {
             try
             {
+                //BackgroundWorker bgw = sender as BackgroundWorker;
+
                 while (true)
                 {
-                    ProcessSerialData();
+                    ProcessSerialData((SerialCom)e.Argument);
                 }
             }
             catch (Exception ex)
@@ -471,6 +469,45 @@ namespace MessageLoggerForm
         {
             BackgroundWorker bgw = (BackgroundWorker)sender;
             bgw.Dispose();
+        }
+
+
+        /// <summary>
+        /// Sends a test message on the bus. Only for tes purposes!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnTestSend_Click(object sender, EventArgs e)
+        {
+            //Create a message frame first (Frame + Payload structure)
+            MsgStructure.tMsgRequestOutputState sMsg = new MsgStructure.tMsgRequestOutputState();
+            sMsg.ucBrightness = 55;
+            sMsg.ucAutomaticModeActive = 1;
+            sMsg.ucBurnTime = 20;
+            sMsg.ucInitMenuActive = 0;
+            sMsg.ucInitMenuActiveInv = 1;
+            sMsg.ucLedStatus = 1;
+            sMsg.ucMotionDetectionOnOff = 1;
+            sMsg.ucNightModeOnOff = 0;
+            sMsg.ucOutputIndex = 2;
+
+            MsgStructure.tsMessageFrame sMsgFrame = new MsgStructure.tsMessageFrame();
+            sMsgFrame.aucData = Class_Helper.Serializer.SerializeMarsh(sMsg);
+            sMsgFrame.ucMsgId = (byte)MsgEnum.teMessageId.eMsgRequestOutputStatus;
+            sMsgFrame.ucCommand = ((byte)MsgEnum.teMessageCmd.eCmdSet);
+            sMsgFrame.ucDestAddress = MsgEnum.ADDRESS_SLAVE1;
+            sMsgFrame.ucMsgType = (byte)MsgEnum.teMessageType.eTypeRequest;
+            sMsgFrame.ucPayloadLen = (byte)sMsgFrame.aucData.Length;
+            sMsgFrame.ucPreamble = MsgEnum.PREAMBE;
+            sMsgFrame.ucQueryID = 1;
+            sMsgFrame.ucSourceAddress = MsgEnum.ADDRESS_MASTER;
+            sMsgFrame.ulCrc32 = 0xFFFFFFFF;
+
+            //Create bus frame
+            Queue<byte> queByteStream = _lstSerialCom[tabCtrlSerialInterface.SelectedIndex].cSerial.CreateBusMessageFrame(sMsgFrame);
+
+            //Send over bus
+            _lstSerialCom[tabCtrlSerialInterface.SelectedIndex].cCOM_Port.WriteBytes(queByteStream.ToArray());
         }
     }
 }

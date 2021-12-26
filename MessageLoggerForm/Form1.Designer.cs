@@ -28,17 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.LVIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVDestination = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVSource = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVKind = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVPayload = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVObject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVCommand = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.LVInterpretation = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -49,6 +38,7 @@
             this.BtnClearListView = new System.Windows.Forms.Button();
             this.BtnResizeListView = new System.Windows.Forms.Button();
             this.grpBoardStatus = new System.Windows.Forms.GroupBox();
+            this.btnTestSend = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.LblTemperature_0 = new System.Windows.Forms.Label();
@@ -106,7 +96,6 @@
             this.ComboBoxSerialComPorts1 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
@@ -123,76 +112,6 @@
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listView1
-            // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.LVIndex,
-            this.LVTime,
-            this.LVMessage,
-            this.LVDestination,
-            this.LVSource,
-            this.LVKind,
-            this.LVPayload,
-            this.LVObject,
-            this.LVCommand,
-            this.LVInterpretation});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.FullRowSelect = true;
-            this.listView1.GridLines = true;
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(3, 3);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(1088, 729);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            // 
-            // LVIndex
-            // 
-            this.LVIndex.Text = "Index";
-            this.LVIndex.Width = 58;
-            // 
-            // LVTime
-            // 
-            this.LVTime.Text = "Time";
-            this.LVTime.Width = 110;
-            // 
-            // LVMessage
-            // 
-            this.LVMessage.Text = "Message";
-            this.LVMessage.Width = 63;
-            // 
-            // LVDestination
-            // 
-            this.LVDestination.Text = "Destination";
-            this.LVDestination.Width = 80;
-            // 
-            // LVSource
-            // 
-            this.LVSource.Text = "Source";
-            // 
-            // LVKind
-            // 
-            this.LVKind.Text = "Kind";
-            // 
-            // LVPayload
-            // 
-            this.LVPayload.Text = "Payload";
-            // 
-            // LVObject
-            // 
-            this.LVObject.Text = "Object";
-            // 
-            // LVCommand
-            // 
-            this.LVCommand.Text = "Command";
-            this.LVCommand.Width = 87;
-            // 
-            // LVInterpretation
-            // 
-            this.LVInterpretation.Text = "Interpretation";
-            this.LVInterpretation.Width = 120;
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -206,7 +125,6 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.listView1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -296,6 +214,7 @@
             // 
             // grpBoardStatus
             // 
+            this.grpBoardStatus.Controls.Add(this.btnTestSend);
             this.grpBoardStatus.Controls.Add(this.groupBox2);
             this.grpBoardStatus.Controls.Add(this.ChkBoxShowACK);
             this.grpBoardStatus.Controls.Add(this.ChkBoxUpdateListView);
@@ -308,6 +227,16 @@
             this.grpBoardStatus.TabIndex = 5;
             this.grpBoardStatus.TabStop = false;
             this.grpBoardStatus.Text = "Board Status";
+            // 
+            // btnTestSend
+            // 
+            this.btnTestSend.Location = new System.Drawing.Point(12, 348);
+            this.btnTestSend.Name = "btnTestSend";
+            this.btnTestSend.Size = new System.Drawing.Size(124, 23);
+            this.btnTestSend.TabIndex = 11;
+            this.btnTestSend.Text = "Send Test message";
+            this.btnTestSend.UseVisualStyleBackColor = true;
+            this.btnTestSend.Click += new System.EventHandler(this.btnTestSend_Click);
             // 
             // groupBox2
             // 
@@ -941,7 +870,6 @@
             this.Name = "Form1";
             this.Text = "Message Logger";
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
@@ -967,18 +895,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader LVIndex;
-        private System.Windows.Forms.ColumnHeader LVTime;
-        private System.Windows.Forms.ColumnHeader LVMessage;
-        private System.Windows.Forms.ColumnHeader LVDestination;
-        private System.Windows.Forms.ColumnHeader LVSource;
-        private System.Windows.Forms.ColumnHeader LVKind;
-        private System.Windows.Forms.ColumnHeader LVPayload;
-        private System.Windows.Forms.ColumnHeader LVObject;
-        private System.Windows.Forms.ColumnHeader LVCommand;
-        private System.Windows.Forms.ColumnHeader LVInterpretation;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -1045,6 +961,7 @@
         private System.Windows.Forms.Label LblPower_1;
         private System.Windows.Forms.Label LblTemperature_1;
         private System.Windows.Forms.Label LblTemperature_2;
+        private System.Windows.Forms.Button btnTestSend;
     }
 }
 

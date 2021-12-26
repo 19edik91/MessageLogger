@@ -101,15 +101,15 @@ namespace MessageLoggerForm.Serial
                     //Disable receive timeout control
                     //TODO:
 
-                    //Throw Event to inform about a valid message has been received
-                    OnMessageReceivedFn();
-
                     //Enque casted message frame
                     _msgFrames.Enqueue(MsgStructure.tsMessageFrame.FromArray(_rxQueue.ToArray()));
                     _rxQueue.Clear();
 
                     //Change state back to start
                     _eReceiveState = teReceiveState.eStart;
+
+                    //Throw Event to inform about a valid message has been received
+                    OnMessageReceivedFn();
                 }
                 else
                 {
@@ -162,6 +162,42 @@ namespace MessageLoggerForm.Serial
         public MsgStructure.tsMessageFrame GetNextMessageFrame()
         {
             return _msgFrames.Dequeue();
+        }
+
+
+
+
+        /********************** Handling to send data over serial interface ******************************/
+        
+        /// <summary>
+        /// Creates a byte stream of the given message which contains the bus-flags as well
+        /// </summary>
+        /// <param name="sMsgFrame"> Structure of the whole message frame </param>
+        public Queue<byte> CreateBusMessageFrame(MsgStructure.tsMessageFrame sMsgFrame)
+        {
+            Queue<byte> queByte = new Queue<byte>();
+
+            //Put the start flag first into the queue
+            queByte.Enqueue(START_FLAG);
+
+            //Go trough the message structure and check for necessary
+            //flags
+            foreach(byte ucByte in sMsgFrame.ToArray())
+            {
+                if(ucByte == START_FLAG ||ucByte == END_FLAG || ucByte == ESCAPE_FLAG)
+                {
+                    //A flag was found. Put an ESC-Flag before next byte
+                    queByte.Enqueue(ESCAPE_FLAG);
+                }
+
+                //Enqueue data byte
+                queByte.Enqueue(ucByte);
+            }
+
+            //Put an end flag at least position
+            queByte.Enqueue(END_FLAG);
+
+            return queByte;
         }
     }
 }

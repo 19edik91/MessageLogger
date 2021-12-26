@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace MessageLoggerForm.COM
 {
@@ -17,6 +18,8 @@ namespace MessageLoggerForm.COM
         private SerialPort _serialPort = default;
         private Queue<byte> _receivedData = default;
         public string portName { get => _serialPort.PortName; }
+
+        private Mutex _mut = new Mutex();
 
         public Class_COM(int baudRate = 38400)
         {
@@ -73,10 +76,14 @@ namespace MessageLoggerForm.COM
                 //Discard port buffer to avoid an overfill
                 // _serialPort.DiscardInBuffer();
 
+                _mut.WaitOne(200);
+
                 for(int buffIdx = 0; buffIdx < SP_Read; buffIdx++)
                 {
                     _receivedData.Enqueue(aucPortBuffer[buffIdx]);
                 }
+
+                _mut.ReleaseMutex();
             }
             catch(Exception exc)
             {
@@ -97,8 +104,7 @@ namespace MessageLoggerForm.COM
         /// <param name="szPortName"></param>
         public void OpenPort(string szPortName)
         {
-            if (_serialPort == default 
-                && _serialPort.IsOpen == false)
+            if (_serialPort == default)
             {
                 //Create new serial port object
                 _serialPort = new SerialPort(szPortName, _baudRate, Parity.None, 8, StopBits.One);
@@ -122,8 +128,7 @@ namespace MessageLoggerForm.COM
         public void ClosePort()
         {
             //Check first if the serial port is open
-            if(_serialPort != null 
-                && _serialPort.IsOpen == true)
+            if(_serialPort != null)
             {
                 //Close port
                 _serialPort.Close();
@@ -148,12 +153,32 @@ namespace MessageLoggerForm.COM
             //Create new list
             List<byte> lstData = new List<byte>();
 
-            //Go trough each entry of the queue and save it into the list
-            while(_receivedData.Count > 0)
+            if (_receivedData.Count > 0)
             {
-                lstData.Add(_receivedData.Dequeue());
+                _mut.WaitOne(200);
+
+                //Go trough each entry of the queue and save it into the list
+                while (_receivedData.Count > 0)
+                {
+                    lstData.Add(_receivedData.Dequeue());
+                }
+
+                _mut.ReleaseMutex();
             }
             return lstData;
+        }
+
+        /// <summary>
+        /// Writes the bytes into the serial COM port.
+        /// </summary>
+        /// <param name="lstData"> List with the byte stream which shall be send </param>
+        public void WriteBytes(List<byte> lstData)
+        {
+            _serialPort.Write(lstData.ToArray(), default, lstData.Count);
+        }
+        public void WriteBytes(byte[] aucArray)
+        {
+            _serialPort.Write(aucArray, default, aucArray.Length);
         }
         
 
