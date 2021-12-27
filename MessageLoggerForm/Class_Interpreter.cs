@@ -97,126 +97,129 @@ namespace MessageLoggerForm
 
             string szRet = "";
 
-            switch (eMsgID.ToEnum(sMsgFrame.ucMsgId))
+            if (sMsgFrame.aucData.Length > 0)
             {
-                case MsgEnum.teMessageId.eMsgInitOutputStatus:
-                case MsgEnum.teMessageId.eMsgRequestOutputStatus:
-                    {
-                        //De-serialize payload into given structure 
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgRequestOutputState>(sMsgFrame.aucData);
-
-                        szRet = $"Output: {payload.ucOutputIndex} | Brightness: {payload.ucBrightness} | Status: {Convert.ToBoolean(payload.ucLedStatus)} | Auto-Mode: {Convert.ToBoolean(payload.ucAutomaticModeActive)} | ";
-                        szRet += $"Init Menu: {Convert.ToBoolean(payload.ucInitMenuActive)} | Night mode: {Convert.ToBoolean(payload.ucNightModeOnOff)} | PIR Mode: {Convert.ToBoolean(payload.ucMotionDetectionOnOff)} | ";
-                        szRet += $"Burntime: {payload.ucBurnTime}";
-
-                        if (payload.ucOutputIndex < Form1.ucUsedLables)
+                switch (eMsgID.ToEnum(sMsgFrame.ucMsgId))
+                {
+                    case MsgEnum.teMessageId.eMsgInitOutputStatus:
+                    case MsgEnum.teMessageId.eMsgRequestOutputStatus:
                         {
-                            Form1._labels[payload.ucOutputIndex].szBrightnessReq = payload.ucBrightness + "%";
-                            Form1._labels[payload.ucOutputIndex].szReqLed = Convert.ToBoolean(payload.ucLedStatus) ? "ON" : "OFF";
-                            Form1._labels[payload.ucOutputIndex].szAutoReq = Convert.ToBoolean(payload.ucAutomaticModeActive) ? "ON" : "OFF";
+                            //De-serialize payload into given structure 
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgRequestOutputState>(sMsgFrame.aucData);
+
+                            szRet = $"Output: {payload.ucOutputIndex} | Brightness: {payload.ucBrightness} | Status: {Convert.ToBoolean(payload.ucLedStatus)} | Auto-Mode: {Convert.ToBoolean(payload.ucAutomaticModeActive)} | ";
+                            szRet += $"Init Menu: {Convert.ToBoolean(payload.ucInitMenuActive)} | Night mode: {Convert.ToBoolean(payload.ucNightModeOnOff)} | PIR Mode: {Convert.ToBoolean(payload.ucMotionDetectionOnOff)} | ";
+                            szRet += $"Burntime: {payload.ucBurnTime}";
+
+                            if (payload.ucOutputIndex < Form1.ucUsedLables)
+                            {
+                                Form1._labels[payload.ucOutputIndex].szBrightnessReq = payload.ucBrightness + "%";
+                                Form1._labels[payload.ucOutputIndex].szReqLed = Convert.ToBoolean(payload.ucLedStatus) ? "ON" : "OFF";
+                                Form1._labels[payload.ucOutputIndex].szAutoReq = Convert.ToBoolean(payload.ucAutomaticModeActive) ? "ON" : "OFF";
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                case MsgEnum.teMessageId.eMsgUpdateOutputStatus:
-                    {
-                        //De-serialize payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgUpdateOutputState>(sMsgFrame.aucData);
-
-                        szRet = $"Output: {payload.ucOutputIndex} | Brightness: {payload.ucBrightness}% | Status: {Convert.ToBoolean(payload.ucLedStatus)} | Nightmode: {Convert.ToBoolean(payload.ucNightModeOnOff)} | ";
-                        szRet += $"PIR-Status: {Convert.ToBoolean(payload.ucMotionDetectionOnOff)} | Burn time: {payload.slRemainingBurnTime}";
-
-
-                        if(payload.ucOutputIndex < Form1.ucUsedLables)
+                    case MsgEnum.teMessageId.eMsgUpdateOutputStatus:
                         {
-                            Form1._labels[payload.ucOutputIndex].szBrightnessRes = payload.ucBrightness + "%";
-                            Form1._labels[payload.ucOutputIndex].szResLed = Convert.ToBoolean(payload.ucLedStatus) ? "ON" : "OFF";
-                            Form1._labels[payload.ucOutputIndex].szAutoRes = "N/A";
+                            //De-serialize payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgUpdateOutputState>(sMsgFrame.aucData);
+
+                            szRet = $"Output: {payload.ucOutputIndex} | Brightness: {payload.ucBrightness}% | Status: {Convert.ToBoolean(payload.ucLedStatus)} | Nightmode: {Convert.ToBoolean(payload.ucNightModeOnOff)} | ";
+                            szRet += $"PIR-Status: {Convert.ToBoolean(payload.ucMotionDetectionOnOff)} | Burn time: {payload.slRemainingBurnTime}";
+
+
+                            if (payload.ucOutputIndex < Form1.ucUsedLables)
+                            {
+                                Form1._labels[payload.ucOutputIndex].szBrightnessRes = payload.ucBrightness + "%";
+                                Form1._labels[payload.ucOutputIndex].szResLed = Convert.ToBoolean(payload.ucLedStatus) ? "ON" : "OFF";
+                                Form1._labels[payload.ucOutputIndex].szAutoRes = "N/A";
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                case MsgEnum.teMessageId.eMsgCurrentTime:
-                    {
-                        //De-serialize payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgCurrentTime>(sMsgFrame.aucData);
-
-                        szRet = $"Ticks: {payload.ulTicks} | Hours: {payload.ucHour} | Minutes: {payload.ucMinutes}";
-                        break;
-                    }
-
-                case MsgEnum.teMessageId.eMsgOutputState:
-                    {
-                        //De-serializes payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgOutputStateResponse>(sMsgFrame.aucData);
-
-                        szRet = $"Output: {payload.ucOutputIndex} | Voltage: {payload.ulVoltage}mV | Current: {payload.uiCurrent}mA | ";
-                        string Temp = Convert.ToString(payload.siTemperature);
-                        Temp = Temp.Insert((Temp.Length - 1), ".");
-                        szRet += "Temp: " + Temp + "°C";
-
-                        if (payload.ucOutputIndex < Form1.ucUsedLables)
+                    case MsgEnum.teMessageId.eMsgCurrentTime:
                         {
-                            Form1._labels[payload.ucOutputIndex].szCurrent = payload.uiCurrent + "mA";
-                            Form1._labels[payload.ucOutputIndex].szVoltage = payload.ulVoltage + "mV";
-                            Form1._labels[payload.ucOutputIndex].szPower = Convert.ToString((payload.ulVoltage * payload.uiCurrent) / 1000) + "W";
-                            Form1._labels[payload.ucOutputIndex].szTemp = Temp + "°C";
+                            //De-serialize payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgCurrentTime>(sMsgFrame.aucData);
+
+                            szRet = $"Ticks: {payload.ulTicks} | Hours: {payload.ucHour} | Minutes: {payload.ucMinutes}";
+                            break;
                         }
+
+                    case MsgEnum.teMessageId.eMsgOutputState:
+                        {
+                            //De-serializes payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgOutputStateResponse>(sMsgFrame.aucData);
+
+                            szRet = $"Output: {payload.ucOutputIndex} | Voltage: {payload.ulVoltage}mV | Current: {payload.uiCurrent}mA | ";
+                            string Temp = Convert.ToString(payload.siTemperature);
+                            Temp = Temp.Insert((Temp.Length - 1), ".");
+                            szRet += "Temp: " + Temp + "°C";
+
+                            if (payload.ucOutputIndex < Form1.ucUsedLables)
+                            {
+                                Form1._labels[payload.ucOutputIndex].szCurrent = payload.uiCurrent + "mA";
+                                Form1._labels[payload.ucOutputIndex].szVoltage = payload.ulVoltage + "mV";
+                                Form1._labels[payload.ucOutputIndex].szPower = Convert.ToString((payload.ulVoltage * payload.uiCurrent) / 1000) + "W";
+                                Form1._labels[payload.ucOutputIndex].szTemp = Temp + "°C";
+                            }
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgErrorCode:
+                        {
+                            //De-serializes payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgErrorCode>(sMsgFrame.aucData);
+
+                            //Get specific enum and cast it directly
+                            ErrorCode.ceFaultCodes ecFaultCode = new ErrorCode.ceFaultCodes();
+                            szRet = $"{ecFaultCode.ToEnum(payload.uiErrorCode)}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgManualInitHardware:
+                        {
+                            //De-serializes payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgManualInit>(sMsgFrame.aucData);
+
+                            szRet = $"SetMinVal: {payload.ucSetMinValue} | SetMaxVal: {payload.ucSetMaxValue} | Output: {payload.ucOutputIndex}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgUserTimer:
+                        {
+                            //De-serializes payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgUserTimer>(sMsgFrame.aucData);
+
+                            szRet = $"Timer: {payload.ucTimerIdx} | Start: {payload.ucStartHour}:{payload.ucStartMin} | Stop: {payload.ucStopHour}:{payload.ucStopMin}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgVersion:
+                        {
+                            //De-serializes payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgVersion>(sMsgFrame.aucData);
+                            szRet = $"Version: {payload.uiVersion}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgStillAlive:
+                        {
+                            // De - serializes payload
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgStillAlive>(sMsgFrame.aucData);
+                            szRet = $"Request: {payload.bRequest:X2} | Response: {payload.bResponse:X2}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgDebug:
+                        {
+                            szRet = Encoding.GetEncoding("UTF-8").GetString(sMsgFrame.aucData);
+                            break;
+                        }
+                    default:
                         break;
-                    }
-
-                case MsgEnum.teMessageId.eMsgErrorCode:
-                    {
-                        //De-serializes payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgErrorCode>(sMsgFrame.aucData);
-
-                        //Get specific enum and cast it directly
-                        ErrorCode.ceFaultCodes ecFaultCode = new ErrorCode.ceFaultCodes();
-                        szRet = $"{ecFaultCode.ToEnum(payload.uiErrorCode)}";
-                        break;
-                    }
-                    
-                case MsgEnum.teMessageId.eMsgManualInitHardware:
-                    {
-                        //De-serializes payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgManualInit>(sMsgFrame.aucData);
-
-                        szRet = $"SetMinVal: {payload.ucSetMinValue} | SetMaxVal: {payload.ucSetMaxValue} | Output: {payload.ucOutputIndex}";
-                        break;
-                    }
-
-                case MsgEnum.teMessageId.eMsgUserTimer:
-                    {
-                        //De-serializes payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgUserTimer>(sMsgFrame.aucData);
-
-                        szRet = $"Timer: {payload.ucTimerIdx} | Start: {payload.ucStartHour}:{payload.ucStartMin} | Stop: {payload.ucStopHour}:{payload.ucStopMin}";
-                        break;
-                    }
-
-                case MsgEnum.teMessageId.eMsgVersion:
-                    {
-                        //De-serializes payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgVersion>(sMsgFrame.aucData);
-                        szRet = $"Version: {payload.uiVersion}";
-                        break;
-                    }
-
-                case MsgEnum.teMessageId.eMsgStillAlive:
-                    {
-                        // De - serializes payload
-                        var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgStillAlive>(sMsgFrame.aucData);
-                        szRet = $"Request: {payload.bRequest:X2} | Response: {payload.bResponse:X2}";
-                        break;
-                    }
-
-                case MsgEnum.teMessageId.eMsgDebug:
-                    {
-                        szRet = Encoding.GetEncoding("UTF-8").GetString(sMsgFrame.aucData);                        
-                        break;
-                    }
-                default:
-                    break;
+                }
             }
 
             return szRet;

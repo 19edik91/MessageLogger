@@ -36,7 +36,7 @@ namespace MessageLoggerForm
             eMsgDebug = 0x10,     /*<-- Debug message --> */
             eMsgInitDone = 0x11,     /*<-- Message for user settings sending done -->*/
             eMsgHeartBeatOutput = 0x12,     /*<-- Message for output heart beat. Shall not be handled as user input */
-            eMsgLastEntry = 0xFF
+            eMsgInvalid
         }
 
         public enum teMessageCmd
