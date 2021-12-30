@@ -57,7 +57,7 @@ namespace MessageLoggerForm.Data
 
                 dt.Columns.Add(new DataColumn { DataType = typeof(int), ColumnName=teTable.GetEnumAsString(teDataTable.Index), Caption=teTable.GetEnumAsString(teDataTable.Index) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(DateTime), ColumnName = teTable.GetEnumAsString(teDataTable.TimeStamp), Caption = teTable.GetEnumAsString(teDataTable.TimeStamp) });
-                dt.Columns.Add(new DataColumn { DataType = typeof(byte[]), ColumnName = teTable.GetEnumAsString(teDataTable.ByteStream), Caption = teTable.GetEnumAsString(teDataTable.ByteStream) });
+                dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.ByteStream), Caption = teTable.GetEnumAsString(teDataTable.ByteStream) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Destination), Caption = teTable.GetEnumAsString(teDataTable.Destination) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Source), Caption = teTable.GetEnumAsString(teDataTable.Source) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Kind), Caption = teTable.GetEnumAsString(teDataTable.Kind) });
@@ -67,6 +67,7 @@ namespace MessageLoggerForm.Data
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Interpretation), Caption = teTable.GetEnumAsString(teDataTable.Interpretation) });
 
                 lv.View = View.Details;
+                lv.FullRowSelect = true;
                 lv.Items.Clear();
                 lv.Columns.Add(new ColumnHeader { Name = teDataTable.Index.ToString(), Text = teDataTable.Index.ToString(), Width = -2 });
                 lv.Columns.Add(new ColumnHeader { Name = teDataTable.TimeStamp.ToString(), Text = teDataTable.TimeStamp.ToString(), Width = -2 });
@@ -113,7 +114,13 @@ namespace MessageLoggerForm.Data
                 //Fill the row
                 dr[teDataTable.Index.ToString()] = GetLastIndex() + 1;
                 dr[teDataTable.TimeStamp.ToString()] = dateTime;
-                dr[teDataTable.ByteStream.ToString()] = byteStream;
+
+                string szDataByteStream = "";
+                foreach(byte data in byteStream)
+                {
+                    szDataByteStream += $" {data.ToString("X2")} ";
+                }
+                dr[teDataTable.ByteStream.ToString()] = szDataByteStream;
                 dr[teDataTable.Destination.ToString()] = dest;
                 dr[teDataTable.Source.ToString()] = source;
                 dr[teDataTable.Kind.ToString()] = kind;

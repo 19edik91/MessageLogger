@@ -21,6 +21,7 @@ namespace MessageLoggerForm
             {
                 MsgEnum.teMessageCmd.eCmdGet => "Get",
                 MsgEnum.teMessageCmd.eCmdSet => "Set",
+                MsgEnum.teMessageCmd.eNoCmd => "No cmd",
                 _ => "No cmd found"
             };
 
@@ -217,6 +218,14 @@ namespace MessageLoggerForm
                             szRet = Encoding.GetEncoding("UTF-8").GetString(sMsgFrame.aucData);
                             break;
                         }
+
+                    case MsgEnum.teMessageId.eMsgHeartBeatOutput:
+                        {
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgHeartBeatOutput>(sMsgFrame.aucData);
+                            szRet = $"Brightness: {payload.ucBrightness} | Status: {Convert.ToBoolean(payload.ucLedStatus)} | OutputIdx: {payload.ucOutputIndex}";
+                            break;
+                        }
+
                     default:
                         break;
                 }

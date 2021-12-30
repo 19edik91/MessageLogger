@@ -34,8 +34,6 @@ namespace MessageLoggerForm
                 cSerial = new Class_Serial();
                 cSerial.OnMessageReceived += new Class_Serial.MessageReceived(MessageReceivedHandler);
                 cCOM_Port = new Class_COM();
-
-                
             }
 
             public SerialCom(Class_COM cCom)
@@ -55,7 +53,7 @@ namespace MessageLoggerForm
         private List<SerialCom> _lstSerialCom;
         private Class_Data.cData _cData;
 
-        private BackgroundWorker[] backgroundWorkersArr;
+        private Mutex _mut = new Mutex();
         public static Class_Lables[] _labels;
         const bool bAppendInFile = true;
 
@@ -297,6 +295,8 @@ namespace MessageLoggerForm
                    /* Call per invoke to put the item to the list view */
                    this.Invoke((MethodInvoker)delegate
                    {
+                       _mut.WaitOne(500);
+
                        for (byte ucLblIdx = 0; ucLblIdx < ucUsedLables; ucLblIdx++)
                        {
                            LblLedStatusReq.Text = _labels[ucLblIdx].szReqLed; ;
@@ -340,6 +340,8 @@ namespace MessageLoggerForm
                        }
 
                        _cData.AddNewestRowToListView();
+
+                       _mut.ReleaseMutex();
                    });
                 }
             }
