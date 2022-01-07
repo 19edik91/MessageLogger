@@ -39,7 +39,7 @@ namespace MessageLoggerForm.Data
         public class cData
         {
             public DataTable dt { get; set; }
-            public ListView lv { get; set; }
+            
             private cteDataTable teTable = new cteDataTable();
 
             public void Clear()
@@ -53,7 +53,6 @@ namespace MessageLoggerForm.Data
             public cData()
             {
                 dt = new DataTable("dataTable");
-                lv = new ListView();
 
                 dt.Columns.Add(new DataColumn { DataType = typeof(int), ColumnName=teTable.GetEnumAsString(teDataTable.Index), Caption=teTable.GetEnumAsString(teDataTable.Index) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(DateTime), ColumnName = teTable.GetEnumAsString(teDataTable.TimeStamp), Caption = teTable.GetEnumAsString(teDataTable.TimeStamp) });
@@ -65,20 +64,6 @@ namespace MessageLoggerForm.Data
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Object), Caption = teTable.GetEnumAsString(teDataTable.Object) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Command), Caption = teTable.GetEnumAsString(teDataTable.Command) });
                 dt.Columns.Add(new DataColumn { DataType = typeof(string), ColumnName = teTable.GetEnumAsString(teDataTable.Interpretation), Caption = teTable.GetEnumAsString(teDataTable.Interpretation) });
-
-                lv.View = View.Details;
-                lv.FullRowSelect = true;
-                lv.Items.Clear();
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Index.ToString(), Text = teDataTable.Index.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.TimeStamp.ToString(), Text = teDataTable.TimeStamp.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.ByteStream.ToString(), Text = teDataTable.ByteStream.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Destination.ToString(), Text = teDataTable.Destination.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Source.ToString(), Text = teDataTable.Source.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Kind.ToString(), Text = teDataTable.Kind.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.QueryId.ToString(), Text = teDataTable.QueryId.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Object.ToString(), Text = teDataTable.Object.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Command.ToString(), Text = teDataTable.Command.ToString(), Width = -2 });
-                lv.Columns.Add(new ColumnHeader { Name = teDataTable.Interpretation.ToString(), Text = teDataTable.Interpretation.ToString(), Width = -2 });
             }
 
             /// <summary>
@@ -133,28 +118,7 @@ namespace MessageLoggerForm.Data
                 dt.Rows.InsertAt(dr, 0);
             }
 
-            /// <summary>
-            /// Method to add the latest row from the data table into the list view.
-            /// </summary>
-            public void AddNewestRowToListView()
-            {
-                //Get the enum as a list
-                var lst = teTable.GetEnumListAsString();
 
-                //Create new list view item object
-                ListViewItem item = new ListViewItem(dt.Rows[0][teDataTable.Index.ToString()].ToString());
-
-                foreach (string szEnum in lst)
-                {
-                    if (szEnum != teDataTable.Index.ToString())
-                    {
-                        //Add subitems
-                        item.SubItems.Add(dt.Rows[0][szEnum].ToString());
-                    }
-                }
-
-                lv.Items.Insert(0, item);
-            }
         }
     }
 }

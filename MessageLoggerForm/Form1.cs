@@ -18,6 +18,7 @@ using Microsoft.Win32;
 using MessageLoggerForm.COM;
 using MessageLoggerForm.Serial;
 using MessageLoggerForm.Data;
+using MessageLoggerForm.ClassListView;
 
 namespace MessageLoggerForm
 {
@@ -28,12 +29,14 @@ namespace MessageLoggerForm
             public Class_COM cCOM_Port;
             public Class_Serial cSerial;
             public BackgroundWorker bgw;
+            public Class_Data.cData cData;
 
             public SerialCom()
             {
                 cSerial = new Class_Serial();
                 cSerial.OnMessageReceived += new Class_Serial.MessageReceived(MessageReceivedHandler);
                 cCOM_Port = new Class_COM();
+                cData = new Class_Data.cData();
             }
 
             public SerialCom(Class_COM cCom)
@@ -41,6 +44,7 @@ namespace MessageLoggerForm
                 cSerial = new Class_Serial();
                 cSerial.OnMessageReceived += new Class_Serial.MessageReceived(MessageReceivedHandler);
                 cCOM_Port = cCom;
+                cData = new Class_Data.cData();
             }
         }
 
@@ -51,8 +55,6 @@ namespace MessageLoggerForm
         public const byte ucUsedLables = 4;
 
         private List<SerialCom> _lstSerialCom;
-        private Class_Data.cData _cData;
-
         private Mutex _mut = new Mutex();
         public static Class_Lables[] _labels;
         const bool bAppendInFile = true;
@@ -82,18 +84,16 @@ namespace MessageLoggerForm
 
             /* Initialize serial handling */
             _lstSerialCom = new List<SerialCom>();
-            _cData = new Class_Data.cData();
 
-
-            _cData.lv.Dock = DockStyle.Fill;
-            _cData.lv.GridLines = true;
-            tabPage1.Controls.Add(_cData.lv);
+            //Add the list view control to the main form
+            Class_ListView.LV_Initialize();
+            tabPage1.Controls.Add(Class_ListView.lv);
 
             //Init combo boxes with available COM-Ports
             BtnComPortInit_Click(default, default);
 
             //Activate the double buffered option in the list view
-            SetDoubleBufferd(_cData.lv);
+            SetDoubleBufferd(Class_ListView.lv);
 
             //Initialize lables class
             _labels = new Class_Lables[ucUsedLables];
@@ -257,7 +257,7 @@ namespace MessageLoggerForm
          ****************************************************************************************************/
         private void ResizeListViewColumns(object sender, EventArgs e)
         {
-            foreach (ColumnHeader column in _cData.lv.Columns)
+            foreach (ColumnHeader column in  Class_ListView.lv.Columns)
             {
                 column.Width = -2;
             }
@@ -269,7 +269,7 @@ namespace MessageLoggerForm
         /// Fills an array for the list view with the interprated data.
         /// </summary>
         /// <param name="sMsgFrame">sMsgFrame - The message frame which shall be interprated and put into the list view</param>
-        private void FillListView(MsgStructure.tsMessageFrame sMsgFrame)
+        private void FillListView(MsgStructure.tsMessageFrame sMsgFrame, Class_Data.cData _cData)
         {
             //Use cdata to fill the data table
             _cData.FillRow(DateTime.Now,
@@ -339,7 +339,8 @@ namespace MessageLoggerForm
                            }
                        }
 
-                       _cData.AddNewestRowToListView();
+                       //Add newest data to list view
+                       Class_ListView.AddNewestRowToListView(_cData.dt.Rows[0]);
 
                        _mut.ReleaseMutex();
                    });
@@ -406,13 +407,25 @@ namespace MessageLoggerForm
         /// <param name="queuedMessages"> The amount of messages which can be retrieved </param>
         private void HandleNewMessage(Class_Serial cSerial, int queuedMessages)
         {
+            Class_Data.cData _cdata = null;
+
+            //Search the linked serial com class.
+            foreach(SerialCom serialCom in _lstSerialCom)
+            {
+                if(serialCom.cSerial == cSerial)
+                {
+                    _cdata = serialCom.cData;
+                    break;
+                }
+            }
+
             for(int msgIdx = 0; msgIdx < queuedMessages; msgIdx++)
             {
                 //Get the message frame
                 MsgStructure.tsMessageFrame msgFrame = cSerial.GetNextMessageFrame();
 
                 //Update list view with new message
-                FillListView(msgFrame);
+                FillListView(msgFrame, _cdata);
             }
         }
 
@@ -441,7 +454,7 @@ namespace MessageLoggerForm
           ****************************************************************************************************/
         private void BtnClearListView_Click(object sender, EventArgs e)
         {
-            _cData.lv.Items.Clear();
+            Class_ListView.lv.Items.Clear();
         }
 
         /****************************************************************************************************
