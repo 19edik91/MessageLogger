@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.InteropServices;
 
+
 namespace MessageLoggerForm
 {
     public class MsgStructure
@@ -64,21 +65,30 @@ namespace MessageLoggerForm
             /// <returns></returns>
             public static tsMessageFrame FromArray(byte[] array)
             {
-                var reader = new BinaryReader(new MemoryStream(array));
-
                 var str = default(tsMessageFrame);
-                str.ucPreamble = reader.ReadByte();
-                str.ucDestAddress = reader.ReadByte();
-                str.ucSourceAddress = reader.ReadByte();
-                str.ucMsgType = reader.ReadByte();
+                try
+                {
+                    var reader = new BinaryReader(new MemoryStream(array));
+                                        
+                    str.ucPreamble = reader.ReadByte();
+                    str.ucDestAddress = reader.ReadByte();
+                    str.ucSourceAddress = reader.ReadByte();
+                    str.ucMsgType = reader.ReadByte();
 
-                str.ucMsgId = reader.ReadByte();
-                str.ucCommand = reader.ReadByte();
-                str.ucQueryID = reader.ReadByte();
-                str.ucPayloadLen = reader.ReadByte();
-                str.aucData = reader.ReadBytes(str.ucPayloadLen);
+                    str.ucMsgId = reader.ReadByte();
+                    str.ucCommand = reader.ReadByte();
+                    str.ucQueryID = reader.ReadByte();
+                    str.ucPayloadLen = reader.ReadByte();
+                    str.aucData = reader.ReadBytes(str.ucPayloadLen);
 
-                str.ulCrc32 = reader.ReadUInt32();
+                    str.ulCrc32 = reader.ReadUInt32();
+                    
+                }
+                catch(EndOfStreamException e)
+                {
+                    Console.WriteLine("End of stream exception!");
+                }
+
                 return str;
             }
         };
