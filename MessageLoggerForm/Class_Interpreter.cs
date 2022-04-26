@@ -103,20 +103,66 @@ namespace MessageLoggerForm
                 switch (eMsgID.ToEnum(sMsgFrame.ucMsgId))
                 {
                     case MsgEnum.teMessageId.eMsgInitOutputStatus:
+                        {
+
+                            MsgStructure.tMsgInitOutputState sMsgInit = new MsgStructure.tMsgInitOutputState();
+                            sMsgInit.asOutputs = new MsgStructure.sOutputs[MsgStructure.MAX_OUTPUTS];
+
+                            int arrayIdx = 0;
+
+                            //De-serialize first part of the array
+                            for (int OutputIdx = 0; OutputIdx < MsgStructure.MAX_OUTPUTS; OutputIdx++)
+                            {
+                                //Unsafe necessary because of the size of operator
+                                unsafe
+                                {
+                                    arrayIdx = sizeof(MsgStructure.sOutputs) * OutputIdx;
+                                    byte[] arr = new byte[sizeof(MsgStructure.sOutputs)];
+
+                                    Array.Copy(sMsgFrame.aucData, arrayIdx, arr, 0, sizeof(MsgStructure.sOutputs));
+
+                                    sMsgInit.asOutputs[OutputIdx] = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.sOutputs>(arr);
+                                }
+                            }
+
+                            //De-serialize second part of the array
+                            unsafe
+                            {
+                                int sizeOf = sizeof(MsgStructure.tMsgInitOutputState_SecondPart);
+                                byte[] arr = new byte[sizeOf];
+
+                                Array.Copy(sMsgFrame.aucData, arrayIdx, arr, 0, sizeof(MsgStructure.tMsgInitOutputState_SecondPart));
+
+                                var payloadSec = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgInitOutputState_SecondPart>(arr);
+
+                                sMsgInit.ucAutomaticModeActive = payloadSec.ucAutomaticModeActive;
+                                sMsgInit.ucBurnTime = payloadSec.ucBurnTime;
+                                sMsgInit.ucMotionDetectionOnOff = payloadSec.ucMotionDetectionOnOff;
+                                sMsgInit.ucNightModeOnOff = payloadSec.ucNightModeOnOff;
+                            }
+
+                            //Print the values in the interprated window
+                            foreach(MsgStructure.sOutputs sOutput in sMsgInit.asOutputs)
+                            {
+                                szRet += $"Output: {sOutput.ucOutputIndex} | Brightness: {sOutput.ucBrightness} | Status: {Convert.ToBoolean(sOutput.ucLedStatus)} | ";
+                            }
+
+                            szRet += $"Auto-Mode: {Convert.ToBoolean(sMsgInit.ucAutomaticModeActive)} |  Night mode: {Convert.ToBoolean(sMsgInit.ucNightModeOnOff)} | PIR Mode: {Convert.ToBoolean(sMsgInit.ucMotionDetectionOnOff)} |";
+                            szRet += $"Burntime: {sMsgInit.ucBurnTime}";
+                            break;
+                        }
+
                     case MsgEnum.teMessageId.eMsgRequestOutputStatus:
                         {
                             //De-serialize payload into given structure 
                             var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgRequestOutputState>(sMsgFrame.aucData);
 
-                            szRet = $"Output: {payload.ucOutputIndex} | Brightness: {payload.ucBrightness} | Status: {Convert.ToBoolean(payload.ucLedStatus)} | Auto-Mode: {Convert.ToBoolean(payload.ucAutomaticModeActive)} | ";
-                            szRet += $"Init Menu: {Convert.ToBoolean(payload.ucInitMenuActive)} | Night mode: {Convert.ToBoolean(payload.ucNightModeOnOff)} | PIR Mode: {Convert.ToBoolean(payload.ucMotionDetectionOnOff)} | ";
-                            szRet += $"Burntime: {payload.ucBurnTime}";
+                            szRet = $"Output: {payload.ucOutputIndex} | Brightness: {payload.ucBrightness} | Status: {Convert.ToBoolean(payload.ucLedStatus)} | Init Menu: {Convert.ToBoolean(payload.ucInitMenuActive)} ";
 
                             if (payload.ucOutputIndex < Form1.ucUsedLables)
                             {
                                 Form1._labels[payload.ucOutputIndex].szBrightnessReq = payload.ucBrightness + "%";
                                 Form1._labels[payload.ucOutputIndex].szReqLed = Convert.ToBoolean(payload.ucLedStatus) ? "ON" : "OFF";
-                                Form1._labels[payload.ucOutputIndex].szAutoReq = Convert.ToBoolean(payload.ucAutomaticModeActive) ? "ON" : "OFF";
                             }
                             break;
                         }
@@ -223,6 +269,29 @@ namespace MessageLoggerForm
                         {
                             var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tMsgHeartBeatOutput>(sMsgFrame.aucData);
                             szRet = $"Brightness: {payload.ucBrightness} | Status: {Convert.ToBoolean(payload.ucLedStatus)} | OutputIdx: {payload.ucOutputIndex}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgEnableNightMode:
+                        {
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgEnableNightMode>(sMsgFrame.aucData);
+                            szRet = $"Night mode enabled: {Convert.ToBoolean(payload.ucNightModeStatus)}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgEnableMotionDetect:
+                        {
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgEnableMotionDetectStatus>(sMsgFrame.aucData);
+                            szRet = $"PIR enabled: {Convert.ToBoolean(payload.ucMotionDetectStatus)} | Burn time: {payload.ucBurnTime}";
+                            break;
+                        }
+
+                    case MsgEnum.teMessageId.eMsgEnableAutomaticMode:
+                        {
+                            var payload = Class_Helper.Serializer.DeserializeMarsh<MsgStructure.tsMsgEnableAutomaticMode>(sMsgFrame.aucData);
+                            szRet = $"Automatic mode enabeld: {Convert.ToBoolean(payload.ucAutomaticModeStatus)}";
+                            
+                            //TODO: CHange label
                             break;
                         }
 
