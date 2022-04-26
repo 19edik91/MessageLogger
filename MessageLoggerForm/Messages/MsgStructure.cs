@@ -11,6 +11,8 @@ namespace MessageLoggerForm
 {
     public class MsgStructure
     {
+        public const int MAX_OUTPUTS = 4;
+
         /********************************** Message frame **********************************/
         //! Format of whole message frame
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -69,7 +71,7 @@ namespace MessageLoggerForm
                 try
                 {
                     var reader = new BinaryReader(new MemoryStream(array));
-                                        
+
                     str.ucPreamble = reader.ReadByte();
                     str.ucDestAddress = reader.ReadByte();
                     str.ucSourceAddress = reader.ReadByte();
@@ -82,9 +84,9 @@ namespace MessageLoggerForm
                     str.aucData = reader.ReadBytes(str.ucPayloadLen);
 
                     str.ulCrc32 = reader.ReadUInt32();
-                    
+
                 }
-                catch(EndOfStreamException e)
+                catch (EndOfStreamException e)
                 {
                     Console.WriteLine("End of stream exception!");
                 }
@@ -101,14 +103,9 @@ namespace MessageLoggerForm
         public struct tMsgRequestOutputState
         {
             public byte ucBrightness;              /* Requested brightness for this output */
-            public byte ucInitMenuActiveInv;       /* Shows if Initializing menu is active (inverted bit) */
             public byte ucLedStatus;               /* The requested status of the output (On / Off) */
             public byte ucInitMenuActive;          /* Shows if Initializing menu is active */
-            public byte ucAutomaticModeActive;     /* Shows if the automatic mode is enabled /disabled */
-            public byte ucNightModeOnOff;          /* Night mode should be switched on or off */
-            public byte ucMotionDetectionOnOff;    /* PIR detection enabled or disabled */
             public byte ucOutputIndex;             /* The which output shall be enabled */
-            public byte ucBurnTime;                /* Requested burning time */
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -144,25 +141,27 @@ namespace MessageLoggerForm
             public byte ucNightModeOnOff;
             public byte ucBurnTime;
         };
+
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tMsgUpdateOutputState
         {
             public byte ucBrightness;
-            public byte ucLedStatus;            
+            public byte ucLedStatus;
             public byte ucNightModeOnOff;
             public byte ucMotionDetectionOnOff;
             public byte ucAutomaticModeOnOff;
             public byte ucOutputIndex;
-            public int  slRemainingBurnTime;
+            public int slRemainingBurnTime;
         };
-        
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgOutputStateResponse
         {
-            public uint    ulVoltage;          /* Voltage in millivolt */
-            public ushort  uiCurrent;          /* Current in milli ampere */
-            public ushort  siTemperature;
-            public byte    ucOutputIndex;
+            public uint ulVoltage;          /* Voltage in millivolt */
+            public ushort uiCurrent;          /* Current in milli ampere */
+            public ushort siTemperature;
+            public byte ucOutputIndex;
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -206,8 +205,8 @@ namespace MessageLoggerForm
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tsMsgStillAlive
         {
-	        public byte bResponse;
-	        public byte bRequest;
+            public byte bResponse;
+            public byte bRequest;
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -221,5 +220,25 @@ namespace MessageLoggerForm
         {
             public char[] aucDebugMsg;
         };
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tsMsgEnableNightMode
+        {
+            public byte ucNightModeStatus;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tsMsgEnableMotionDetectStatus
+        {
+            public byte ucMotionDetectStatus;
+            public byte ucBurnTime;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tsMsgEnableAutomaticMode
+        {
+            public byte ucAutomaticModeStatus;
+        }
     }
 }
+
