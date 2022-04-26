@@ -36,6 +36,9 @@ namespace MessageLoggerForm
             eMsgDebug = 0x10,     /*<-- Debug message --> */
             eMsgInitDone = 0x11,     /*<-- Message for user settings sending done -->*/
             eMsgHeartBeatOutput = 0x12,     /*<-- Message for output heart beat. Shall not be handled as user input */
+            eMsgEnableNightMode = 0x13,  /*<-- Sets the night mode status. When the master is within the night time the output is set to MIN  --> */
+            eMsgEnableMotionDetect = 0x14,  /*<-- Sets the motion detection status. When its on the PIR input is checked to --> */
+            eMsgEnableAutomaticMode = 0x15,  /*<-- Sets the automatic mode status. When the time is within the start-stop time the output is switched on --> */
             eMsgInvalid
         }
 
