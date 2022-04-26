@@ -48,3 +48,23 @@ Thumbs.db
 *.mov
 *.wmv
 
+/.vs/MessageLoggerForm/v16/Browse.VC.db
+/.vs/MessageLoggerForm/v16/Browse.VC.db-shm
+/.vs/MessageLoggerForm/v16/Browse.VC.db-wal
+/.vs/MessageLoggerForm/v16/Browse.VC.opendb
+/.vs/MessageLoggerForm/v16/Solution.VC.db
+/.vs/MessageLoggerForm/v16/Solution.VC.db-shm
+/.vs/MessageLoggerForm/v16/Solution.VC.db-wal
+/MessageLoggerForm/bin/Debug/MessageLoggerForm.exe.config
+/MessageLoggerForm/bin/Debug/MessageLoggerForm.pdb
+/MessageLoggerForm/obj/Debug/.NETFramework,Version=v4.8.AssemblyAttributes.cs
+/MessageLoggerForm/obj/Debug/DesignTimeResolveAssemblyReferences.cache
+/MessageLoggerForm/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.csproj.AssemblyReference.cache
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.csproj.CoreCompileInputs.cache
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.csproj.FileListAbsolute.txt
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.csproj.GenerateResource.cache
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.Form1.resources
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.pdb
+/MessageLoggerForm/obj/Debug/MessageLoggerForm.Properties.Resources.resources
+/MessageLoggerForm/obj/Debug/TempPE/Properties.Resources.Designer.cs.dll

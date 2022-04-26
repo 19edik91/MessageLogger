@@ -119,8 +119,31 @@ namespace MessageLoggerForm
             public byte ucOutputIndex;
         };
 
-        //public struct tMsgInitOutputState tMsgRequestOutputState;
-        
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct sOutputs
+        {
+            public byte ucBrightness;
+            public byte ucLedStatus;
+            public byte ucOutputIndex;
+        };
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tMsgInitOutputState
+        {
+            public sOutputs[] asOutputs;
+
+            public byte ucAutomaticModeActive;
+            public byte ucMotionDetectionOnOff;
+            public byte ucNightModeOnOff;
+            public byte ucBurnTime;
+        };
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tMsgInitOutputState_SecondPart
+        {
+            public byte ucAutomaticModeActive;
+            public byte ucMotionDetectionOnOff;
+            public byte ucNightModeOnOff;
+            public byte ucBurnTime;
+        };
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct tMsgUpdateOutputState
         {

@@ -502,13 +502,13 @@ namespace MessageLoggerForm
             //Create a message frame first (Frame + Payload structure)
             MsgStructure.tMsgRequestOutputState sMsg = new MsgStructure.tMsgRequestOutputState();
             sMsg.ucBrightness = 55;
-            sMsg.ucAutomaticModeActive = 1;
-            sMsg.ucBurnTime = 20;
+            //sMsg.ucAutomaticModeActive = 1;
+            //sMsg.ucBurnTime = 20;
             sMsg.ucInitMenuActive = 0;
-            sMsg.ucInitMenuActiveInv = 1;
+            //sMsg.ucInitMenuActiveInv = 1;
             sMsg.ucLedStatus = 1;
-            sMsg.ucMotionDetectionOnOff = 1;
-            sMsg.ucNightModeOnOff = 0;
+            //sMsg.ucMotionDetectionOnOff = 1;
+            //sMsg.ucNightModeOnOff = 0;
             sMsg.ucOutputIndex = 2;
 
             MsgStructure.tsMessageFrame sMsgFrame = new MsgStructure.tsMessageFrame();
