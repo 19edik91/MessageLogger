@@ -101,9 +101,17 @@ namespace MessageLoggerForm.Data
                 dr[teDataTable.TimeStamp.ToString()] = dateTime;
 
                 string szDataByteStream = "";
-                foreach(byte data in byteStream)
+
+                if (byteStream != null)
                 {
-                    szDataByteStream += $" {data.ToString("X2")} ";
+                    foreach (byte data in byteStream)
+                    {
+                        szDataByteStream += $" {data.ToString("X2")} ";
+                    }
+                }
+                else
+                {
+                    szDataByteStream = "Invalid bytestream";
                 }
                 dr[teDataTable.ByteStream.ToString()] = szDataByteStream;
                 dr[teDataTable.Destination.ToString()] = dest;

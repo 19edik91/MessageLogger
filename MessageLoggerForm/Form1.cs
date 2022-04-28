@@ -279,8 +279,8 @@ namespace MessageLoggerForm
                 Class_Interpreter.GetType((MsgEnum.teMessageType)sMsgFrame.ucMsgType),
                 sMsgFrame.ucQueryID,
                 Class_Interpreter.GetID((MsgEnum.teMessageId)sMsgFrame.ucMsgId),
-                Class_Interpreter.GetCommand((MsgEnum.teMessageCmd)sMsgFrame.ucCommand),
-                Class_Interpreter.GetPayload(sMsgFrame));
+                (MsgEnum.teMessageType)sMsgFrame.ucMsgType == MsgEnum.teMessageType.eTypeAck ? "" : Class_Interpreter.GetCommand((MsgEnum.teMessageCmd)sMsgFrame.ucCommand),
+                (MsgEnum.teMessageType)sMsgFrame.ucMsgType == MsgEnum.teMessageType.eTypeAck ? "" : Class_Interpreter.GetPayload(sMsgFrame));
 
             /* Check if list view shall be updated */
             if (ChkBoxUpdateListView.Checked == true)
